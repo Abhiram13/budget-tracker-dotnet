@@ -1,5 +1,6 @@
 using System.Net;
 using Application;
+using Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,7 @@ DotEnv.Load(dotenv);
 
 // Add services to the container.
 builder.Configuration.AddEnvironmentVariables().Build();
+builder.Services.AddSingleton(s => Mongo.DB);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
