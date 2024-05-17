@@ -29,4 +29,10 @@ public class WeatherForecastController : ControllerBase
         })
         .ToArray();
     }
+
+    [HttpGet("api")]
+    public string Api()
+    {
+        return "This API is working";
+    }
 }
