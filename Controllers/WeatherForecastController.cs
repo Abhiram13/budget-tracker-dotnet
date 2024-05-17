@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace budget_tracker.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("")]
 public class WeatherForecastController : ControllerBase
 {
     private static readonly string[] Summaries = new[]
