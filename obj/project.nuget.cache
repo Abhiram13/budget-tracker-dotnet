@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "ciHnzM680eE8I5FWI7AyXfbHOAPJ9EXQjembbng+tQ6V+krj8wV5BPxxQ+8Enc2q0ld3h7xLVOHjdmRYpUllLw==",
+  "success": true,
+  "projectFilePath": "/Users/abhiramnagadi/Documents/DotNet/budget-tracker/budget-tracker.csproj",
+  "expectedPackageFiles": [
+    "/Users/abhiramnagadi/.nuget/packages/microsoft.extensions.apidescription.server/6.0.5/microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
+    "/Users/abhiramnagadi/.nuget/packages/microsoft.openapi/1.2.3/microsoft.openapi.1.2.3.nupkg.sha512",
+    "/Users/abhiramnagadi/.nuget/packages/swashbuckle.aspnetcore/6.5.0/swashbuckle.aspnetcore.6.5.0.nupkg.sha512",
+    "/Users/abhiramnagadi/.nuget/packages/swashbuckle.aspnetcore.swagger/6.5.0/swashbuckle.aspnetcore.swagger.6.5.0.nupkg.sha512",
+    "/Users/abhiramnagadi/.nuget/packages/swashbuckle.aspnetcore.swaggergen/6.5.0/swashbuckle.aspnetcore.swaggergen.6.5.0.nupkg.sha512",
+    "/Users/abhiramnagadi/.nuget/packages/swashbuckle.aspnetcore.swaggerui/6.5.0/swashbuckle.aspnetcore.swaggerui.6.5.0.nupkg.sha512"
+  ],
+  "logs": []
+}
