@@ -46,3 +46,5 @@ public class Transaction : MongoObject
     [JsonPropertyName("category_id")]
     public string CategoryId { get; set; } = "";
 }
+
+public interface ITransactionService : IService<Transaction> { }

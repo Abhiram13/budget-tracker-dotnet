@@ -6,7 +6,9 @@ namespace Defination;
 
 public class Bank : MongoObject
 {
-   [BsonElement("name")]
-   [JsonPropertyName("name")]
-   public string Name { get; set; } = "";
+    [BsonElement("name")]
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = "";
 }
+
+public interface IBankService : IService<Bank> { }

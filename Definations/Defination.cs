@@ -17,7 +17,7 @@ public abstract class MongoObject
 {    
     [BsonElement("_id")]
     [JsonPropertyName("_id")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public ObjectId Id {get; set;}
     
     [BsonElement("__v")]
@@ -37,4 +37,16 @@ public class ApiResponse<T> where T : class
     [JsonPropertyName("result")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public T? Result {get; set;}
+}
+
+public static class Collection
+{
+    public const string Transaction = "transactions";
+    public const string Category = "categories";
+    public const string Bank = "banks";
+}
+
+public interface IService<T> where T : class
+{
+    Task InserOne(T document);
 }

@@ -5,26 +5,26 @@ using System.Net;
 namespace budget_tracker.Controllers;
 
 [ApiController]
-[Route("transactions")]
-public class TransactionsController : ControllerBase
+[Route("category")]
+public class CategoryController : ControllerBase
 {
-    private readonly ITransactionService service;
+    private readonly ICategoryService service;
 
-    public TransactionsController(ITransactionService _service)
+    public CategoryController(ICategoryService _service)
     {
         service = _service;
     }
 
     [HttpPost("add")]
-    public async Task<ApiResponse<string>> Add([FromBody] Transaction body)
+    public async Task<ApiResponse<string>> Add([FromBody] Category body)
     {
         try
         {
-            Transaction transaction = body;
-            await service.InserOne(transaction);
+            Category category = body;
+            await service.InserOne(category);
             return new ApiResponse<string>()
             {
-                Message = "Transaction inserted successfully",
+                Message = "Category inserted successfully",
                 StatusCode = HttpStatusCode.Created,
             };
         }
