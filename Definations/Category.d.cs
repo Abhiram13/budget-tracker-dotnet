@@ -11,4 +11,6 @@ public class Category : MongoObject
     public string Name { get; set; } = "";
 }
 
-public interface ICategoryService : IService<Category> { }
+public interface ICategoryService : IService<Category> { 
+    Task<Category> SearchById(string Id);
+}

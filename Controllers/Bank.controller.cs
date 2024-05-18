@@ -37,4 +37,16 @@ public class BankController : ControllerBase
             };
         }
     }
+
+    [HttpGet("list")]
+    public async Task<ApiResponse<List<Bank>>> GetList()
+    {
+        List<Bank> list = await service.GetList();
+
+        return new ApiResponse<List<Bank>>()
+        {
+            Result = list,
+            StatusCode = HttpStatusCode.OK,
+        };
+    }
 }

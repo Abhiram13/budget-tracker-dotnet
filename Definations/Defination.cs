@@ -14,11 +14,13 @@ public static class Env
 }
 
 public abstract class MongoObject
-{    
+{   
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
     [BsonElement("_id")]
     [JsonPropertyName("_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    public ObjectId Id {get; set;}
+    public string Id {get; set;} = "";
     
     [BsonElement("__v")]
     [JsonPropertyName("__v")]
@@ -49,4 +51,5 @@ public static class Collection
 public interface IService<T> where T : class
 {
     Task InserOne(T document);
+    Task<List<T>> GetList();
 }

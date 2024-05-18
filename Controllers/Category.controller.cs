@@ -37,4 +37,39 @@ public class CategoryController : ControllerBase
             };
         }
     }
+
+    [HttpGet("search/{id}")]
+    public async Task<ApiResponse<Category>> SearcById(string id)
+    {
+        try
+        {
+            Category category = await service.SearchById(id);
+
+            return new ApiResponse<Category>()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Result = category
+            };
+        }
+        catch (Exception e)
+        {
+            return new ApiResponse<Category>()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Message = $"Something went wrong. Message {e.Message}",
+            };
+        }
+    }
+
+    [HttpGet("list")]
+    public async Task<ApiResponse<List<Category>>> GetList()
+    {
+        List<Category> list = await service.GetList();
+
+        return new ApiResponse<List<Category>>()
+        {
+            Result = list,
+            StatusCode = HttpStatusCode.OK,
+        };
+    }
 }
