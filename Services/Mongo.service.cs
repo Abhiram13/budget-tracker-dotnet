@@ -1,17 +1,23 @@
 using Defination;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Services;
 
+public static class Collection
+{
+    public static IMongoCollection<Transaction> Transaction {get {return Mongo.DB.GetCollection<Transaction>("transactions");}}
+    public static IMongoCollection<Category> Category {get {return Mongo.DB.GetCollection<Category>("categories");}}
+    public static IMongoCollection<Bank> Bank {get {return Mongo.DB.GetCollection<Bank>("banks");}}
+}
+
 public abstract class MongoService<T> : IService<T> where T : class
 {
-    protected readonly IMongoCollection<T> collection;
-    protected readonly IMongoCollection<Transaction> transactionCollection;
+    protected IMongoCollection<T> collection;
 
-    public MongoService(string collectionName)
+    public MongoService(IMongoCollection<T> _collection)
     {
-        collection = Mongo.DB.GetCollection<T>(collectionName);
-        transactionCollection = Mongo.DB.GetCollection<Transaction>(Collection.Transaction);
+        collection = _collection;
     }
 
     public async Task InserOne(T document)
@@ -23,5 +29,12 @@ public abstract class MongoService<T> : IService<T> where T : class
     {
         FilterDefinition<T> filter = Builders<T>.Filter.Empty;
         return await collection.Aggregate().Match(filter).ToListAsync();
+    }
+
+    public async Task<T> SearchById(string Id)
+    {
+        FilterDefinition<T> filter = Builders<T>.Filter.Eq("_id", ObjectId.Parse(Id));
+
+        return await collection.Find(filter).FirstAsync();
     }
 }

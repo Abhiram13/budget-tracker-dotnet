@@ -41,15 +41,9 @@ public class ApiResponse<T> where T : class
     public T? Result {get; set;}
 }
 
-public static class Collection
-{
-    public const string Transaction = "transactions";
-    public const string Category = "categories";
-    public const string Bank = "banks";
-}
-
 public interface IService<T> where T : class
 {
     Task InserOne(T document);
     Task<List<T>> GetList();
+    Task<T> SearchById(string id);
 }

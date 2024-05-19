@@ -47,4 +47,31 @@ public class Transaction : MongoObject
     public string CategoryId { get; set; } = "";
 }
 
-public interface ITransactionService : IService<Transaction> { }
+public class TransactionDateAmounts
+{
+    [BsonElement("amount")]
+    public double Amount {get; set;}
+
+    [BsonElement("date")]
+    public DateTime Date {get; set;}
+
+    [BsonElement("type")]
+    public TransactionType type {get; set;}
+}
+
+public class TransactionList
+{
+    [BsonElement("debit")]
+    public double Debit {get; set;}
+
+    [BsonElement("credit")]
+    public double Credit {get; set;}
+
+    [BsonElement("date")]
+    public string Date {get; set;} = DateTime.Now.ToString();
+}
+
+public interface ITransactionService : IService<Transaction> { 
+    Task Validations(Transaction transaction);
+    List<TransactionList> List();
+}

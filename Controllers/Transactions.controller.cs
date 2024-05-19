@@ -22,6 +22,7 @@ public class TransactionsController : ControllerBase
         try
         {
             Transaction transaction = body;
+            await service.Validations(body);
             await service.InserOne(transaction);
             return new ApiResponse<string>()
             {
@@ -37,5 +38,11 @@ public class TransactionsController : ControllerBase
                 StatusCode = HttpStatusCode.InternalServerError,
             };
         }
+    }
+
+    [HttpGet("list")]
+    public List<TransactionList> Get()
+    {
+        return service.List();
     }
 }
