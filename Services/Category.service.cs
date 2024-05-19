@@ -6,7 +6,7 @@ using MongoDB.Bson;
 
 namespace Services;
 
-public class CategoryService : MongoService<Category>, ICategoryService
+public class CategoryService : MongoServices<Category>, ICategoryService
 {
     public CategoryService() : base(Collection.Category) { }    
 }

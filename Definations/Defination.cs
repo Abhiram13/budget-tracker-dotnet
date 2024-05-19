@@ -34,6 +34,7 @@ public class ApiResponse<T> where T : class
     public HttpStatusCode StatusCode {get; set;}
 
     [JsonPropertyName("message")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Message {get; set;}
 
     [JsonPropertyName("result")]

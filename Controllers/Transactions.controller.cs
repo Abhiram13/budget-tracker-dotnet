@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Defination;
 using System.Net;
-using MongoDB.Bson;
+using Services;
 
 namespace budget_tracker.Controllers;
 
@@ -19,8 +19,7 @@ public class TransactionsController : ControllerBase
     [HttpPost("add")]
     public async Task<ApiResponse<string>> Add([FromBody] Transaction body)
     {
-        try
-        {
+        Func<Task<ApiResponse<string>>> callback = async () => {
             Transaction transaction = body;
             await service.Validations(body);
             await service.InserOne(transaction);
@@ -29,20 +28,23 @@ public class TransactionsController : ControllerBase
                 Message = "Transaction inserted successfully",
                 StatusCode = HttpStatusCode.Created,
             };
-        }
-        catch (Exception e)
-        {
-            return new ApiResponse<string>()
-            {
-                Message = $"Something went wrong. Message {e.Message}",
-                StatusCode = HttpStatusCode.InternalServerError,
-            };
-        }
+        };
+
+        return await Handler<string>.Exception(callback);
     }
 
     [HttpGet("list")]
-    public List<TransactionList> Get()
+    public ApiResponse<List<TransactionList>> Get()
     {
-        return service.List();
+        Func<ApiResponse<List<TransactionList>>> callback = () => {
+            List<TransactionList> list = service.List();
+            return new ApiResponse<List<TransactionList>>()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Result = list,
+            };
+        };
+
+        return Handler<List<TransactionList>>.Exception(callback);
     }
 }

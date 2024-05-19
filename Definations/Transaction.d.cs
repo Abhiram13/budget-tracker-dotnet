@@ -68,7 +68,7 @@ public class TransactionList
     public double Credit {get; set;}
 
     [BsonElement("date")]
-    public string Date {get; set;} = DateTime.Now.ToString();
+    public DateTime Date {get; set;}
 }
 
 public interface ITransactionService : IService<Transaction> { 
