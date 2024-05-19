@@ -14,3 +14,15 @@ build_property.SupportLocalizedComponentNames =
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
 build_property.MSBuildProjectDirectory = /Users/abhiramnagadi/Documents/DotNet/budget-tracker
 build_property._RazorSourceGeneratorDebug = 
+
+[/Users/abhiramnagadi/Documents/DotNet/budget-tracker/Pages/Component.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvQ29tcG9uZW50LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/abhiramnagadi/Documents/DotNet/budget-tracker/Pages/Hello.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvSGVsbG8uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/abhiramnagadi/Documents/DotNet/budget-tracker/Pages/Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvTGF5b3V0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 

@@ -1,11 +1,37 @@
 {
   "Version": 1,
-  "Hash": "79Y+UzJII2mHG9TkseOxhBaKQ1M4o86QZUGED8FXZUA=",
+  "Hash": "InU7iPLf3ztCJtl/UFbgv33bXKHW/8RglUI/1FGiR3A=",
   "Source": "budget-tracker",
   "BasePath": "_content/budget-tracker",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
-  "Assets": []
+  "DiscoveryPatterns": [
+    {
+      "Name": "budget-tracker/wwwroot",
+      "Source": "budget-tracker",
+      "ContentRoot": "/Users/abhiramnagadi/Documents/DotNet/budget-tracker/wwwroot/",
+      "BasePath": "_content/budget-tracker",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "/Users/abhiramnagadi/Documents/DotNet/budget-tracker/wwwroot/Styles/main.css",
+      "SourceId": "budget-tracker",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/abhiramnagadi/Documents/DotNet/budget-tracker/wwwroot/",
+      "BasePath": "_content/budget-tracker",
+      "RelativePath": "Styles/main.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/Styles/main.css"
+    }
+  ]
 }

@@ -56,4 +56,16 @@ public class TransactionService : MongoServices<Transaction>, ITransactionServic
 
         return list;
     }
+
+    public async Task<long> GetCount()
+    {
+        FilterDefinition<Transaction> filter = Builders<Transaction>.Filter.Empty;
+        long count = await collection.CountDocumentsAsync(filter);
+        return count;
+    }
+
+    public void Action()
+    {
+        Console.WriteLine("Hi There!");
+    }
 }

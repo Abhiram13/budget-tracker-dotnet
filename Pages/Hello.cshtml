@@ -1,0 +1,27 @@
+@page "/"
+@using Defination;
+@using Services;
+@{
+   Layout = "Layout.cshtml";
+   TransactionService service = new TransactionService();
+   List<TransactionList> lists = service.List();
+   long count = await service.GetCount();
+}
+
+<div class="d-flex" style="justify-content: space-between; align-items: center;">
+   <h3 style="margin: 0;">Total transactions: @count</h3>
+   <button type="button" asp-action="@service.Action" style="border: 1px solid green; border-radius: 6px; background: transparent; color: green; padding: 5px 17px">ADD</button>
+</div>
+
+<section class="d-flex" style="justify-content: space-between; flex-wrap: wrap; flex-direction: column;">
+   @foreach (TransactionList transaction in lists)
+   {
+      <div class="d-flex" style="margin-top: 10px; flex-direction: column; padding: 10px; box-shadow: 1px 1px 5px -1px gray; border-radius: 10px;">
+         <p>Date: @transaction.Date</p>
+         <div class="d-flex" style="justify-content: space-between;">
+            <p>Credit: @transaction.Credit</p>
+            <p>Debit: @transaction.Debit</p>
+         </div>
+      </div>
+   }
+</section>
