@@ -12,9 +12,12 @@ public static class Collection
     public static IMongoCollection<Bank> Bank {get {return Mongo.DB.GetCollection<Bank>("banks");}}
 }
 
+public delegate ApiResponse<T> Callback<T>() where T : class;
+public delegate Task<ApiResponse<T>> AsyncCallback<T>() where T : class;
+
 public static class Handler<T> where T : class
 {
-    public static ApiResponse<T> Exception(Func<ApiResponse<T>> callback)
+    public static ApiResponse<T> Exception(Callback<T> callback)
     {
         try
         {
@@ -30,7 +33,7 @@ public static class Handler<T> where T : class
         }
     }
 
-    public static async Task<ApiResponse<T>> Exception(Func<Task<ApiResponse<T>>> callback)
+    public static async Task<ApiResponse<T>> Exception(AsyncCallback<T> callback)
     {
         try
         {

@@ -61,17 +61,20 @@ public class TransactionDateAmounts
 
 public class TransactionList
 {
-    [BsonElement("debit")]
+    [JsonPropertyName("debit")]
     public double Debit {get; set;}
 
-    [BsonElement("credit")]
+    [JsonPropertyName("credit")]
     public double Credit {get; set;}
 
-    [BsonElement("date")]
+    [JsonPropertyName("date")]
     public DateTime Date {get; set;}
+
+    [JsonPropertyName("count")]
+    public int Count {get; set;}
 }
 
 public interface ITransactionService : IService<Transaction> { 
     Task Validations(Transaction transaction);
-    List<TransactionList> List();
+    Task<List<TransactionList>> List();
 }

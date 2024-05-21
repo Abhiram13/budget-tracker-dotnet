@@ -1,5 +1,13 @@
 using Defination;
+using Global;
+using MongoDB.Bson;
+using MongoDB.Bson.IO;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
+using System.Globalization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
 namespace Services;
@@ -44,15 +52,17 @@ public class TransactionService : MongoServices<Transaction>, ITransactionServic
         }
     }
 
-    public List<TransactionList> List()
+    public async Task<List<TransactionList>> List()
     {
-        List<TransactionList> list =  collection.AsQueryable()
-            .GroupBy(t => t.Date)
-            .Select(tr => new TransactionList() {
-                Date = tr.First().Date,
-                Debit = tr.Where(d => d.Type == TransactionType.Debit && d.Date == tr.First().Date).Sum(d => d.Amount),
-                Credit = tr.Where(d => d.Type == TransactionType.Credit && d.Date == tr.First().Date).Sum(d => d.Amount),
-            }).ToList();
+        List<TransactionList> list =  await collection.Aggregate()
+        .Group(a => a.Date, b => new TransactionList () {
+            Debit = b.Where(c => c.Type == TransactionType.Debit).Sum(d => d.Amount),
+            Credit = b.Where(c => c.Type == TransactionType.Credit).Sum(d => d.Amount),
+            Date = b.First().Date.Date,
+            Count = b.Count()
+        })
+        .Sort(Builders<TransactionList>.Sort.Ascending(x => x.Date))
+        .ToListAsync();
 
         return list;
     }

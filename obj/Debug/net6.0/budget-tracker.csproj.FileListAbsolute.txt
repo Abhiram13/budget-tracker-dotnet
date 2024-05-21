@@ -38,3 +38,4 @@
 /Users/abhiramnagadi/Documents/DotNet/budget-tracker/bin/Debug/net6.0/runtimes/linux/native/libmongocrypt.so
 /Users/abhiramnagadi/Documents/DotNet/budget-tracker/bin/Debug/net6.0/runtimes/osx/native/libmongocrypt.dylib
 /Users/abhiramnagadi/Documents/DotNet/budget-tracker/bin/Debug/net6.0/runtimes/win/native/mongocrypt.dll
+/Users/abhiramnagadi/Documents/DotNet/budget-tracker/bin/Debug/net6.0/budget-tracker.staticwebassets.runtime.json
