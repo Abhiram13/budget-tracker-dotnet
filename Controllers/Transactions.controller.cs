@@ -16,7 +16,7 @@ public class TransactionsController : ControllerBase
         service = _service;
     }
 
-    [HttpPost("add")]
+    [HttpPost("")]
     public async Task<ApiResponse<string>> Add([FromBody] Transaction body)
     {
         AsyncCallback<string> callback = async () => {
@@ -28,16 +28,16 @@ public class TransactionsController : ControllerBase
                 Message = "Transaction inserted successfully",
                 StatusCode = HttpStatusCode.Created,
             };
-        };
+        };        
 
         return await Handler<string>.Exception(callback);
     }
 
-    [HttpGet("list")]
+    [HttpGet("")]
     public async Task<ApiResponse<List<TransactionList>>> Get()
     {
         AsyncCallback<List<TransactionList>> callback = async () => {
-            List<TransactionList> list = await service.List();
+            List<TransactionList> list = await service.ListByDate();
             return new ApiResponse<List<TransactionList>>()
             {
                 StatusCode = HttpStatusCode.OK,

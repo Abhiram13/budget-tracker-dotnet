@@ -1,13 +1,5 @@
 using Defination;
-using Global;
-using MongoDB.Bson;
-using MongoDB.Bson.IO;
-using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
-using System.Globalization;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
 namespace Services;
@@ -52,7 +44,7 @@ public class TransactionService : MongoServices<Transaction>, ITransactionServic
         }
     }
 
-    public async Task<List<TransactionList>> List()
+    public async Task<List<TransactionList>> ListByDate()
     {
         List<TransactionList> list =  await collection.Aggregate()
         .Group(a => a.Date, b => new TransactionList () {

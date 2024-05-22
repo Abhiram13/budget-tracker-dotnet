@@ -76,5 +76,5 @@ public class TransactionList
 
 public interface ITransactionService : IService<Transaction> { 
     Task Validations(Transaction transaction);
-    Task<List<TransactionList>> List();
+    Task<List<TransactionList>> ListByDate();
 }
