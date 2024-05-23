@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Defination;
 using System.Net;
 using Services;
+using Global;
 
 namespace budget_tracker.Controllers;
 
@@ -16,7 +17,7 @@ public class TransactionsController : ControllerBase
         service = _service;
     }
 
-    [HttpPost("")]
+    [HttpPost]
     public async Task<ApiResponse<string>> Add([FromBody] Transaction body)
     {
         AsyncCallback<string> callback = async () => {
@@ -33,18 +34,18 @@ public class TransactionsController : ControllerBase
         return await Handler<string>.Exception(callback);
     }
 
-    [HttpGet("")]
-    public async Task<ApiResponse<List<TransactionList>>> Get()
+    [HttpGet]
+    public async Task<ApiResponse<List<TransactionList<string>>>> Get([FromQuery] string? date)
     {
-        AsyncCallback<List<TransactionList>> callback = async () => {
-            List<TransactionList> list = await service.ListByDate();
-            return new ApiResponse<List<TransactionList>>()
+        AsyncCallback<List<TransactionList<string>>> callback = async () => {
+            List<TransactionList<string>> list = await service.ListByDate(date);
+            return new ApiResponse<List<TransactionList<string>>>()
             {
                 StatusCode = HttpStatusCode.OK,
                 Result = list
             };
         };
 
-        return await Handler<List<TransactionList>>.Exception(callback);
+        return await Handler<List<TransactionList<string>>>.Exception(callback);
     }
 }

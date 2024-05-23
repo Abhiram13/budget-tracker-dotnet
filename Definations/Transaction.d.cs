@@ -59,7 +59,7 @@ public class TransactionDateAmounts
     public TransactionType type {get; set;}
 }
 
-public class TransactionList
+public class TransactionList<T>
 {
     [JsonPropertyName("debit")]
     public double Debit {get; set;}
@@ -67,8 +67,8 @@ public class TransactionList
     [JsonPropertyName("credit")]
     public double Credit {get; set;}
 
-    [JsonPropertyName("date")]
-    public DateTime Date {get; set;}
+    [JsonPropertyName("date")]    
+    public T? Date {get; set;}
 
     [JsonPropertyName("count")]
     public int Count {get; set;}
@@ -76,5 +76,5 @@ public class TransactionList
 
 public interface ITransactionService : IService<Transaction> { 
     Task Validations(Transaction transaction);
-    Task<List<TransactionList>> ListByDate();
+    Task<List<TransactionList<string>>> ListByDate(string? date = null);
 }
