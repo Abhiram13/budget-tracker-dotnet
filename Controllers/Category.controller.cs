@@ -15,7 +15,7 @@ public class CategoryController : ControllerBase
         service = _service;
     }
 
-    [HttpPost("add")]
+    [HttpPost()]
     public async Task<ApiResponse<string>> Add([FromBody] Category body)
     {
         try
@@ -38,7 +38,7 @@ public class CategoryController : ControllerBase
         }
     }
 
-    [HttpGet("search/{id}")]
+    [HttpGet("{id}")]
     public async Task<ApiResponse<Category>> SearcById(string id)
     {
         try
@@ -61,7 +61,7 @@ public class CategoryController : ControllerBase
         }
     }
 
-    [HttpGet("list")]
+    [HttpGet()]
     public async Task<ApiResponse<List<Category>>> GetList()
     {
         List<Category> list = await service.GetList();

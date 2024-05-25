@@ -79,6 +79,11 @@ public abstract class MongoServices<T> : IService<T> where T : class
 
     public async Task<C> SearchById<C>(string Id, IMongoCollection<C> _collection)
     {
+        // if (string.IsNullOrEmpty(Id))
+        // {
+        //     return default;
+        // }
+
         FilterDefinition<C> filter = Builders<C>.Filter.Eq("_id", ObjectId.Parse(Id));
 
         return await _collection.Find(filter).FirstAsync();

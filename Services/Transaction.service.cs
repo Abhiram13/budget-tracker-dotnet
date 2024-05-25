@@ -31,19 +31,19 @@ public class TransactionService : MongoServices<Transaction>, ITransactionServic
             throw new InvalidDataException("Invalid category id provided");
         }
 
-        Bank? fromBank =  await SearchById(transaction.FromBank, Collection.Bank);
+        // Bank? fromBank =  await SearchById(transaction.FromBank, Collection.Bank);
 
-        if (fromBank == null || string.IsNullOrEmpty(fromBank.Name))
-        {
-            throw new InvalidDataException("Invalid from bank id provided");
-        }
+        // if (fromBank == null || string.IsNullOrEmpty(fromBank.Name))
+        // {
+        //     throw new InvalidDataException("Invalid from bank id provided");
+        // }
 
-        Bank? toBank =  await SearchById(transaction.ToBank, Collection.Bank);
+        // Bank? toBank =  await SearchById(transaction.ToBank, Collection.Bank);
 
-        if (toBank == null || string.IsNullOrEmpty(toBank.Name))
-        {
-            throw new InvalidDataException("Invalid to bank id provided");
-        }
+        // if (toBank == null || string.IsNullOrEmpty(toBank.Name))
+        // {
+        //     throw new InvalidDataException("Invalid to bank id provided");
+        // }
     }
 
     public async Task<List<TransactionList<string>>> ListByDate(string? date = null)

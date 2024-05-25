@@ -15,7 +15,7 @@ public class BankController : ControllerBase
         service = _service;
     }
 
-    [HttpPost("add")]
+    [HttpPost()]
     public async Task<ApiResponse<string>> Add([FromBody] Bank body)
     {
         try
@@ -38,7 +38,7 @@ public class BankController : ControllerBase
         }
     }
 
-    [HttpGet("list")]
+    [HttpGet()]
     public async Task<ApiResponse<List<Bank>>> GetList()
     {
         List<Bank> list = await service.GetList();
