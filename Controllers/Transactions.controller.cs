@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Defination;
+using System.Net;
 using Services;
+using Global;
 
 namespace budget_tracker.Controllers;
 
@@ -8,38 +10,42 @@ namespace budget_tracker.Controllers;
 [Route("transactions")]
 public class TransactionsController : ControllerBase
 {
-    [HttpGet]
-    public async Task<ApiResponse<string>> Add()
+    private readonly ITransactionService service;
+
+    public TransactionsController(ITransactionService _service)
     {
-        try
-        {
-            Transaction transaction = new()
-            {
-                Amount = 32.5,
-                CategoryId = "",
-                Date = DateTime.Now,
-                Description = "Sample transation",
-                Due = false,
-                FromBank = "",
-                ToBank = "",
-                Type = TransactionType.Debit
-            };
+        service = _service;
+    }
 
-            await Mongo.DB.GetCollection<Transaction>("transactions").InsertOneAsync(transaction);
-
+    [HttpPost]
+    public async Task<ApiResponse<string>> Add([FromBody] Transaction body)
+    {
+        AsyncCallback<string> callback = async () => {
+            Transaction transaction = body;
+            await service.Validations(body);
+            await service.InserOne(transaction);
             return new ApiResponse<string>()
             {
                 Message = "Transaction inserted successfully",
-                StatusCode = System.Net.HttpStatusCode.Created,
+                StatusCode = HttpStatusCode.Created,
             };
-        }
-        catch (Exception e)
-        {
-            return new ApiResponse<string>()
+        };        
+
+        return await Handler<string>.Exception(callback);
+    }
+
+    [HttpGet]
+    public async Task<ApiResponse<List<TransactionList<string>>>> Get([FromQuery] string? date)
+    {
+        AsyncCallback<List<TransactionList<string>>> callback = async () => {
+            List<TransactionList<string>> list = await service.ListByDate(date);
+            return new ApiResponse<List<TransactionList<string>>>()
             {
-                Message = $"Something went wrong. Message {e.Message}",
-                StatusCode = System.Net.HttpStatusCode.InternalServerError,
+                StatusCode = HttpStatusCode.OK,
+                Result = list
             };
-        }
+        };
+
+        return await Handler<List<TransactionList<string>>>.Exception(callback);
     }
 }

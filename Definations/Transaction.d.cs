@@ -46,3 +46,35 @@ public class Transaction : MongoObject
     [JsonPropertyName("category_id")]
     public string CategoryId { get; set; } = "";
 }
+
+public class TransactionDateAmounts
+{
+    [BsonElement("amount")]
+    public double Amount {get; set;}
+
+    [BsonElement("date")]
+    public DateTime Date {get; set;}
+
+    [BsonElement("type")]
+    public TransactionType type {get; set;}
+}
+
+public class TransactionList<T>
+{
+    [JsonPropertyName("debit")]
+    public double Debit {get; set;}
+
+    [JsonPropertyName("credit")]
+    public double Credit {get; set;}
+
+    [JsonPropertyName("date")]    
+    public T? Date {get; set;}
+
+    [JsonPropertyName("count")]
+    public int Count {get; set;}
+}
+
+public interface ITransactionService : IService<Transaction> { 
+    Task Validations(Transaction transaction);
+    Task<List<TransactionList<string>>> ListByDate(string? date = null);
+}

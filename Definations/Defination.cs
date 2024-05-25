@@ -14,11 +14,13 @@ public static class Env
 }
 
 public abstract class MongoObject
-{    
+{   
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
     [BsonElement("_id")]
     [JsonPropertyName("_id")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public ObjectId Id {get; set;}
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public string Id {get; set;} = "";
     
     [BsonElement("__v")]
     [JsonPropertyName("__v")]
@@ -32,9 +34,17 @@ public class ApiResponse<T> where T : class
     public HttpStatusCode StatusCode {get; set;}
 
     [JsonPropertyName("message")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Message {get; set;}
 
     [JsonPropertyName("result")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public T? Result {get; set;}
+}
+
+public interface IService<T> where T : class
+{
+    Task InserOne(T document);
+    Task<List<T>> GetList();
+    Task<T> SearchById(string id);
 }
