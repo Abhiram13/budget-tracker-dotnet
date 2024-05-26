@@ -47,4 +47,6 @@ public interface IService<T> where T : class
     Task InserOne(T document);
     Task<List<T>> GetList();
     Task<T> SearchById(string id);
+    Task<bool> DeleteById(string id);
+    Task<bool> UpdateById(string id, dynamic document);
 }

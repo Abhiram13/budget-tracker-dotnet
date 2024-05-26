@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Defination;
 using System.Net;
+using Services;
 
 namespace budget_tracker.Controllers;
 
@@ -71,5 +72,41 @@ public class CategoryController : ControllerBase
             Result = list,
             StatusCode = HttpStatusCode.OK,
         };
+    }
+
+    [HttpPatch("{id}")]
+    public async Task<ApiResponse<string>> Update(string id, [FromBody] dynamic body)
+    {
+        AsyncCallback<string> callback = async () => {
+            bool isUpdated = await service.UpdateById(id, body);
+            HttpStatusCode statusCode = isUpdated ? HttpStatusCode.Created : HttpStatusCode.NotModified;
+            string message = isUpdated ? "Category updated successfully" : "Category couldn't be updated";
+
+            return new ApiResponse<string>()
+            {
+                Message = message,
+                StatusCode = statusCode,
+            };
+        };
+
+        return await Handler<string>.Exception(callback);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ApiResponse<string>> Delete(string id)
+    {
+        AsyncCallback<string> callback = async () => {
+            bool isDeleted = await service.DeleteById(id);
+            string message = isDeleted ? "Category deleted successfully" : "Cannot delete selected category";
+            HttpStatusCode statusCode = isDeleted ? HttpStatusCode.OK : HttpStatusCode.NotModified;
+
+            return new ApiResponse<string>()
+            {
+                Message = message,
+                StatusCode = statusCode,
+            };
+        };
+
+        return await Handler<string>.Exception(callback);
     }
 }

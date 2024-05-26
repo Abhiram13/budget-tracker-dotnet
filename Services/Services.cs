@@ -1,7 +1,10 @@
 using Defination;
+using Global;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Net;
+using System.Reflection;
+using System.Text.Json;
 
 namespace Services;
 
@@ -13,6 +16,14 @@ public static class Collection
 }
 
 public delegate ApiResponse<T> Callback<T>() where T : class;
+
+/// <summary>
+/// 
+/// </summary>
+/// <typeparam name="T">
+///     The Type of result to the client in ApiResponse Object
+/// </typeparam>
+/// <returns></returns>
 public delegate Task<ApiResponse<T>> AsyncCallback<T>() where T : class;
 
 public static class Handler<T> where T : class
@@ -79,13 +90,39 @@ public abstract class MongoServices<T> : IService<T> where T : class
 
     public async Task<C> SearchById<C>(string Id, IMongoCollection<C> _collection)
     {
-        // if (string.IsNullOrEmpty(Id))
-        // {
-        //     return default;
-        // }
-
         FilterDefinition<C> filter = Builders<C>.Filter.Eq("_id", ObjectId.Parse(Id));
 
         return await _collection.Find(filter).FirstAsync();
+    }
+
+    public async Task<bool> DeleteById(string id)
+    {
+        FilterDefinition<T> filter = Builders<T>.Filter.Eq("_id", ObjectId.Parse(id));
+        DeleteResult result = await collection.DeleteOneAsync(filter);
+
+        return result.DeletedCount > 0;
+    }
+
+    public async Task<bool> UpdateById(string id, dynamic document)
+    {
+        FilterDefinition<T> filter = Builders<T>.Filter.Eq("_id", ObjectId.Parse(id));        
+        Dictionary<string, string> dictionary = JsonSerializer.Deserialize<Dictionary<string, string>>(document);
+        UpdateDefinition<T>? update = null;
+
+        foreach (var prop in dictionary)
+        {
+            if (update == null)
+            {
+                update = Builders<T>.Update.Set(prop.Key, prop.Value);
+            }
+            else
+            {
+                update = update?.Set(prop.Key, prop.Value);
+            }
+        }
+
+        UpdateResult result = await collection.UpdateOneAsync(filter, update);
+
+        return result.ModifiedCount > 0;
     }
 }
