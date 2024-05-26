@@ -10,8 +10,6 @@ string root = Directory.GetCurrentDirectory();
 string dotenv = Path.Combine(root, ".env");
 DotEnv.Load(dotenv);
 
-string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-
 // Add services to the container.
 builder.Configuration.AddEnvironmentVariables().Build();
 builder.Services.AddSingleton(s => Mongo.DB);

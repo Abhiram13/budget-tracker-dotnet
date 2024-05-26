@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Defination;
 using System.Net;
 using Services;
-using Global;
 
 namespace budget_tracker.Controllers;
 
