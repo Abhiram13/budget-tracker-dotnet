@@ -28,7 +28,7 @@ public class Transaction : MongoObject
 
     [BsonElement("date")]
     [JsonPropertyName("date")]
-    public string Date { get; set; } = "";
+    public DateTime Date { get; set; }
 
     [BsonElement("due")]
     [JsonPropertyName("due")]
@@ -53,13 +53,13 @@ public class TransactionDateAmounts
     public double Amount {get; set;}
 
     [BsonElement("date")]
-    public string Date {get; set;}
+    public DateOnly Date {get; set;}
 
     [BsonElement("type")]
     public TransactionType type {get; set;}
 }
 
-public class TransactionList<T>
+public class TransactionList
 {
     [JsonPropertyName("debit")]
     public double Debit {get; set;}
@@ -68,7 +68,7 @@ public class TransactionList<T>
     public double Credit {get; set;}
 
     [JsonPropertyName("date")]    
-    public T? Date {get; set;}
+    public DateTime Date {get; set;}
 
     [JsonPropertyName("count")]
     public int Count {get; set;}
@@ -76,5 +76,5 @@ public class TransactionList<T>
 
 public interface ITransactionService : IService<Transaction> { 
     Task Validations(Transaction transaction);
-    Task<List<TransactionList<string>>> ListByDate(string? date = null);
+    Task<List<TransactionList>> ListByDate(string? date = null);
 }

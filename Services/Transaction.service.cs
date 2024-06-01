@@ -46,7 +46,7 @@ public class TransactionService : MongoServices<Transaction>, ITransactionServic
         // }
     }
 
-    public async Task<List<TransactionList<string>>> ListByDate(string? date = null)
+    public async Task<List<TransactionList>> ListByDate(string? date = null)
     {
         IAggregateFluent<Transaction> aggregate;
 
@@ -56,31 +56,32 @@ public class TransactionService : MongoServices<Transaction>, ITransactionServic
         }
         else
         {
-            aggregate = collection.Aggregate().Match(Builders<Transaction>.Filter.Eq(t => t.Date, date));
+            DateTime dateOnly = DateTime.Parse(date);
+            aggregate = collection.Aggregate().Match(Builders<Transaction>.Filter.Eq(t => t.Date, dateOnly));
         }
 
-        Func<string, string> ConvertDateToString = (string dateTime) => {
-            return DateTime.Parse(dateTime).ToString("D");
+        Func<DateOnly, string> ConvertDateToString = (DateOnly dateTime) => {
+            return dateTime.ToString("D");
         };
 
-        List<TransactionList<string>> data =  await aggregate
-        .Group(a => a.Date, b => new TransactionList<string> () {
+        List<TransactionList> data =  await aggregate
+        .Group(a => a.Date, b => new TransactionList () {
             Debit = b.Where(c => c.Type == TransactionType.Debit).Sum(d => d.Amount),
             Credit = b.Where(c => c.Type == TransactionType.Credit).Sum(d => d.Amount),
             Date = b.First().Date,
             Count = b.Count(),
         })
-        .Sort(Builders<TransactionList<string>>.Sort.Ascending(x => x.Date))
+        .Sort(Builders<TransactionList>.Sort.Ascending(x => x.Date))
         .ToListAsync();
 
-        List<TransactionList<string>> list = new List<TransactionList<string>>();
+        List<TransactionList> list = new List<TransactionList>();
 
-        foreach (TransactionList<string> transaction in data)
+        foreach (TransactionList transaction in data)
         {
-            list.Add(new TransactionList<string>() {
+            list.Add(new TransactionList() {
                 Count = transaction.Count,
                 Credit = transaction.Credit,
-                Date = ConvertDateToString(transaction.Date),
+                Date = transaction.Date,
                 Debit = transaction.Debit,
             });
         }
