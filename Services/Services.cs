@@ -92,7 +92,7 @@ public abstract class MongoServices<T> : IService<T> where T : class
     {
         FilterDefinition<C> filter = Builders<C>.Filter.Eq("_id", ObjectId.Parse(Id));
 
-        return await _collection.Find(filter).FirstAsync();
+        return await _collection.Find(filter).FirstOrDefaultAsync();
     }
 
     public async Task<bool> DeleteById(string id)
