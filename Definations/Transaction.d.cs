@@ -28,8 +28,7 @@ public class Transaction : MongoObject
 
     [BsonElement("date")]
     [JsonPropertyName("date")]
-    [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
-    public DateTime Date { get; set; } = new DateTime();
+    public string Date { get; set; } = "";
 
     [BsonElement("due")]
     [JsonPropertyName("due")]
@@ -54,7 +53,7 @@ public class TransactionDateAmounts
     public double Amount {get; set;}
 
     [BsonElement("date")]
-    public DateTime Date {get; set;}
+    public string Date {get; set;}
 
     [BsonElement("type")]
     public TransactionType type {get; set;}
