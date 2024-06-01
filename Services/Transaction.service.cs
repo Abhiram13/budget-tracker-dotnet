@@ -56,13 +56,13 @@ public class TransactionService : MongoServices<Transaction>, ITransactionServic
         }
         else
         {
-            DateTime datetime = DateTime.Parse(date, CultureInfo.InvariantCulture);
+            DateTime datetime = DateTime.Parse(date);
             aggregate = collection.Aggregate().Match(Builders<Transaction>.Filter.Eq(t => t.Date, datetime));
         }
 
         Func<DateTime, string> ConvertDateToString = (DateTime dateTime) => {
             DateTime d = dateTime;
-            TimeZoneInfo tz = TimeZoneInfo.Local;
+            TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
             DateTime local = TimeZoneInfo.ConvertTimeFromUtc(d, tz);
             return local.ToString("D");
         };
