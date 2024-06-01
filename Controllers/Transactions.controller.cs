@@ -22,9 +22,6 @@ public class TransactionsController : ControllerBase
     {
         AsyncCallback<string> callback = async () => {
             Transaction transaction = body;
-            TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById("Asia/Calcutta");
-            DateTime local = TimeZoneInfo.ConvertTime(transaction.Date, tz);
-            transaction.Date = local;
             await service.Validations(body);
             await service.InserOne(transaction);
             return new ApiResponse<string>()

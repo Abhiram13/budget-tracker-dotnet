@@ -56,30 +56,26 @@ public class TransactionService : MongoServices<Transaction>, ITransactionServic
         }
         else
         {
-            DateTime datetime = DateTime.Parse(date);
-            aggregate = collection.Aggregate().Match(Builders<Transaction>.Filter.Eq(t => t.Date, datetime));
+            aggregate = collection.Aggregate().Match(Builders<Transaction>.Filter.Eq(t => t.Date, date));
         }
 
-        Func<DateTime, string> ConvertDateToString = (DateTime dateTime) => {
-            DateTime d = dateTime;
-            TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
-            DateTime local = TimeZoneInfo.ConvertTimeFromUtc(d, tz);
-            return local.ToString("D");
+        Func<string, string> ConvertDateToString = (string dateTime) => {
+            return DateTime.Parse(dateTime).ToString("D");
         };
 
-        List<TransactionList<DateTime>> data =  await aggregate
-        .Group(a => a.Date, b => new TransactionList<DateTime> () {
+        List<TransactionList<string>> data =  await aggregate
+        .Group(a => a.Date, b => new TransactionList<string> () {
             Debit = b.Where(c => c.Type == TransactionType.Debit).Sum(d => d.Amount),
             Credit = b.Where(c => c.Type == TransactionType.Credit).Sum(d => d.Amount),
             Date = b.First().Date,
             Count = b.Count(),
         })
-        .Sort(Builders<TransactionList<DateTime>>.Sort.Ascending(x => x.Date))
+        .Sort(Builders<TransactionList<string>>.Sort.Ascending(x => x.Date))
         .ToListAsync();
 
         List<TransactionList<string>> list = new List<TransactionList<string>>();
 
-        foreach (TransactionList<DateTime> transaction in data)
+        foreach (TransactionList<string> transaction in data)
         {
             list.Add(new TransactionList<string>() {
                 Count = transaction.Count,
