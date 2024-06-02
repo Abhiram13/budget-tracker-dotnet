@@ -52,8 +52,8 @@ public class TransactionService : MongoServices<Transaction>, ITransactionServic
 
         Func<string, DateTime> ParseDateTime = (string dateTime) => {
             TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Calcutta");
-            DateTime date = DateTime.Parse(dateTime);
-            return TimeZoneInfo.ConvertTimeToUtc(date, timeZone);
+            DateTime date = DateTime.SpecifyKind(DateTime.Parse(dateTime), DateTimeKind.Unspecified);
+            return TimeZoneInfo.ConvertTimeFromUtc(date, timeZone);
         };
 
         if (string.IsNullOrEmpty(date))
