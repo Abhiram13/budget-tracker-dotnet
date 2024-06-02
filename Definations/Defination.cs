@@ -18,7 +18,7 @@ public abstract class MongoObject
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     [BsonElement("_id")]
-    [JsonPropertyName("_id")]
+    [JsonPropertyName("id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public string Id {get; set;} = "";
     
