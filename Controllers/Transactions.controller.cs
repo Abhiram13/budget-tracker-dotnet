@@ -20,8 +20,20 @@ public class TransactionsController : ControllerBase
     [HttpPost]
     public async Task<ApiResponse<string>> Add([FromBody] Transaction body)
     {
+        DateTime ChangeDate()
+        {            
+            string date = body.Date.ToString("yyyy-MM-dd");
+            string[] split = date.Split("-");
+            int year = int.Parse(split[0]);
+            int month = int.Parse(split[1]);
+            int day = int.Parse(split[2]);
+
+            return new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Utc);
+        }
+
         AsyncCallback<string> callback = async () => {
             Transaction transaction = body;
+            transaction.Date = ChangeDate();
             await service.Validations(body);
             await service.InserOne(transaction);
             return new ApiResponse<string>()
