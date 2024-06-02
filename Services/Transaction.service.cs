@@ -50,19 +50,21 @@ public class TransactionService : MongoServices<Transaction>, ITransactionServic
     {
         IAggregateFluent<Transaction> aggregate;
 
+        Func<string, DateTime> ParseDateTime = (string dateTime) => {
+            TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Calcutta");
+            DateTime date = DateTime.Parse(dateTime);
+            return TimeZoneInfo.ConvertTimeToUtc(date, timeZone);
+        };
+
         if (string.IsNullOrEmpty(date))
         {
             aggregate = collection.Aggregate();
         }
         else
         {
-            DateTime dateOnly = DateTime.Parse(date);
-            aggregate = collection.Aggregate().Match(Builders<Transaction>.Filter.Eq(t => t.Date, dateOnly));
-        }
-
-        Func<DateOnly, string> ConvertDateToString = (DateOnly dateTime) => {
-            return dateTime.ToString("D");
-        };
+            DateTime dateTime = ParseDateTime(date);
+            aggregate = collection.Aggregate().Match(Builders<Transaction>.Filter.Eq(t => t.Date, dateTime));
+        }        
 
         List<TransactionList> data =  await aggregate
         .Group(a => a.Date, b => new TransactionList () {

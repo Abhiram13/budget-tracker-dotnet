@@ -28,6 +28,7 @@ public class Transaction : MongoObject
 
     [BsonElement("date")]
     [JsonPropertyName("date")]
+    [BsonDateTimeOptions(Kind = DateTimeKind.Unspecified)]
     public DateTime Date { get; set; }
 
     [BsonElement("due")]
