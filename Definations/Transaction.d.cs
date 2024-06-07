@@ -48,26 +48,40 @@ namespace Defination
         public string CategoryId { get; set; } = "";
     }
 
-    public class TransactionList
+    public class TransactionList<T>
     {
         [JsonPropertyName("debit")]
-        public double Debit { get; set; }
+        public T? Debit { get; set; }
 
         [JsonPropertyName("credit")]
-        public double Credit { get; set; }
+        public T? Credit { get; set; }
 
         [JsonPropertyName("date")]
         public string Date { get; set; } = "";
 
         [JsonPropertyName("count")]
         public int Count { get; set; }
+
+        [JsonPropertyName("date_link")]
+        public string? DateLink {get; set;} = "";
+    }
+
+    namespace TransactionsList
+    {
+        public class QueryParams
+        {
+            public string? date { get; set; }
+            public string? month { get; set; }
+            public string? year { get; set; }
+        }
     }
 
     public interface ITransactionService : IService<Transaction>
     {
         Task Validations(Transaction transaction);
-        Task<List<TransactionList>> List();
+        Task<List<TransactionList<string>>> List(TransactionsList.QueryParams? queryParams);
         Task<TransactionsByDate.Detail> ListByDate(string date);
+        Task ListByMonth();
     }
 }
 

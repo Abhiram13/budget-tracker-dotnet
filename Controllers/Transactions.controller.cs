@@ -35,18 +35,24 @@ public class TransactionsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ApiResponse<List<TransactionList>>> Get()
+    public async Task<ApiResponse<List<TransactionList<string>>>> Get([FromQuery] string? date, [FromQuery] string? month, [FromQuery] string? year)
     {
-        AsyncCallback<List<TransactionList>> callback = async () => {
-            List<TransactionList> list = await service.List();
-            return new ApiResponse<List<TransactionList>>()
+        AsyncCallback<List<TransactionList<string>>> callback = async () => {
+            Defination.TransactionsList.QueryParams queryParams = new Defination.TransactionsList.QueryParams() {
+                date = date,
+                month = month,
+                year = year
+            };
+
+            List<TransactionList<string>> list = await service.List(queryParams);
+            return new ApiResponse<List<TransactionList<string>>>()
             {
                 StatusCode = HttpStatusCode.OK,
                 Result = list
             };
         };
 
-        return await Handler<List<TransactionList>>.Exception(callback);
+        return await Handler<List<TransactionList<string>>>.Exception(callback);
     }
 
     [HttpGet("{date}")]

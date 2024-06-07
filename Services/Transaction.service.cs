@@ -48,31 +48,45 @@ namespace Services
             // }
         }
 
-        public async Task<List<TransactionList>> List()
+        public async Task<List<TransactionList<string>>> List(Defination.TransactionsList.QueryParams? queryParams)
         {
             IAggregateFluent<Transaction> aggregate = collection.Aggregate();
+            FilterDefinition<Transaction> filter;
 
-            List<TransactionList> data = await aggregate
-            .Group(a => a.Date, b => new TransactionList()
+            if (!string.IsNullOrEmpty(queryParams?.month) && !string.IsNullOrEmpty(queryParams?.year))
             {
+                BsonRegularExpression regex = new BsonRegularExpression($"{queryParams?.year}-{queryParams?.month}");                
+                filter = Builders<Transaction>.Filter.Regex("date", regex);
+            }
+            else
+            {
+                string currentMonth = DateTime.Now.Month.ToString("D2");
+                string currentYear = DateTime.Now.Year.ToString();
+                BsonRegularExpression regex = new BsonRegularExpression($"{currentYear}-{currentMonth}");
+                filter = Builders<Transaction>.Filter.Regex("date", regex);
+            }
+
+            List<TransactionList<double>> data = await aggregate.Match(filter).Group(a => a.Date, b => new TransactionList<double>() {
                 Debit = b.Where(c => c.Type == TransactionType.Debit).Sum(d => d.Amount),
                 Credit = b.Where(c => c.Type == TransactionType.Credit).Sum(d => d.Amount),
                 Date = b.First().Date,
                 Count = b.Count(),
+                DateLink = b.First().Date,
             })
-            .Sort(Builders<TransactionList>.Sort.Ascending(x => x.Date))
+            .Sort(Builders<TransactionList<double>>.Sort.Ascending(x => x.Date))
             .ToListAsync();
 
-            List<TransactionList> list = new List<TransactionList>();
+            List<TransactionList<string>> list = new List<TransactionList<string>>();
 
-            foreach (TransactionList transaction in data)
+            foreach (TransactionList<double> transaction in data)
             {
-                list.Add(new TransactionList()
+                list.Add(new TransactionList<string>()
                 {
                     Count = transaction.Count,
-                    Credit = transaction.Credit,
-                    Date = transaction.Date,
-                    Debit = transaction.Debit,
+                    Credit = string.Format("{0:#,##0.##}", transaction.Credit),
+                    Debit = string.Format("{0:#,##0.##}", transaction.Debit),
+                    Date = DateTime.Parse(transaction.Date).ToString("D"),
+                    DateLink = transaction.Date,
                 });
             }
 
@@ -81,9 +95,9 @@ namespace Services
 
         public async Task<TransactionsByDate.Detail> ListByDate(string date)
         {
+            IAggregateFluent<Transaction> aggregate = collection.Aggregate().Match(Builders<Transaction>.Filter.Eq(t => t.Date, date));
+            
             Func<Task<TransactionsByDate.GroupAmounts>> fetchGroupAmounts = async () => {
-                IAggregateFluent<Transaction> aggregate = collection.Aggregate().Match(Builders<Transaction>.Filter.Eq(t => t.Date, date));
-
                 List<TransactionsByDate.GroupAmounts> list = await aggregate
                     .Group(a => a.Date, b => new TransactionsByDate.GroupAmounts(
                         b.Where(c => c.Type == TransactionType.Debit).Sum(d => d.Amount),
@@ -99,7 +113,6 @@ namespace Services
             };
 
             Func<Task<List<TransactionsByDate.List>>> fetchTransactions = async () => {
-                IAggregateFluent<Transaction> aggregate = collection.Aggregate().Match(Builders<Transaction>.Filter.Eq(t => t.Date, date));
                 ProjectionDefinition<Transaction, TransactionsByDate.List> projection = Builders<Transaction>.Projection
                     .Include(t => t.Amount)
                     .Include(t => t.Description)
@@ -114,6 +127,27 @@ namespace Services
             List<TransactionsByDate.List> list = await fetchTransactions();
 
             return new TransactionsByDate.Detail(group, list);
+        }
+
+        public async Task ListByMonth()
+        {
+            BsonRegularExpression regex = new BsonRegularExpression("2024-06");
+            IAggregateFluent<Transaction> aggregate = collection.Aggregate().Match(Builders<Transaction>.Filter.Regex("date", regex));
+            List<TransactionList<double>> list = await aggregate
+            .Group(a => a.Date, b => new TransactionList<double>()
+            {
+                Debit = b.Where(c => c.Type == TransactionType.Debit).Sum(d => d.Amount),
+                Credit = b.Where(c => c.Type == TransactionType.Credit).Sum(d => d.Amount),
+                // Date = b.First().Date,
+                Count = b.Count(),
+            })
+            .Sort(Builders<TransactionList<double>>.Sort.Ascending(x => x.Date))
+            .ToListAsync();
+
+            Logger.Log(DateTime.Now.Month.ToString("D2"));
+            Logger.Log(DateTime.Now.Year.ToString());
+
+            Logger.Log(list);
         }
     }
 }
