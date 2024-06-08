@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using System.Transactions;
+using Defination;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -81,34 +82,46 @@ namespace Defination
         Task Validations(Transaction transaction);
         Task<List<TransactionList<string>>> List(TransactionsList.QueryParams? queryParams);
         Task<TransactionsByDate.Detail> ListByDate(string date);
-        Task ListByMonth();
     }
 }
 
 namespace TransactionsByDate
 {
-    public class List: Defination.MongoObject
+    public class Data: MongoObject
     {
         [JsonInclude]
-        [BsonElement("amount")]
         [JsonPropertyName("amount")]
         public double Amount { get; private set; }
 
         [JsonInclude]
-        [BsonElement("description")]
         [JsonPropertyName("description")]
         public string Description { get; private set; } = "";
 
         [JsonInclude]
-        [BsonElement("type")]
         [JsonPropertyName("type")]
-        public Defination.TransactionType Type { get; private set; }
+        public TransactionType Type { get; private set; }
 
-        public List(double amount, string description, Defination.TransactionType type)
+        [JsonInclude]
+        [JsonPropertyName("from_bank")]
+        public string FromBank { get; private set; }
+
+        [JsonInclude]
+        [JsonPropertyName("to_bank")]
+        public string ToBank { get; private set; }
+
+        [JsonInclude]
+        [JsonPropertyName("category")]
+        public string Category { get; private set; }
+
+        public Data(double amount, string description, TransactionType type, string fromBank, string toBank, string category, string transactionId)
         {
             Amount = amount;
             Description = description;
             Type = type;
+            FromBank = fromBank;
+            ToBank = toBank;
+            Category = category;
+            Id = transactionId;
         }
     }
 
@@ -138,9 +151,9 @@ namespace TransactionsByDate
     public class Detail : GroupAmounts
     {
         [JsonPropertyName("transactions")]
-        public List<List> Transactions {get; private set;} = new List<List>();
+        public List<Data> Transactions {get; private set;} = new List<Data>();
 
-        public Detail(GroupAmounts group, List<List> transactions) : base(group.Debit, group.Credit, group.PartialDebit, group.PartialCredit) { 
+        public Detail(GroupAmounts group, List<Data> transactions) : base(group.Debit, group.Credit, group.PartialDebit, group.PartialCredit) { 
             Transactions = transactions;
         }
     }
