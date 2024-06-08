@@ -151,8 +151,8 @@ namespace Services
                     amount: transaction.Amount,
                     description: transaction.Description,
                     type: transaction.Type,
-                    fromBank: fromBank?.Name ?? "",
-                    toBank: toBank?.Name ?? "",
+                    fromBank: fromBank?.Name,
+                    toBank: toBank?.Name,
                     category: category?.Name ?? "",
                     transactionId: transaction.Id
                 ));

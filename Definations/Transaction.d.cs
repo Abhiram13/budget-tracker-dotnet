@@ -91,7 +91,7 @@ namespace TransactionsByDate
     {
         [JsonInclude]
         [JsonPropertyName("amount")]
-        public double Amount { get; private set; }
+        public string Amount { get; private set; }
 
         [JsonInclude]
         [JsonPropertyName("description")]
@@ -103,19 +103,19 @@ namespace TransactionsByDate
 
         [JsonInclude]
         [JsonPropertyName("from_bank")]
-        public string FromBank { get; private set; }
+        public string? FromBank { get; private set; }
 
         [JsonInclude]
         [JsonPropertyName("to_bank")]
-        public string ToBank { get; private set; }
+        public string? ToBank { get; private set; }
 
         [JsonInclude]
         [JsonPropertyName("category")]
         public string Category { get; private set; }
 
-        public Data(double amount, string description, TransactionType type, string fromBank, string toBank, string category, string transactionId)
+        public Data(double amount, string description, TransactionType type, string? fromBank, string? toBank, string category, string transactionId)
         {
-            Amount = amount;
+            Amount = string.Format("{0:#,##0.##}", amount);
             Description = description;
             Type = type;
             FromBank = fromBank;
