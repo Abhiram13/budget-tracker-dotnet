@@ -24,9 +24,8 @@ builder.WebHost.ConfigureKestrel((context, server) => {
     int PORT = int.Parse(portNumber);
     server.Listen(IPAddress.Any, PORT);
 });
-
-builder.Services.AddCors(options =>
-{
+builder.WebHost.UseKestrel(options => options.AddServerHeader = false);
+builder.Services.AddCors(options => {
     options.AddDefaultPolicy(builder => {
         builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
     });
@@ -46,21 +45,20 @@ app.UseCors();
 app.UseAuthorization();
 app.MapControllers();
 app.UseStatusCodePages(async context => {
+    context.HttpContext.Response.Headers.ContentType = "application/json";
+    
+    Func<object, byte[]> ConvertObjToBytes = (object obj) => {
+        byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(obj);
+        return bytes;
+    };
+
     if (context.HttpContext.Response.StatusCode == 404)
     {
-        byte[] bytes = ConvertObjectToByte(new ApiResponse<string> {
+        byte[] bytes = ConvertObjToBytes(new ApiResponse<string> {
             StatusCode = HttpStatusCode.NotFound,
             Message = "Route not found",
-        });
-
-        context.HttpContext.Response.Headers.ContentType = "application/json";
+        });        
         await context.HttpContext.Response.Body.WriteAsync(bytes, 0, bytes.Length);
     }
 });
 app.Run();
-
-byte[] ConvertObjectToByte(object obj)
-{
-    byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(obj);
-    return bytes;
-}

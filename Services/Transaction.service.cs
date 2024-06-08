@@ -2,9 +2,8 @@ using Defination;
 using Global;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using System.Globalization;
-using System.Text.Json;
 using System.Text.RegularExpressions;
+using TransactionsByDate;
 
 namespace Services
 {
@@ -93,13 +92,13 @@ namespace Services
             return list;
         }
 
-        public async Task<TransactionsByDate.Detail> ListByDate(string date)
+        public async Task<Detail> ListByDate(string date)
         {
             IAggregateFluent<Transaction> aggregate = collection.Aggregate().Match(Builders<Transaction>.Filter.Eq(t => t.Date, date));
             
-            Func<Task<TransactionsByDate.GroupAmounts>> fetchGroupAmounts = async () => {
-                List<TransactionsByDate.GroupAmounts> list = await aggregate
-                    .Group(a => a.Date, b => new TransactionsByDate.GroupAmounts(
+            Func<Task<GroupAmounts>> fetchGroupAmounts = async () => {
+                List<GroupAmounts> list = await aggregate
+                    .Group(a => a.Date, b => new GroupAmounts(
                         b.Where(c => c.Type == TransactionType.Debit).Sum(d => d.Amount),
                         b.Where(c => c.Type == TransactionType.Credit).Sum(d => d.Amount),
                         b.Where(c => c.Type == TransactionType.PartialDebit).Sum(d => d.Amount),
@@ -107,47 +106,59 @@ namespace Services
                     ))
                     .ToListAsync();
 
-                TransactionsByDate.GroupAmounts group = list.Count > 0 ? list[0] : new TransactionsByDate.GroupAmounts(0, 0, 0, 0);
+                GroupAmounts group = list.Count > 0 ? list[0] : new GroupAmounts(0, 0, 0, 0);
 
                 return group;
             };
 
-            Func<Task<List<TransactionsByDate.List>>> fetchTransactions = async () => {
-                ProjectionDefinition<Transaction, TransactionsByDate.List> projection = Builders<Transaction>.Projection
+            Func<Task<List<Bank>>> banks = async () => {
+                List<Bank> list = await Collection.Bank.Aggregate().ToListAsync();
+                return list;
+            };
+
+            Func<Task<List<Category>>> categories = async () => {
+                List<Category> list = await Collection.Category.Aggregate().ToListAsync();
+                return list;
+            };
+
+            Func<Task<List<Transaction>>> transactions = async () => {
+                ProjectionDefinition<Transaction> projection = Builders<Transaction>.Projection
                     .Include(t => t.Amount)
                     .Include(t => t.Description)
-                    .Include(t => t.Type);
+                    .Include(t => t.Type)
+                    .Include(t => t.CategoryId)
+                    .Include(t => t.FromBank)
+                    .Include(t => t.ToBank);
 
-                List<TransactionsByDate.List> list = await aggregate.Project(projection).ToListAsync();
+                List<Transaction> list = await aggregate.Project<Transaction>(projection).ToListAsync();
 
                 return list;
             };
 
-            TransactionsByDate.GroupAmounts? group = await fetchGroupAmounts();
-            List<TransactionsByDate.List> list = await fetchTransactions();
+            GroupAmounts? group = await fetchGroupAmounts();
+            List<Transaction> list = await transactions();
+            List<Data> data = new List<Data>();
+            List<Bank> listOfBanks = await banks();
+            List<Category> listOfCategories = await categories();
 
-            return new TransactionsByDate.Detail(group, list);
-        }
-
-        public async Task ListByMonth()
-        {
-            BsonRegularExpression regex = new BsonRegularExpression("2024-06");
-            IAggregateFluent<Transaction> aggregate = collection.Aggregate().Match(Builders<Transaction>.Filter.Regex("date", regex));
-            List<TransactionList<double>> list = await aggregate
-            .Group(a => a.Date, b => new TransactionList<double>()
+            foreach (Transaction transaction in list)
             {
-                Debit = b.Where(c => c.Type == TransactionType.Debit).Sum(d => d.Amount),
-                Credit = b.Where(c => c.Type == TransactionType.Credit).Sum(d => d.Amount),
-                // Date = b.First().Date,
-                Count = b.Count(),
-            })
-            .Sort(Builders<TransactionList<double>>.Sort.Ascending(x => x.Date))
-            .ToListAsync();
+                Bank? fromBank = listOfBanks.Where(b => b.Id == transaction.FromBank).FirstOrDefault();
+                Bank? toBank = listOfBanks.Where(b => b.Id == transaction.ToBank).FirstOrDefault();
+                Category? category = listOfCategories.Where(c => c.Id == transaction.CategoryId).FirstOrDefault();
 
-            Logger.Log(DateTime.Now.Month.ToString("D2"));
-            Logger.Log(DateTime.Now.Year.ToString());
+                data.Add(new Data(
+                    amount: transaction.Amount,
+                    description: transaction.Description,
+                    type: transaction.Type,
+                    fromBank: fromBank?.Name,
+                    toBank: toBank?.Name,
+                    category: category?.Name ?? "",
+                    transactionId: transaction.Id
+                ));
+            }
 
-            Logger.Log(list);
+            return new Detail(group, data);
         }
     }
 }
