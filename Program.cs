@@ -44,7 +44,6 @@ app.UseHttpsRedirection();
 app.UseCors();
 app.UseAuthorization();
 app.MapControllers();
-app.WaitForShutdown();
 app.UseStatusCodePages(async context => {
     context.HttpContext.Response.Headers.ContentType = "application/json";
     
