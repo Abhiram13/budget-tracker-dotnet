@@ -16,6 +16,7 @@ builder.Services.AddSingleton(s => Mongo.DB);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddMemoryCache();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IBankService, BankService>();
@@ -24,6 +25,7 @@ builder.WebHost.ConfigureKestrel((context, server) => {
     int PORT = int.Parse(portNumber);
     server.Listen(IPAddress.Any, PORT);
 });
+
 builder.WebHost.UseKestrel(options => options.AddServerHeader = false);
 builder.Services.AddCors(options => {
     options.AddDefaultPolicy(builder => {
@@ -46,7 +48,7 @@ app.UseAuthorization();
 app.MapControllers();
 app.UseStatusCodePages(async context => {
     context.HttpContext.Response.Headers.ContentType = "application/json";
-    
+
     Func<object, byte[]> ConvertObjToBytes = (object obj) => {
         byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(obj);
         return bytes;

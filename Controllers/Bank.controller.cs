@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Defination;
 using System.Net;
 using Services;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace budget_tracker.Controllers;
 
@@ -10,10 +11,13 @@ namespace budget_tracker.Controllers;
 public class BankController : ControllerBase
 {
     private readonly IBankService service;
+    private readonly IMemoryCache cache;
+    private readonly string cacheKey = "bank_cache";
 
-    public BankController(IBankService _service)
+    public BankController(IBankService _service, IMemoryCache memoryCache)
     {
         service = _service;
+        cache = memoryCache;
     }
 
     [HttpPost]
@@ -22,6 +26,8 @@ public class BankController : ControllerBase
         AsyncCallback<string> callback = async () => {
             Bank bank = body;
             await service.InserOne(bank);
+
+            cache.Remove(cacheKey);
 
             return new ApiResponse<string>()
             {
@@ -37,11 +43,15 @@ public class BankController : ControllerBase
     public async Task<ApiResponse<List<Bank>>> GetList()
     {
         AsyncCallback<List<Bank>> callback = async () => {
-            List<Bank> list = await service.GetList();
+            if (!cache.TryGetValue(cacheKey, out List<Bank> banks))
+            {
+                banks = await service.GetList();
+                cache.Set(cacheKey, banks);
+            }
 
             return new ApiResponse<List<Bank>>()
             {
-                Result = list,
+                Result = banks,
                 StatusCode = HttpStatusCode.OK,
             };
         };
@@ -73,6 +83,8 @@ public class BankController : ControllerBase
             HttpStatusCode statusCode = isUpdated ? HttpStatusCode.Created : HttpStatusCode.NotModified;
             string message = isUpdated ? "Bank updated successfully" : "Bank couldn't be updated";
 
+            cache.Remove(cacheKey);
+
             return new ApiResponse<string>()
             {
                 Message = message,
@@ -90,6 +102,8 @@ public class BankController : ControllerBase
             bool isDeleted = await service.DeleteById(id);
             string message = isDeleted ? "Bank deleted successfully" : "Cannot delete selected bank";
             HttpStatusCode statusCode = isDeleted ? HttpStatusCode.OK : HttpStatusCode.NotModified;
+
+            cache.Remove(cacheKey);
 
             return new ApiResponse<string>()
             {
