@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Defination;
 using System.Net;
 using Services;
+using Microsoft.Extensions.Caching.Memory;
+using Global;
 
 namespace budget_tracker.Controllers;
 
@@ -10,17 +12,19 @@ namespace budget_tracker.Controllers;
 public class CategoryController : ControllerBase
 {
     private readonly ICategoryService service;
+    private readonly IMemoryCache cache;
+    private readonly string cacheKey = "category_cache";
 
-    public CategoryController(ICategoryService _service)
+    public CategoryController(ICategoryService _service, IMemoryCache memoryCache)
     {
         service = _service;
+        cache = memoryCache;        
     }
 
-    [HttpPost()]
+    [HttpPost]
     public async Task<ApiResponse<string>> Add([FromBody] Category body)
     {
-        try
-        {
+        AsyncCallback<string> callback = async () => {
             Category category = body;
             await service.InserOne(category);
             return new ApiResponse<string>()
@@ -28,50 +32,44 @@ public class CategoryController : ControllerBase
                 Message = "Category inserted successfully",
                 StatusCode = HttpStatusCode.Created,
             };
-        }
-        catch (Exception e)
-        {
-            return new ApiResponse<string>()
-            {
-                Message = $"Something went wrong. Message {e.Message}",
-                StatusCode = HttpStatusCode.InternalServerError,
-            };
-        }
+        };
+
+        return await Handler<string>.Exception(callback);
     }
 
     [HttpGet("{id}")]
     public async Task<ApiResponse<Category>> SearcById(string id)
     {
-        try
-        {
+        AsyncCallback<Category> callback = async () => {
             Category category = await service.SearchById(id);
-
             return new ApiResponse<Category>()
             {
                 StatusCode = HttpStatusCode.OK,
                 Result = category
             };
-        }
-        catch (Exception e)
-        {
-            return new ApiResponse<Category>()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Message = $"Something went wrong. Message {e.Message}",
-            };
-        }
+        };
+
+        return await Handler<Category>.Exception(callback);
     }
 
-    [HttpGet()]
+    [HttpGet]
     public async Task<ApiResponse<List<Category>>> GetList()
     {
-        List<Category> list = await service.GetList();
+        AsyncCallback<List<Category>> callback = async () => {
+            if (!cache.TryGetValue(cacheKey, out List<Category> categories))
+            {
+                categories = await service.GetList();
+                cache.Set(cacheKey, categories);
+            }
 
-        return new ApiResponse<List<Category>>()
-        {
-            Result = list,
-            StatusCode = HttpStatusCode.OK,
+            return new ApiResponse<List<Category>>()
+            {
+                Result = categories,
+                StatusCode = HttpStatusCode.OK,
+            };
         };
+
+        return await Handler<List<Category>>.Exception(callback);
     }
 
     [HttpPatch("{id}")]
