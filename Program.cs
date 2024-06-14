@@ -20,6 +20,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IBankService, BankService>();
+builder.Services.AddScoped<IDueService, DueService>();
 builder.WebHost.ConfigureKestrel((context, server) => {
     string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3000";
     int PORT = int.Parse(portNumber);
