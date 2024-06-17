@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "xtHCS3tm9zAI+s+m/fMhF+pIpJLMw7ACAC6/7Ux7L7+6vaIdele9Y0SfzW2gfwiXVXURxrvr0Q/dLNMpmlvNog==",
+  "dgSpecHash": "8iy23Foh2uDvnEZdElq5beTsAVRoG1bxYcJVHTY+IF+Al6GqBRxp9jTNJZbNyA6kLGp6By1wmRdpUTZHLZaRYg==",
   "success": true,
   "projectFilePath": "/Users/abhiramnagadi/Documents/DotNet/budget-tracker/budget-tracker.csproj",
   "expectedPackageFiles": [
@@ -9,6 +9,10 @@
     "/Users/abhiramnagadi/.nuget/packages/dnsclient/1.6.1/dnsclient.1.6.1.nupkg.sha512",
     "/Users/abhiramnagadi/.nuget/packages/microsoft.extensions.apidescription.server/6.0.5/microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
     "/Users/abhiramnagadi/.nuget/packages/microsoft.extensions.logging.abstractions/2.0.0/microsoft.extensions.logging.abstractions.2.0.0.nupkg.sha512",
+    "/Users/abhiramnagadi/.nuget/packages/microsoft.identitymodel.abstractions/7.6.0/microsoft.identitymodel.abstractions.7.6.0.nupkg.sha512",
+    "/Users/abhiramnagadi/.nuget/packages/microsoft.identitymodel.jsonwebtokens/7.6.0/microsoft.identitymodel.jsonwebtokens.7.6.0.nupkg.sha512",
+    "/Users/abhiramnagadi/.nuget/packages/microsoft.identitymodel.logging/7.6.0/microsoft.identitymodel.logging.7.6.0.nupkg.sha512",
+    "/Users/abhiramnagadi/.nuget/packages/microsoft.identitymodel.tokens/7.6.0/microsoft.identitymodel.tokens.7.6.0.nupkg.sha512",
     "/Users/abhiramnagadi/.nuget/packages/microsoft.netcore.platforms/5.0.0/microsoft.netcore.platforms.5.0.0.nupkg.sha512",
     "/Users/abhiramnagadi/.nuget/packages/microsoft.openapi/1.2.3/microsoft.openapi.1.2.3.nupkg.sha512",
     "/Users/abhiramnagadi/.nuget/packages/microsoft.win32.registry/5.0.0/microsoft.win32.registry.5.0.0.nupkg.sha512",
@@ -23,6 +27,7 @@
     "/Users/abhiramnagadi/.nuget/packages/swashbuckle.aspnetcore.swaggergen/6.5.0/swashbuckle.aspnetcore.swaggergen.6.5.0.nupkg.sha512",
     "/Users/abhiramnagadi/.nuget/packages/swashbuckle.aspnetcore.swaggerui/6.5.0/swashbuckle.aspnetcore.swaggerui.6.5.0.nupkg.sha512",
     "/Users/abhiramnagadi/.nuget/packages/system.buffers/4.5.1/system.buffers.4.5.1.nupkg.sha512",
+    "/Users/abhiramnagadi/.nuget/packages/system.identitymodel.tokens.jwt/7.6.0/system.identitymodel.tokens.jwt.7.6.0.nupkg.sha512",
     "/Users/abhiramnagadi/.nuget/packages/system.memory/4.5.5/system.memory.4.5.5.nupkg.sha512",
     "/Users/abhiramnagadi/.nuget/packages/system.runtime.compilerservices.unsafe/5.0.0/system.runtime.compilerservices.unsafe.5.0.0.nupkg.sha512",
     "/Users/abhiramnagadi/.nuget/packages/system.security.accesscontrol/5.0.0/system.security.accesscontrol.5.0.0.nupkg.sha512",
