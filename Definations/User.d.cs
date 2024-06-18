@@ -20,5 +20,8 @@ namespace Defination
         public string Salt { get; set; } = "";
     }
 
-    public interface IUserService : IService<User> { };
+    public interface IUserService : IService<User> 
+    { 
+        Task<User?> SearchByUserName(string username);
+    };
 }
