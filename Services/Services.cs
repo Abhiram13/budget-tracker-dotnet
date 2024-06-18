@@ -12,6 +12,7 @@ public static class Collection
     public static IMongoCollection<Category> Category { get { return Mongo.DB.GetCollection<Category>("categories"); } }
     public static IMongoCollection<Bank> Bank { get { return Mongo.DB.GetCollection<Bank>("banks"); } }
     public static IMongoCollection<Due> Due { get { return Mongo.DB.GetCollection<Due>("dues"); } }
+    public static IMongoCollection<User> User { get { return Mongo.DB.GetCollection<User>("users"); } }
 }
 
 public delegate ApiResponse<T> Callback<T>() where T : class;

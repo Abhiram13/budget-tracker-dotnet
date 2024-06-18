@@ -3,10 +3,6 @@ using Application;
 using Services;
 using Defination;
 using System.Text.Json;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Authentication;
-using MongoDB.Bson;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +22,7 @@ builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IBankService, BankService>();
 builder.Services.AddScoped<IDueService, DueService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.WebHost.ConfigureKestrel((context, server) => {
     string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3000";
     int PORT = int.Parse(portNumber);
@@ -71,17 +68,10 @@ app.UseStatusCodePages(async context => {
     }
 });
 app.Use(async (context, next) => {
-    string token = Jwt<string>.Create();
-    // Console.WriteLine(token);
-    // string token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IkFiaGlyYW0iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9hbm9ueW1vdXMiOiIyMyIsIm5iZiI6MTcxODYzNzMxOSwiZXhwIjoxNzE4NjM3OTE5LCJpYXQiOjE3MTg2MzczMTl9.gPROLEup9iV1jwLY72UY6sqLUzPRpqZKx7D6EcQ9x9Q";
-    JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
-    // SecurityToken readToken = handler.ReadJwtToken(token);        
-    string[]? split = handler?.ReadToken(token)?.ToString()?.Split(".");
+    // var test = JwtService.Decode("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiQWJoaXJhbSIsIm5iZiI6MTcxODcxNjkwMiwiZXhwIjoxNzE4NzE3NTAyLCJpYXQiOjE3MTg3MTY5MDIsImlzcyI6Ik5hZ2FkaSJ9.FZ6Iyrvrm0BrWNWzj8v8bQhAMQQfrUMLYIJb8hseRuY");
+    // Console.WriteLine(test?.Name);
 
-    // string json = readToken
-    // Console.WriteLine(json);
-    Defination.JwtPayload? jwt = JsonSerializer.Deserialize<Defination.JwtPayload>(split?[1]);    
-    Console.WriteLine(jwt?.Iss);
+    Security.Hash.GenerateHashedPassword("13@Kadapa");
     await next.Invoke();
 });
 app.Run();
