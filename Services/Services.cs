@@ -17,9 +17,6 @@ public static class Collection
 
 public delegate ApiResponse<T> Callback<T>() where T : class;
 
-/// <summary>
-/// 
-/// </summary>
 /// <typeparam name="T">
 ///     The Type of result to the client in ApiResponse Object
 /// </typeparam>

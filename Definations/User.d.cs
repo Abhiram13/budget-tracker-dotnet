@@ -20,8 +20,17 @@ namespace Defination
         public string Salt { get; set; } = "";
     }
 
+    public class Login
+    {
+        [JsonPropertyName("user_name")]
+        public string Username { get; set; } = "";
+
+        [JsonPropertyName("password")]
+        public string Password { get; set; } = "";
+    }
+
     public interface IUserService : IService<User> 
     { 
-        Task<User?> SearchByUserName(string username);
+        Task<string?> Login(string username, string password);
     };
 }

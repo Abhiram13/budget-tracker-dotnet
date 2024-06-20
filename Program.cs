@@ -3,6 +3,7 @@ using Application;
 using Services;
 using Defination;
 using System.Text.Json;
+using Global;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +18,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddMemoryCache();
-builder.Services.AddTransient<JwtMiddleware>();
+builder.Services.AddTransient<JWT.Middleware>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IBankService, BankService>();
@@ -46,13 +47,15 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.Use(async (context, next) => {    
+    context.Response.Headers.ContentType = "application/json";
+    await next.Invoke();    
+});
 app.UseCors();
 app.UseAuthorization();
 app.MapControllers();
-app.UseMiddleware<JwtMiddleware>();
+app.UseMiddleware<JWT.Middleware>();
 app.UseStatusCodePages(async context => {
-    context.HttpContext.Response.Headers.ContentType = "application/json";
-
     Func<object, byte[]> ConvertObjToBytes = (object obj) => {
         byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(obj);
         return bytes;
@@ -66,12 +69,5 @@ app.UseStatusCodePages(async context => {
         });        
         await context.HttpContext.Response.Body.WriteAsync(bytes, 0, bytes.Length);
     }
-});
-app.Use(async (context, next) => {
-    // var test = JwtService.Decode("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiQWJoaXJhbSIsIm5iZiI6MTcxODcxNjkwMiwiZXhwIjoxNzE4NzE3NTAyLCJpYXQiOjE3MTg3MTY5MDIsImlzcyI6Ik5hZ2FkaSJ9.FZ6Iyrvrm0BrWNWzj8v8bQhAMQQfrUMLYIJb8hseRuY");
-    // Console.WriteLine(test?.Name);
-
-    Security.Hash.GenerateHashedPassword("13@Kadapa");
-    await next.Invoke();
 });
 app.Run();

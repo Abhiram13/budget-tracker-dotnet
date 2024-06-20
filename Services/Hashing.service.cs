@@ -1,8 +1,5 @@
-using System;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using System.Text;
-using Global;
 
 namespace Security
 {
