@@ -7,9 +7,7 @@ using Global;
 
 namespace budget_tracker.Controllers;
 
-[ApiController]
-[Route("category")]
-public class CategoryController : ControllerBase
+public class CategoryController : ApiBaseController
 {
     private readonly ICategoryService service;
     private readonly IMemoryCache cache;

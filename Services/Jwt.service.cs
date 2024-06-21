@@ -10,30 +10,6 @@ using Global;
 
 namespace JWT
 {
-    public class Middleware : IMiddleware
-    {
-        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
-        {
-            try
-            {
-                Microsoft.Extensions.Primitives.StringValues header = context.Request.Headers.Authorization;
-                string? token = header.ToString().Split(" ")[1];
-                Service.Decode(token);
-                await next.Invoke(context);
-            }
-            catch (Exception e)
-            {
-                context.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
-                byte[] bytes = Helper.ConvertToBytes(new ApiResponse<string>() {
-                    StatusCode = HttpStatusCode.Unauthorized,
-                    Message = "Invalid token provided"
-                });
-                await context.Response.Body.WriteAsync(bytes, 0, bytes.Length);
-                Console.WriteLine($"Error caught at JWT Middleware: {e?.Message}");
-            }
-        }
-    }
-
     public static class Service
     {
         public static Payload? Decode(string token)

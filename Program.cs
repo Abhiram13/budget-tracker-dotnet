@@ -18,7 +18,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddMemoryCache();
-builder.Services.AddTransient<JWT.Middleware>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IBankService, BankService>();
@@ -54,7 +53,6 @@ app.Use(async (context, next) => {
 app.UseCors();
 app.UseAuthorization();
 app.MapControllers();
-app.UseMiddleware<JWT.Middleware>();
 app.UseStatusCodePages(async context => {
     Func<object, byte[]> ConvertObjToBytes = (object obj) => {
         byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(obj);
