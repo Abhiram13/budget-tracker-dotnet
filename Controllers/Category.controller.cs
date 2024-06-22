@@ -3,7 +3,6 @@ using Defination;
 using System.Net;
 using Services;
 using Microsoft.Extensions.Caching.Memory;
-using Global;
 
 namespace budget_tracker.Controllers;
 

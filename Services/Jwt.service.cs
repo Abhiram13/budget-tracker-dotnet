@@ -29,14 +29,15 @@ namespace JWT
             }
         }
 
-        public static string CreateToken()
+        public static string CreateToken(string id, string username)
         {
             string privateKey = "bAafd@A7d9#@F4*V!LHZs#ebKQrkE6pad2f3kj34c3dXy@";
             byte[] key = Encoding.ASCII.GetBytes(privateKey);
             SymmetricSecurityKey symmetricSecurity = new SymmetricSecurityKey(key);
             SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor {
                 Subject = new ClaimsIdentity(new[] {
-                    new Claim("name", "Abhiram"),
+                    new Claim("user_id", $"{id}"),
+                    new Claim("user_name", $"{username}")
                 }),
                 Issuer = "Nagadi",
                 Expires = DateTime.UtcNow.AddMinutes(10),

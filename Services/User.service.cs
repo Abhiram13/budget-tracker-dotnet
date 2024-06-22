@@ -1,4 +1,5 @@
 using Defination;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using Security;
 
@@ -32,10 +33,25 @@ public class UserService : MongoServices<User>, IUserService
 
         if (IsValidPassword())
         {
-            string jwt = JWT.Service.CreateToken();
+            string jwt = JWT.Service.CreateToken(user?.Id ?? "", user?.UserName ?? "");
             return jwt;
         }
 
         return null;
+    }
+
+    public async Task<User?> FetchByIdAndName(string id, string username)
+    {
+        try
+        {
+            FilterDefinition<User> idFilter = Builders<User>.Filter.Eq("_id", ObjectId.Parse(id));
+            FilterDefinition<User> userNameFilter = Builders<User>.Filter.Eq(u => u.UserName, username);
+            User? user = await collection.Aggregate().Match(idFilter & userNameFilter).FirstOrDefaultAsync();
+            return user;
+        }
+        catch (Exception)
+        {
+            return null;
+        }     
     }
 }

@@ -9,8 +9,11 @@ namespace JWT
 {
     public class Payload
     {
-        [JsonPropertyName("name")]
-        public string Name {get; set;} = "";
+        [JsonPropertyName("user_id")]
+        public string UserId {get; set;} = "";
+
+        [JsonPropertyName("user_name")]
+        public string Username {get; set;} = "";
 
         [JsonPropertyName("iss")]
         public string Iss {get; set;} = "";

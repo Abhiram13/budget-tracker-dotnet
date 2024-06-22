@@ -51,17 +51,11 @@ app.Use(async (context, next) => {
     await next.Invoke();    
 });
 app.UseCors();
-app.UseAuthorization();
 app.MapControllers();
 app.UseStatusCodePages(async context => {
-    Func<object, byte[]> ConvertObjToBytes = (object obj) => {
-        byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(obj);
-        return bytes;
-    };
-
     if (context.HttpContext.Response.StatusCode == 404)
     {
-        byte[] bytes = ConvertObjToBytes(new ApiResponse<string> {
+        byte[] bytes = Helper.ConvertToBytes(new ApiResponse<string> {
             StatusCode = HttpStatusCode.NotFound,
             Message = "Route not found",
         });        
