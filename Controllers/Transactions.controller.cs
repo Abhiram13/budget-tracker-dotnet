@@ -56,18 +56,18 @@ public class TransactionsController : ControllerBase
     }
 
     [HttpGet("{date}")]
-    public async Task<ApiResponse<TransactionsByDate.Detail>> Get(string date)
+    public async Task<ApiResponse<TransactionsByDate.Result>> Get(string date)
     {
-        AsyncCallback<TransactionsByDate.Detail> callback = async () => {
-            TransactionsByDate.Detail data = await service.ListByDate(date);
+        AsyncCallback<TransactionsByDate.Result> callback = async () => {
+            TransactionsByDate.Result data = await service.ListByDate(date);
 
-            return new ApiResponse<TransactionsByDate.Detail>()
+            return new ApiResponse<TransactionsByDate.Result>()
             {
                 StatusCode = HttpStatusCode.OK,
                 Result = data
             };
         };
 
-        return await Handler<TransactionsByDate.Detail>.Exception(callback);
+        return await Handler<TransactionsByDate.Result>.Exception(callback);
     }
 }

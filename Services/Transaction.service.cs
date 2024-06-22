@@ -1,7 +1,9 @@
 using Defination;
 using Global;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using TransactionsByDate;
 
@@ -92,73 +94,166 @@ namespace Services
             return list;
         }
 
-        public async Task<Detail> ListByDate(string date)
+        public async Task<Result> ListByDate(string date)
         {
-            IAggregateFluent<Transaction> aggregate = collection.Aggregate().Match(Builders<Transaction>.Filter.Eq(t => t.Date, date));
-            
-            Func<Task<GroupAmounts>> fetchGroupAmounts = async () => {
-                List<GroupAmounts> list = await aggregate
-                    .Group(a => a.Date, b => new GroupAmounts(
-                        b.Where(c => c.Type == TransactionType.Debit).Sum(d => d.Amount),
-                        b.Where(c => c.Type == TransactionType.Credit).Sum(d => d.Amount),
-                        b.Where(c => c.Type == TransactionType.PartialDebit).Sum(d => d.Amount),
-                        b.Where(c => c.Type == TransactionType.PartialCredit).Sum(d => d.Amount)
-                    ))
-                    .ToListAsync();
-
-                GroupAmounts group = list.Count > 0 ? list[0] : new GroupAmounts(0, 0, 0, 0);
-
-                return group;
+            BsonDocument match = new BsonDocument {
+                {"$match", new BsonDocument {
+                    {"date", $"{date}"}
+                }}
             };
 
-            Func<Task<List<Bank>>> banks = async () => {
-                List<Bank> list = await Collection.Bank.Aggregate().ToListAsync();
-                return list;
+            BsonDocument addfields = new BsonDocument {
+                {"$addFields", new BsonDocument {
+                    {"categoryId", new BsonDocument {
+                        {"$convert", new BsonDocument{
+                            {"input", "$category_id"},
+                            {"to", "objectId"},
+                            {"onError", ""},
+                            {"onNull", ""}
+                        }}
+                    }},
+                    {"fromBankId", new BsonDocument {
+                        {"$convert", new BsonDocument{
+                            {"input", "$from_bank"},
+                            {"to", "objectId"},
+                            {"onError", ""},
+                            {"onNull", ""}
+                        }}
+                    }},
+                    {"toBankId", new BsonDocument {
+                        {"$convert", new BsonDocument{
+                            {"input", "$to_bank"},
+                            {"to", "objectId"},
+                            {"onError", ""},
+                            {"onNull", ""}
+                        }}
+                    }},
+                }}
             };
 
-            Func<Task<List<Category>>> categories = async () => {
-                List<Category> list = await Collection.Category.Aggregate().ToListAsync();
-                return list;
+            BsonDocument lookup1 = new BsonDocument {
+                {"$lookup", new BsonDocument {
+                    {"from", "banks"},
+                    {"localField", "fromBankId"},
+                    {"foreignField", "_id"},
+                    {"as", "from_banks"}
+                }},               
             };
 
-            Func<Task<List<Transaction>>> transactions = async () => {
-                ProjectionDefinition<Transaction> projection = Builders<Transaction>.Projection
-                    .Include(t => t.Amount)
-                    .Include(t => t.Description)
-                    .Include(t => t.Type)
-                    .Include(t => t.CategoryId)
-                    .Include(t => t.FromBank)
-                    .Include(t => t.ToBank);
-
-                List<Transaction> list = await aggregate.Project<Transaction>(projection).ToListAsync();
-
-                return list;
+            BsonDocument lookup2 = new BsonDocument {
+                {"$lookup", new BsonDocument {
+                    {"from", "banks"},
+                    {"localField", "toBankId"},
+                    {"foreignField", "_id"},
+                    {"as", "to_banks"}
+                }},               
             };
 
-            GroupAmounts? group = await fetchGroupAmounts();
-            List<Transaction> list = await transactions();
-            List<Data> data = new List<Data>();
-            List<Bank> listOfBanks = await banks();
-            List<Category> listOfCategories = await categories();
+            BsonDocument lookup3 = new BsonDocument {
+                {"$lookup", new BsonDocument {
+                    {"from", "categories"},
+                    {"localField", "categoryId"},
+                    {"foreignField", "_id"},
+                    {"as", "categories"}
+                }},                
+            };
 
-            foreach (Transaction transaction in list)
-            {
-                Bank? fromBank = listOfBanks.Where(b => b.Id == transaction.FromBank).FirstOrDefault();
-                Bank? toBank = listOfBanks.Where(b => b.Id == transaction.ToBank).FirstOrDefault();
-                Category? category = listOfCategories.Where(c => c.Id == transaction.CategoryId).FirstOrDefault();
+            BsonDocument group = new BsonDocument {
+                {
+                    "$group", new BsonDocument {
+                        {"_id", "$date" },
+                        {"credit", new BsonDocument {
+                            {"$sum", new BsonDocument {
+                                {"$cond", new BsonArray {
+                                    new BsonDocument { {"$eq", new BsonArray { "$type", TransactionType.Credit }} },                                    
+                                    "$amount",
+                                    0
+                                }}
+                            }}
+                        }},
+                        {"debit", new BsonDocument {
+                            {"$sum", new BsonDocument {
+                                {"$cond", new BsonArray {
+                                    new BsonDocument { {"$eq", new BsonArray { "$type", TransactionType.Debit }} },
+                                    "$amount",
+                                    0
+                                }}
+                            }}
+                        }},
+                        {"partial_credit", new BsonDocument {
+                            {"$sum", new BsonDocument {
+                                {"$cond", new BsonArray {
+                                    new BsonDocument { {"$eq", new BsonArray { "$type", TransactionType.PartialCredit }} },
+                                    "$amount",
+                                    0
+                                }}
+                            }}
+                        }},
+                        {"partial_debit", new BsonDocument {
+                            {"$sum", new BsonDocument {
+                                {"$cond", new BsonArray {
+                                    new BsonDocument { {"$eq", new BsonArray { "$type", TransactionType.PartialDebit }} },
+                                    "$amount",
+                                    0
+                                }}
+                            }}
+                        }},
+                        {"transactions", new BsonDocument {
+                            {"$push", new BsonDocument {
+                                {"amount", "$amount"},
+                                {"description", "$description"},
+                                {"type", "$type"},
+                                {"id", new BsonDocument { {"$toString", "$_id"} }},
+                                {"from_bank", new BsonDocument {
+                                    {"$reduce", new BsonDocument {
+                                        {"input", "$from_banks.name"},
+                                        {"initialValue", ""},
+                                        {"in", new BsonDocument {
+                                            {"$concat", new BsonArray{ "$$value", "$$this" }}
+                                        }}
+                                    }}
+                                }},
+                                {"to_bank", new BsonDocument {
+                                    {"$reduce", new BsonDocument {
+                                        {"input", "$to_banks.name"},
+                                        {"initialValue", ""},
+                                        {"in", new BsonDocument {
+                                            {"$concat", new BsonArray{ "$$value", "$$this" }}
+                                        }}
+                                    }}
+                                }},
+                                {"category", new BsonDocument {
+                                    {"$reduce", new BsonDocument {
+                                        {"input", "$categories.name"},
+                                        {"initialValue", ""},
+                                        {"in", new BsonDocument {
+                                            {"$concat", new BsonArray{ "$$value", "$$this" }}
+                                        }}
+                                    }}
+                                }}
+                            }}
+                        }}
+                    }
+                }
+            };
 
-                data.Add(new Data(
-                    amount: transaction.Amount,
-                    description: transaction.Description,
-                    type: transaction.Type,
-                    fromBank: fromBank?.Name,
-                    toBank: toBank?.Name,
-                    category: category?.Name ?? "",
-                    transactionId: transaction.Id
-                ));
-            }
+            BsonDocument project = new BsonDocument {
+                {"$project", new BsonDocument {
+                    {"credit", 1},
+                    {"debit", 1},
+                    {"partial_credit", 1},
+                    {"partial_debit", 1},
+                    {"transactions", 1},
+                    {"_id", 0}
+                }}
+            };
 
-            return new Detail(group, data);
+            BsonDocument[] pipeline = new[] {match, addfields, lookup1, lookup2, lookup3, group, project};
+            List<BsonDocument> results = await collection.Aggregate<BsonDocument>(pipeline).ToListAsync();
+            string document = results[0].ToBsonDocument().ToJson();            
+            Result test = JsonSerializer.Deserialize<Result>(document) ?? new Result();
+
+            return test;
         }
     }
 }
