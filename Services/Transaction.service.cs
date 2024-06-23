@@ -47,8 +47,172 @@ namespace Services
             // }
         }
 
+        private async Task Test()
+        {
+            IAggregateFluent<Transaction> aggregate = collection.Aggregate();
+            string currentMonth = DateTime.Now.Month.ToString("D2");
+            string currentYear = DateTime.Now.Year.ToString();
+            BsonRegularExpression regex = new BsonRegularExpression($"{currentYear}-{currentMonth}");
+            // FilterDefinition<Transaction> filter = Builders<Transaction>.Filter.Regex("date", regex);
+
+            BsonDocument match = new BsonDocument {
+                {"$match", new BsonDocument {
+                    {"date", new BsonDocument {
+                        {"$regex", $"{currentYear}-{currentMonth}"}
+                    }}
+                }}
+            };
+
+            BsonDocument pipeline1 = new BsonDocument {
+                {"$group", new BsonDocument {
+                    {"_id", $"{currentYear}-{currentMonth}" },
+                    {"total_count", new BsonDocument {
+                        {"$sum", 1}
+                    }},
+                    {"transactions", new BsonDocument {
+                        {"$group", new BsonDocument {
+                            {"_id", "$date"},
+                            {"$push", new BsonDocument {
+                                {"debit", new BsonDocument {
+                                    {"$sum", new BsonDocument {
+                                        {"$cond", new BsonArray {
+                                            new BsonDocument { {"$eq", new BsonArray { "$type", TransactionType.Debit }} },
+                                            "$amount",
+                                            0
+                                        }}
+                                    }}
+                                }},
+                                {"credit", new BsonDocument {
+                                    {"$sum", new BsonDocument {
+                                        {"$cond", new BsonArray {
+                                            new BsonDocument { {"$eq", new BsonArray { "$type", TransactionType.Credit }} },
+                                            "$amount",
+                                            0
+                                        }}
+                                    }}
+                                }},
+                                {"count", new BsonDocument {
+                                    {"$sum", 1}
+                                }},
+                                {"date", "$date"}
+                            }}
+                        }}
+                    }}
+                }}
+            };
+
+            BsonDocument pipeline2 = new BsonDocument {
+                {"$group", new BsonDocument {
+                    {"_id", "$date"},
+                    {"transactions", new BsonDocument {
+                        {"$push", new BsonDocument {
+                            {"debit", new BsonDocument {
+                                {"$sum", new BsonDocument {
+                                    {"$cond", new BsonArray {
+                                        new BsonDocument { {"$eq", new BsonArray { "$type", TransactionType.Debit }} },
+                                        "$amount",
+                                        0
+                                    }}
+                                }}
+                            }},
+                            {"credit", new BsonDocument {
+                                {"$sum", new BsonDocument {
+                                    {"$cond", new BsonArray {
+                                        new BsonDocument { {"$eq", new BsonArray { "$type", TransactionType.Credit }} },
+                                        "$amount",
+                                        0
+                                    }}
+                                }}
+                            }},
+                            {"count", new BsonDocument {
+                                {"$sum", 1}
+                            }},
+                            {"date", "$date"}
+                        }}
+                    }}
+                }}
+            };
+
+            BsonDocument[] pipelines = new BsonDocument[] {
+                match,
+                new BsonDocument {
+                    {"$group", new BsonDocument {
+                        {"_id", "$date"},
+                        {"debit", new BsonDocument {
+                            {"$sum", new BsonDocument {
+                                {"$cond", new BsonArray {
+                                    new BsonDocument { {"$eq", new BsonArray { "$type", TransactionType.Debit }} },
+                                    "$amount",
+                                    0
+                                }}
+                            }}
+                        }},
+                        {"credit", new BsonDocument {
+                            {"$sum", new BsonDocument {
+                                {"$cond", new BsonArray {
+                                    new BsonDocument { {"$eq", new BsonArray { "$type", TransactionType.Credit }} },
+                                    "$amount",
+                                    0
+                                }}
+                            }}
+                        }},                             
+                        {"count", new BsonDocument {
+                            {"$sum", 1}
+                        }},
+                    }}
+                },
+                new BsonDocument {
+                    {"$sort", new BsonDocument {
+                        {"_id", 1}
+                    }}
+                },
+                new BsonDocument {
+                    {"$group", new BsonDocument {
+                        {"_id", $"{currentYear}-{currentMonth}" },
+                        {"transactions", new BsonDocument {
+                            {"$push", new BsonDocument {
+                                {"debit", "$$ROOT.debit"},
+                                {"credit", "$$ROOT.credit"},
+                                {"count", "$$ROOT.count"},
+                                {"date", new BsonDocument {
+                                    {"$dateToString", new BsonDocument {
+                                        {"format", "%w, %b %d, %G"},
+                                        {"date", new BsonDocument {
+                                            {"$dateFromString", new BsonDocument {
+                                                { "dateString", "$$ROOT._id" },
+                                                { "format", "%Y-%m-%d" },
+                                            }}
+                                        }}
+                                    }}                            
+                                }},
+                            }}
+                        }}
+                    }}
+                },
+                new BsonDocument {
+                    {"$project", new BsonDocument {
+                        {"_id", 0},
+                        {"total_count", new BsonDocument {
+                            {"$sum", "$transactions.count"}
+                        }},
+                        {"transactions", 1},                        
+                    }}
+                }
+            };
+
+            List<BsonDocument> results = await collection.Aggregate<BsonDocument>(pipelines).ToListAsync();
+
+            Console.WriteLine("HI!");
+
+            foreach (BsonDocument result in results)
+            {
+                Console.WriteLine(result);
+            }
+        }
+
         public async Task<List<TransactionList<string>>> List(Defination.TransactionsList.QueryParams? queryParams)
         {
+            await Test();
             IAggregateFluent<Transaction> aggregate = collection.Aggregate();
             FilterDefinition<Transaction> filter;
 
