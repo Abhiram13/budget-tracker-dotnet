@@ -1,9 +1,8 @@
 using Defination;
-using Global;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System.Text.Json;
 using System.Text.RegularExpressions;
-using TransactionsByDate;
 
 namespace Services
 {
@@ -47,88 +46,25 @@ namespace Services
             // }
         }
 
-        private async Task Test()
-        {
-            IAggregateFluent<Transaction> aggregate = collection.Aggregate();
+        public async Task<API.Transactions.List.Result> List(API.Transactions.List.QueryParams? queryParams)
+        {            
             string currentMonth = DateTime.Now.Month.ToString("D2");
             string currentYear = DateTime.Now.Year.ToString();
-            BsonRegularExpression regex = new BsonRegularExpression($"{currentYear}-{currentMonth}");
-            // FilterDefinition<Transaction> filter = Builders<Transaction>.Filter.Regex("date", regex);
+            string dateFilter;
+
+            if (!string.IsNullOrEmpty(queryParams?.month) && !string.IsNullOrEmpty(queryParams?.year))
+            {
+                dateFilter = $"{queryParams?.year}-{queryParams?.month}";
+            }
+            else
+            {
+                dateFilter = $"{currentYear}-{currentMonth}";
+            }
 
             BsonDocument match = new BsonDocument {
                 {"$match", new BsonDocument {
                     {"date", new BsonDocument {
-                        {"$regex", $"{currentYear}-{currentMonth}"}
-                    }}
-                }}
-            };
-
-            BsonDocument pipeline1 = new BsonDocument {
-                {"$group", new BsonDocument {
-                    {"_id", $"{currentYear}-{currentMonth}" },
-                    {"total_count", new BsonDocument {
-                        {"$sum", 1}
-                    }},
-                    {"transactions", new BsonDocument {
-                        {"$group", new BsonDocument {
-                            {"_id", "$date"},
-                            {"$push", new BsonDocument {
-                                {"debit", new BsonDocument {
-                                    {"$sum", new BsonDocument {
-                                        {"$cond", new BsonArray {
-                                            new BsonDocument { {"$eq", new BsonArray { "$type", TransactionType.Debit }} },
-                                            "$amount",
-                                            0
-                                        }}
-                                    }}
-                                }},
-                                {"credit", new BsonDocument {
-                                    {"$sum", new BsonDocument {
-                                        {"$cond", new BsonArray {
-                                            new BsonDocument { {"$eq", new BsonArray { "$type", TransactionType.Credit }} },
-                                            "$amount",
-                                            0
-                                        }}
-                                    }}
-                                }},
-                                {"count", new BsonDocument {
-                                    {"$sum", 1}
-                                }},
-                                {"date", "$date"}
-                            }}
-                        }}
-                    }}
-                }}
-            };
-
-            BsonDocument pipeline2 = new BsonDocument {
-                {"$group", new BsonDocument {
-                    {"_id", "$date"},
-                    {"transactions", new BsonDocument {
-                        {"$push", new BsonDocument {
-                            {"debit", new BsonDocument {
-                                {"$sum", new BsonDocument {
-                                    {"$cond", new BsonArray {
-                                        new BsonDocument { {"$eq", new BsonArray { "$type", TransactionType.Debit }} },
-                                        "$amount",
-                                        0
-                                    }}
-                                }}
-                            }},
-                            {"credit", new BsonDocument {
-                                {"$sum", new BsonDocument {
-                                    {"$cond", new BsonArray {
-                                        new BsonDocument { {"$eq", new BsonArray { "$type", TransactionType.Credit }} },
-                                        "$amount",
-                                        0
-                                    }}
-                                }}
-                            }},
-                            {"count", new BsonDocument {
-                                {"$sum", 1}
-                            }},
-                            {"date", "$date"}
-                        }}
+                        {"$regex", dateFilter}
                     }}
                 }}
             };
@@ -176,7 +112,7 @@ namespace Services
                                 {"count", "$$ROOT.count"},
                                 {"date", new BsonDocument {
                                     {"$dateToString", new BsonDocument {
-                                        {"format", "%w, %b %d, %G"},
+                                        {"format", "%B %d, %G"},
                                         {"date", new BsonDocument {
                                             {"$dateFromString", new BsonDocument {
                                                 { "dateString", "$$ROOT._id" },
@@ -185,6 +121,7 @@ namespace Services
                                         }}
                                     }}                            
                                 }},
+                                {"date_link", "$$ROOT._id"}
                             }}
                         }}
                     }}
@@ -201,68 +138,18 @@ namespace Services
             };
 
             List<BsonDocument> results = await collection.Aggregate<BsonDocument>(pipelines).ToListAsync();
-
-            Console.WriteLine("HI!");
-
-            foreach (BsonDocument result in results)
-            {
-                Console.WriteLine(result);
-            }
+            string document = results[0].ToBsonDocument().ToJson();            
+            API.Transactions.List.Result result = JsonSerializer.Deserialize<API.Transactions.List.Result>(document) ?? new ();
+            return result;
         }
 
-        public async Task<List<TransactionList<string>>> List(Defination.TransactionsList.QueryParams? queryParams)
-        {
-            await Test();
-            IAggregateFluent<Transaction> aggregate = collection.Aggregate();
-            FilterDefinition<Transaction> filter;
-
-            if (!string.IsNullOrEmpty(queryParams?.month) && !string.IsNullOrEmpty(queryParams?.year))
-            {
-                BsonRegularExpression regex = new BsonRegularExpression($"{queryParams?.year}-{queryParams?.month}");                
-                filter = Builders<Transaction>.Filter.Regex("date", regex);
-            }
-            else
-            {
-                string currentMonth = DateTime.Now.Month.ToString("D2");
-                string currentYear = DateTime.Now.Year.ToString();
-                BsonRegularExpression regex = new BsonRegularExpression($"{currentYear}-{currentMonth}");
-                filter = Builders<Transaction>.Filter.Regex("date", regex);
-            }
-
-            List<TransactionList<double>> data = await aggregate.Match(filter).Group(a => a.Date, b => new TransactionList<double>() {
-                Debit = b.Where(c => c.Type == TransactionType.Debit).Sum(d => d.Amount),
-                Credit = b.Where(c => c.Type == TransactionType.Credit).Sum(d => d.Amount),
-                Date = b.First().Date,
-                Count = b.Count(),
-                DateLink = b.First().Date,
-            })
-            .Sort(Builders<TransactionList<double>>.Sort.Ascending(x => x.Date))
-            .ToListAsync();
-
-            List<TransactionList<string>> list = new List<TransactionList<string>>();
-
-            foreach (TransactionList<double> transaction in data)
-            {
-                list.Add(new TransactionList<string>()
-                {
-                    Count = transaction.Count,
-                    Credit = string.Format("{0:#,##0.##}", transaction.Credit),
-                    Debit = string.Format("{0:#,##0.##}", transaction.Debit),
-                    Date = DateTime.Parse(transaction.Date).ToString("D"),
-                    DateLink = transaction.Date,
-                });
-            }
-
-            return list;
-        }
-
-        public async Task<Detail> ListByDate(string date)
+        public async Task<API.Transactions.ByDate.Detail> ListByDate(string date)
         {
             IAggregateFluent<Transaction> aggregate = collection.Aggregate().Match(Builders<Transaction>.Filter.Eq(t => t.Date, date));
             
-            Func<Task<GroupAmounts>> fetchGroupAmounts = async () => {
-                List<GroupAmounts> list = await aggregate
-                    .Group(a => a.Date, b => new GroupAmounts(
+            Func<Task<API.Transactions.ByDate.GroupAmounts>> fetchGroupAmounts = async () => {
+                List<API.Transactions.ByDate.GroupAmounts> list = await aggregate
+                    .Group(a => a.Date, b => new API.Transactions.ByDate.GroupAmounts(
                         b.Where(c => c.Type == TransactionType.Debit).Sum(d => d.Amount),
                         b.Where(c => c.Type == TransactionType.Credit).Sum(d => d.Amount),
                         b.Where(c => c.Type == TransactionType.PartialDebit).Sum(d => d.Amount),
@@ -270,7 +157,7 @@ namespace Services
                     ))
                     .ToListAsync();
 
-                GroupAmounts group = list.Count > 0 ? list[0] : new GroupAmounts(0, 0, 0, 0);
+                API.Transactions.ByDate.GroupAmounts group = list.Count > 0 ? list[0] : new API.Transactions.ByDate.GroupAmounts(0, 0, 0, 0);
 
                 return group;
             };
@@ -299,9 +186,9 @@ namespace Services
                 return list;
             };
 
-            GroupAmounts? group = await fetchGroupAmounts();
+            API.Transactions.ByDate.GroupAmounts? group = await fetchGroupAmounts();
             List<Transaction> list = await transactions();
-            List<Data> data = new List<Data>();
+            List<API.Transactions.ByDate.Data> data = new List<API.Transactions.ByDate.Data>();
             List<Bank> listOfBanks = await banks();
             List<Category> listOfCategories = await categories();
 
@@ -311,7 +198,7 @@ namespace Services
                 Bank? toBank = listOfBanks.Where(b => b.Id == transaction.ToBank).FirstOrDefault();
                 Category? category = listOfCategories.Where(c => c.Id == transaction.CategoryId).FirstOrDefault();
 
-                data.Add(new Data(
+                data.Add(new API.Transactions.ByDate.Data(
                     amount: transaction.Amount,
                     description: transaction.Description,
                     type: transaction.Type,
@@ -322,7 +209,7 @@ namespace Services
                 ));
             }
 
-            return new Detail(group, data);
+            return new API.Transactions.ByDate.Detail(group, data);
         }
     }
 }
