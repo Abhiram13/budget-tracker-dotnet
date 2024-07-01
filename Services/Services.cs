@@ -8,9 +8,10 @@ namespace Services;
 
 public static class Collection
 {
-    public static IMongoCollection<Transaction> Transaction {get {return Mongo.DB.GetCollection<Transaction>("transactions");}}
-    public static IMongoCollection<Category> Category {get {return Mongo.DB.GetCollection<Category>("categories");}}
-    public static IMongoCollection<Bank> Bank {get {return Mongo.DB.GetCollection<Bank>("banks");}}
+    public static IMongoCollection<Transaction> Transaction { get { return Mongo.DB.GetCollection<Transaction>("transactions"); } }
+    public static IMongoCollection<Category> Category { get { return Mongo.DB.GetCollection<Category>("categories"); } }
+    public static IMongoCollection<Bank> Bank { get { return Mongo.DB.GetCollection<Bank>("banks"); } }
+    public static IMongoCollection<Due> Due { get { return Mongo.DB.GetCollection<Due>("dues"); } }
 }
 
 public delegate ApiResponse<T> Callback<T>() where T : class;
@@ -32,6 +33,14 @@ public static class Handler<T> where T : class
         {
             return callback();
         }
+        catch (BadRequestException e)
+        {
+            return new ApiResponse<T>()
+            {
+                StatusCode = HttpStatusCode.BadRequest,
+                Message = $"Bad request. Message: {e.Message}",
+            };
+        }
         catch (Exception e)
         {
             return new ApiResponse<T>()
@@ -39,7 +48,7 @@ public static class Handler<T> where T : class
                 StatusCode = HttpStatusCode.InternalServerError,
                 Message = $"Something went wrong. Message: {e.Message}",
             };
-        }
+        }        
     }
 
     public static async Task<ApiResponse<T>> Exception(AsyncCallback<T> callback)
@@ -47,6 +56,14 @@ public static class Handler<T> where T : class
         try
         {
             return await callback();
+        }
+        catch (BadRequestException e)
+        {
+            return new ApiResponse<T>()
+            {
+                StatusCode = HttpStatusCode.BadRequest,
+                Message = $"Bad request. Message: {e.Message}",
+            };
         }
         catch (Exception e)
         {
@@ -123,4 +140,9 @@ public abstract class MongoServices<T> : IService<T> where T : class
 
         return result.ModifiedCount > 0;
     }
+}
+
+public class BadRequestException : Exception
+{
+    public BadRequestException(string message) : base (message) {}
 }

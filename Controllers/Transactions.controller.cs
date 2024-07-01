@@ -2,7 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Defination;
 using System.Net;
 using Services;
-using Global;
+
+// Alias type - similar to Typescript's Type keyword
+using TransactionListResult = API.Transactions.List.Result;
+using TransactionDetails = API.Transactions.ByDate.Detail;
 
 namespace budget_tracker.Controllers;
 
@@ -35,39 +38,39 @@ public class TransactionsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ApiResponse<List<TransactionList<string>>>> Get([FromQuery] string? date, [FromQuery] string? month, [FromQuery] string? year)
+    public async Task<ApiResponse<TransactionListResult>> Get([FromQuery] string? date, [FromQuery] string? month, [FromQuery] string? year)
     {
-        AsyncCallback<List<TransactionList<string>>> callback = async () => {
-            Defination.TransactionsList.QueryParams queryParams = new Defination.TransactionsList.QueryParams() {
+        AsyncCallback<TransactionListResult> callback = async () => {
+            API.Transactions.List.QueryParams queryParams = new API.Transactions.List.QueryParams() {
                 date = date,
                 month = month,
                 year = year
             };
 
-            List<TransactionList<string>> list = await service.List(queryParams);
-            return new ApiResponse<List<TransactionList<string>>>()
+            TransactionListResult list = await service.List(queryParams);
+            return new ApiResponse<TransactionListResult>()
             {
                 StatusCode = HttpStatusCode.OK,
                 Result = list
             };
         };
 
-        return await Handler<List<TransactionList<string>>>.Exception(callback);
+        return await Handler<TransactionListResult>.Exception(callback);
     }
 
     [HttpGet("{date}")]
-    public async Task<ApiResponse<TransactionsByDate.Detail>> Get(string date)
+    public async Task<ApiResponse<TransactionDetails>> Get(string date)
     {
-        AsyncCallback<TransactionsByDate.Detail> callback = async () => {
-            TransactionsByDate.Detail data = await service.ListByDate(date);
+        AsyncCallback<TransactionDetails> callback = async () => {
+            TransactionDetails data = await service.ListByDate(date);
 
-            return new ApiResponse<TransactionsByDate.Detail>()
+            return new ApiResponse<TransactionDetails>()
             {
                 StatusCode = HttpStatusCode.OK,
                 Result = data
             };
         };
 
-        return await Handler<TransactionsByDate.Detail>.Exception(callback);
+        return await Handler<TransactionDetails>.Exception(callback);
     }
 }

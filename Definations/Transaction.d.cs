@@ -64,97 +64,131 @@ namespace Defination
         public int Count { get; set; }
 
         [JsonPropertyName("date_link")]
-        public string? DateLink {get; set;} = "";
-    }
-
-    namespace TransactionsList
-    {
-        public class QueryParams
-        {
-            public string? date { get; set; }
-            public string? month { get; set; }
-            public string? year { get; set; }
-        }
+        public string? DateLink { get; set; } = "";
     }
 
     public interface ITransactionService : IService<Transaction>
     {
         Task Validations(Transaction transaction);
-        Task<List<TransactionList<string>>> List(TransactionsList.QueryParams? queryParams);
-        Task<TransactionsByDate.Detail> ListByDate(string date);
+        Task<API.Transactions.List.Result> List(API.Transactions.List.QueryParams? queryParams);
+        Task<API.Transactions.ByDate.Detail> ListByDate(string date);
     }
 }
 
-namespace TransactionsByDate
+namespace API
 {
-    public class Data: MongoObject
+    namespace Transactions
     {
-        [JsonInclude]
-        [JsonPropertyName("amount")]
-        public string Amount { get; private set; }
-
-        [JsonInclude]
-        [JsonPropertyName("description")]
-        public string Description { get; private set; } = "";
-
-        [JsonInclude]
-        [JsonPropertyName("type")]
-        public TransactionType Type { get; private set; }
-
-        [JsonInclude]
-        [JsonPropertyName("from_bank")]
-        public string? FromBank { get; private set; }
-
-        [JsonInclude]
-        [JsonPropertyName("to_bank")]
-        public string? ToBank { get; private set; }
-
-        [JsonInclude]
-        [JsonPropertyName("category")]
-        public string Category { get; private set; }
-
-        public Data(double amount, string description, TransactionType type, string? fromBank, string? toBank, string category, string transactionId)
+        namespace ByDate
         {
-            Amount = string.Format("{0:#,##0.##}", amount);
-            Description = description;
-            Type = type;
-            FromBank = fromBank;
-            ToBank = toBank;
-            Category = category;
-            Id = transactionId;
+            public class Data : MongoObject
+            {
+                [JsonInclude]
+                [JsonPropertyName("amount")]
+                public string Amount { get; private set; }
+
+                [JsonInclude]
+                [JsonPropertyName("description")]
+                public string Description { get; private set; } = "";
+
+                [JsonInclude]
+                [JsonPropertyName("type")]
+                public TransactionType Type { get; private set; }
+
+                [JsonInclude]
+                [JsonPropertyName("from_bank")]
+                public string? FromBank { get; private set; }
+
+                [JsonInclude]
+                [JsonPropertyName("to_bank")]
+                public string? ToBank { get; private set; }
+
+                [JsonInclude]
+                [JsonPropertyName("category")]
+                public string Category { get; private set; }
+
+                public Data(double amount, string description, TransactionType type, string? fromBank, string? toBank, string category, string transactionId)
+                {
+                    Amount = string.Format("{0:#,##0.##}", amount);
+                    Description = description;
+                    Type = type;
+                    FromBank = fromBank;
+                    ToBank = toBank;
+                    Category = category;
+                    Id = transactionId;
+                }
+            }
+
+            public class GroupAmounts
+            {
+                [JsonPropertyName("debit")]
+                public double Debit { get; private set; }
+
+                [JsonPropertyName("credit")]
+                public double Credit { get; private set; }
+
+                [JsonPropertyName("partial_debit")]
+                public double PartialDebit { get; private set; }
+
+                [JsonPropertyName("partial_credit")]
+                public double PartialCredit { get; private set; }
+
+                public GroupAmounts(double debit, double credit, double partialDebit, double partialCredit)
+                {
+                    Debit = debit;
+                    Credit = credit;
+                    PartialCredit = partialCredit;
+                    PartialDebit = partialDebit;
+                }
+            }
+
+            public class Detail : GroupAmounts
+            {
+                [JsonPropertyName("transactions")]
+                public List<Data> Transactions { get; private set; } = new List<Data>();
+
+                public Detail(GroupAmounts group, List<Data> transactions) : base(group.Debit, group.Credit, group.PartialDebit, group.PartialCredit)
+                {
+                    Transactions = transactions;
+                }
+            }
         }
-    }
 
-    public class GroupAmounts
-    {
-        [JsonPropertyName("debit")]
-        public double Debit { get; private set; }
-
-        [JsonPropertyName("credit")]
-        public double Credit { get; private set; }
-
-        [JsonPropertyName("partial_debit")]
-        public double PartialDebit { get; private set; }
-
-        [JsonPropertyName("partial_credit")]
-        public double PartialCredit { get; private set; }
-
-        public GroupAmounts(double debit, double credit, double partialDebit, double partialCredit)
+        namespace List
         {
-            Debit = debit;
-            Credit = credit;
-            PartialCredit = partialCredit;
-            PartialDebit = partialDebit;
-        }
-    }
+            public class QueryParams
+            {
+                public string? date { get; set; }
+                public string? month { get; set; }
+                public string? year { get; set; }
+            }
 
-    public class Detail : GroupAmounts
-    {
-        [JsonPropertyName("transactions")]
-        public List<Data> Transactions {get; private set;} = new List<Data>();
+            public class Result
+            {
+                [JsonPropertyName("total_count")]
+                public int TotalCount { get; set; }
 
-        public Detail(GroupAmounts group, List<Data> transactions) : base(group.Debit, group.Credit, group.PartialDebit, group.PartialCredit) { 
-            Transactions = transactions;
+                [JsonPropertyName("transactions")]
+                public List<TransactionDetails> Transactions { get; set; } = new List<TransactionDetails>();
+            }
+
+            public class TransactionDetails
+            {
+                [JsonPropertyName("debit")]
+                public double? Debit { get; set; }
+
+                [JsonPropertyName("credit")]
+                public double? Credit { get; set; }
+
+                [JsonPropertyName("date")]
+                public string Date { get; set; } = "";
+
+                [JsonPropertyName("count")]
+                public int Count { get; set; }
+
+                [JsonPropertyName("date_link")]
+                public string? DateLink { get; set; } = "";
+            }
         }
     }
 }
