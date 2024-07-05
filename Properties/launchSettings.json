@@ -12,13 +12,13 @@
         "budget_tracker": {
             "commandName": "Project",
             "dotnetRunMessages": true,
-            "launchBrowser": true,
+            "launchBrowser": false,
             "launchUrl": "swagger",
             "applicationUrl": "http://localhost:3000"
         },
         "IIS Express": {
             "commandName": "IISExpress",
-            "launchBrowser": true,
+            "launchBrowser": false,
             "launchUrl": "swagger"
         }
     }

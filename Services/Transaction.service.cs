@@ -1,4 +1,5 @@
 using Defination;
+using Global;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Text.Json;
@@ -47,7 +48,7 @@ namespace Services
         }
 
         public async Task<API.Transactions.List.Result> List(API.Transactions.List.QueryParams? queryParams)
-        {            
+        {
             string currentMonth = DateTime.Now.Month.ToString("D2");
             string currentYear = DateTime.Now.Year.ToString();
             string dateFilter;
@@ -61,16 +62,14 @@ namespace Services
                 dateFilter = $"{currentYear}-{currentMonth}";
             }
 
-            BsonDocument match = new BsonDocument {
-                {"$match", new BsonDocument {
-                    {"date", new BsonDocument {
-                        {"$regex", dateFilter}
-                    }}
-                }}
-            };
-
             BsonDocument[] pipelines = new BsonDocument[] {
-                match,
+                new BsonDocument {
+                    {"$match", new BsonDocument {
+                        {"date", new BsonDocument {
+                            {"$regex", dateFilter}
+                        }}
+                    }}
+                },
                 new BsonDocument {
                     {"$group", new BsonDocument {
                         {"_id", "$date"},
@@ -132,15 +131,21 @@ namespace Services
                         {"total_count", new BsonDocument {
                             {"$sum", "$transactions.count"}
                         }},
-                        {"transactions", 1},                        
+                        {"transactions", 1},
                     }}
                 }
             };
 
             List<BsonDocument> results = await collection.Aggregate<BsonDocument>(pipelines).ToListAsync();
-            string document = results[0].ToBsonDocument().ToJson();            
-            API.Transactions.List.Result result = JsonSerializer.Deserialize<API.Transactions.List.Result>(document) ?? new ();
-            return result;
+
+            if (results.Any())
+            {
+                string document = results[0].ToBsonDocument().ToJson();            
+                API.Transactions.List.Result result = JsonSerializer.Deserialize<API.Transactions.List.Result>(document) ?? new ();
+                return result;
+            }
+
+            return new API.Transactions.List.Result();
         }
 
         public async Task<API.Transactions.ByDate.Detail> ListByDate(string date)

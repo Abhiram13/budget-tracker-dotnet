@@ -2,7 +2,7 @@ using System.Net;
 using Application;
 using Services;
 using Defination;
-using System.Text.Json;
+using Global;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +15,6 @@ builder.Configuration.AddEnvironmentVariables().Build();
 builder.Services.AddSingleton(s => Mongo.DB);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
@@ -44,23 +43,21 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.Use(async (context, next) => {    
+    context.Response.Headers.ContentType = "application/json";
+    await next.Invoke();    
+});
 app.UseCors();
-app.UseAuthorization();
+// app.UseMiddleware<AuthenticationMiddleware>();
 app.MapControllers();
 app.UseStatusCodePages(async context => {
-    context.HttpContext.Response.Headers.ContentType = "application/json";
-
-    Func<object, byte[]> ConvertObjToBytes = (object obj) => {
-        byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(obj);
-        return bytes;
-    };
-
     if (context.HttpContext.Response.StatusCode == 404)
     {
-        byte[] bytes = ConvertObjToBytes(new ApiResponse<string> {
+        ApiResponse<string> response = new ApiResponse<string> {
             StatusCode = HttpStatusCode.NotFound,
             Message = "Route not found",
-        });        
+        };
+        byte[] bytes = ResponseBytes.Convert(response);
         await context.HttpContext.Response.Body.WriteAsync(bytes, 0, bytes.Length);
     }
 });
