@@ -1,9 +1,9 @@
 using Defination;
-using Global;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using System.Text.Json;
 using System.Text.RegularExpressions;
+
+using ListAPI = API.Transactions.List;
 
 namespace Services
 {
@@ -47,7 +47,7 @@ namespace Services
             // }
         }
 
-        public async Task<API.Transactions.List.Result> List(API.Transactions.List.QueryParams? queryParams)
+        public async Task<ListAPI.Result> List(ListAPI.QueryParams? queryParams)
         {
             string currentMonth = DateTime.Now.Month.ToString("D2");
             string currentYear = DateTime.Now.Year.ToString();
@@ -62,14 +62,16 @@ namespace Services
                 dateFilter = $"{currentYear}-{currentMonth}";
             }
 
-            BsonDocument[] pipelines = new BsonDocument[] {
-                new BsonDocument {
-                    {"$match", new BsonDocument {
-                        {"date", new BsonDocument {
-                            {"$regex", dateFilter}
-                        }}
+            BsonDocument match = new BsonDocument {
+                {"$match", new BsonDocument {
+                    {"date", new BsonDocument {
+                        {"$regex", dateFilter}
                     }}
-                },
+                }}
+            };
+
+            BsonDocument[] pipelines = new BsonDocument[] {
+                match,
                 new BsonDocument {
                     {"$group", new BsonDocument {
                         {"_id", "$date"},
@@ -100,10 +102,10 @@ namespace Services
                     {"$sort", new BsonDocument {
                         {"_id", 1}
                     }}
-                },
+                },                
                 new BsonDocument {
                     {"$group", new BsonDocument {
-                        {"_id", $"{currentYear}-{currentMonth}" },
+                        {"_id", $"{currentYear}-{currentMonth}" },                        
                         {"transactions", new BsonDocument {
                             {"$push", new BsonDocument {
                                 {"debit", "$$ROOT.debit"},
@@ -135,17 +137,103 @@ namespace Services
                     }}
                 }
             };
-
-            List<BsonDocument> results = await collection.Aggregate<BsonDocument>(pipelines).ToListAsync();
+            
+            ListAPI.CategoryData[] categories = await CategoryWise(match);
+            List<ListAPI.TransactionStage> results = await collection.Aggregate<ListAPI.TransactionStage>(pipelines).ToListAsync();
 
             if (results.Any())
             {
-                string document = results[0].ToBsonDocument().ToJson();            
-                API.Transactions.List.Result result = JsonSerializer.Deserialize<API.Transactions.List.Result>(document) ?? new ();
+                ListAPI.Result result = new ListAPI.Result() {
+                    TotalCount = results[0].TotalCount,
+                    Transactions = results[0].Transactions,
+                    Categories = categories
+                };
+
                 return result;
             }
 
-            return new API.Transactions.List.Result();
+            return new ListAPI.Result();
+        }
+
+        private async Task<ListAPI.CategoryData[]> CategoryWise(BsonDocument matchStage)
+        {
+            BsonDocument[] pipelines = new BsonDocument[] {
+                matchStage,
+                new BsonDocument {
+                    {"$addFields", new BsonDocument {
+                        {"categoryId", new BsonDocument {
+                            {"$toObjectId", "$category_id"}
+                        }}
+                    }}
+                },
+                new BsonDocument {
+                    {"$lookup", new BsonDocument {
+                        {"from", "categories"},
+                        {"localField", "categoryId"},
+                        {"foreignField", "_id"},
+                        {"as", "category"}
+                    }}
+                },
+                new BsonDocument {
+                    {"$group", new BsonDocument {
+                        {"_id", "$category_id"},
+                        {"category", new BsonDocument {
+                            {"$first", new BsonDocument {
+                                {"$first", "$category.name"}
+                            }}
+                        }},
+                        {"amount", new BsonDocument {
+                            {"$sum", new BsonDocument {
+                                {"$cond", new BsonArray {
+                                    new BsonDocument { {"$eq", new BsonArray { "$type", TransactionType.Debit }} },
+                                    "$amount",
+                                    0
+                                }}
+                            }}
+                        }}
+                    }}
+                },
+                new BsonDocument {
+                    {"$group", new BsonDocument {
+                        {"_id", "$$ROOT._id"},
+                        {"categories", new BsonDocument {
+                            {"$push", new BsonDocument {
+                                {"$cond", new BsonArray {
+                                    new BsonDocument { {"$gt", new BsonArray { "$$ROOT.amount", 0 }} },
+                                    new BsonDocument {
+                                        {"id", "$$ROOT._id"},
+                                        {"category", "$$ROOT.category"},
+                                        {"amount", "$$ROOT.amount"}
+                                    },
+                                    "$$REMOVE"
+                                }},                                
+                            }}
+                        }}
+                    }}                    
+                },
+                new BsonDocument {
+                    {"$project", new BsonDocument {
+                        {"_id", 0},
+                        {"categories", new BsonDocument {
+                            {"$cond", new BsonArray {
+                                new BsonDocument { {"$eq", new BsonArray { new BsonDocument {{"$size", "$categories"}}, 0 }} },
+                                "$$REMOVE",
+                                "$categories"
+                            }}
+                        }},
+                    }}
+                },                
+                new BsonDocument {
+                    {"$project", new BsonDocument {
+                        {"categories.id", 0}
+                    }}
+                }
+            };
+
+            List<ListAPI.CategoryWiseData> results = await collection.Aggregate<ListAPI.CategoryWiseData>(pipelines).ToListAsync();            
+            ListAPI.CategoryData[] data = results.Where(result => result.Categories.Count() > 0).Select(result => result.Categories[0]).ToArray();
+
+            return data;
         }
 
         public async Task<API.Transactions.ByDate.Detail> ListByDate(string date)

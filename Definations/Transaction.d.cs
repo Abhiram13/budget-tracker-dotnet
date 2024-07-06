@@ -163,32 +163,64 @@ namespace API
                 public string? year { get; set; }
             }
 
-            public class Result
+            public class TransactionStage
             {
+                [BsonElement("total_count")]
                 [JsonPropertyName("total_count")]
                 public int TotalCount { get; set; }
 
+                [BsonElement("transactions")]
                 [JsonPropertyName("transactions")]
                 public List<TransactionDetails> Transactions { get; set; } = new List<TransactionDetails>();
             }
 
+            public class Result : TransactionStage
+            {
+                [BsonElement("categories")]
+                [JsonPropertyName("categories")]
+                public CategoryData[] Categories { get; set; } = Array.Empty<CategoryData>();
+            }
+
             public class TransactionDetails
             {
+                [BsonElement("debit")]
                 [JsonPropertyName("debit")]
                 public double? Debit { get; set; }
 
+                [BsonElement("credit")]
                 [JsonPropertyName("credit")]
                 public double? Credit { get; set; }
 
+                [BsonElement("date")]
                 [JsonPropertyName("date")]
                 public string Date { get; set; } = "";
 
+                [BsonElement("count")]
                 [JsonPropertyName("count")]
                 public int Count { get; set; }
 
+                [BsonElement("date_link")]
                 [JsonPropertyName("date_link")]
                 public string? DateLink { get; set; } = "";
             }
+
+            public class CategoryData
+            {
+                [BsonElement("category")]
+                [JsonPropertyName("category")]
+                public string Key { get; set; } = string.Empty;
+                
+                [BsonElement("amount")]
+                [JsonPropertyName("amount")]
+                public double Value { get; set; } = 0;
+            } 
+
+            public class CategoryWiseData
+            {
+                [BsonElement("categories")]
+                [JsonPropertyName("categories")]
+                public CategoryData[] Categories { get; set; } = Array.Empty<CategoryData>();
+            } 
         }
     }
 }
