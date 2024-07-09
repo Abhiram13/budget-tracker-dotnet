@@ -9,3 +9,12 @@ public static class Logger
         Console.WriteLine(JsonSerializer.Serialize(arg));
     }
 }
+
+public static class ResponseBytes
+{
+    public static byte[] Convert(object obj)
+    {
+        byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(obj);
+        return bytes;
+    }
+}

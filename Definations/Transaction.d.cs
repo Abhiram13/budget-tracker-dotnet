@@ -163,32 +163,81 @@ namespace API
                 public string? year { get; set; }
             }
 
-            public class Result
+            public class TransactionStage
             {
+                [BsonElement("total_count")]
                 [JsonPropertyName("total_count")]
                 public int TotalCount { get; set; }
 
+                [BsonElement("transactions")]
                 [JsonPropertyName("transactions")]
                 public List<TransactionDetails> Transactions { get; set; } = new List<TransactionDetails>();
             }
 
+            public class Result : TransactionStage
+            {
+                [BsonElement("categories")]
+                [JsonPropertyName("categories")]
+                public CategoryData[] Categories { get; set; } = Array.Empty<CategoryData>();
+            }
+
             public class TransactionDetails
             {
+                private double _debit;
+                private double _credit;
+
+                [BsonElement("debit")]
                 [JsonPropertyName("debit")]
-                public double? Debit { get; set; }
+                public double? Debit 
+                { 
+                    get { return _debit; }
+                    set { _debit = Convert.ToDouble(string.Format("{0:0.00}", value)); }
+                }
 
+                [BsonElement("credit")]
                 [JsonPropertyName("credit")]
-                public double? Credit { get; set; }
+                public double? Credit
+                {
+                    get { return _credit; }
+                    set { _credit = Convert.ToDouble(string.Format("{0:0.00}", value)); }
+                }
 
+                [BsonElement("date")]
                 [JsonPropertyName("date")]
                 public string Date { get; set; } = "";
 
+                [BsonElement("count")]
                 [JsonPropertyName("count")]
                 public int Count { get; set; }
 
+                [BsonElement("date_link")]
                 [JsonPropertyName("date_link")]
                 public string? DateLink { get; set; } = "";
             }
+
+            public class CategoryData
+            {
+                private double _amount;
+
+                [BsonElement("category")]
+                [JsonPropertyName("category")]
+                public string Key { get; set; } = string.Empty;
+                
+                [BsonElement("amount")]
+                [JsonPropertyName("amount")]
+                public double Value
+                {
+                    get { return _amount; }
+                    set { _amount = Convert.ToDouble(string.Format("{0:0.00}", value)); }
+                }
+            } 
+
+            public class CategoryWiseData
+            {
+                [BsonElement("categories")]
+                [JsonPropertyName("categories")]
+                public CategoryData[] Categories { get; set; } = Array.Empty<CategoryData>();
+            } 
         }
     }
 }
