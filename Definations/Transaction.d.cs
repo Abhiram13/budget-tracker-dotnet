@@ -183,13 +183,24 @@ namespace API
 
             public class TransactionDetails
             {
+                private double _debit;
+                private double _credit;
+
                 [BsonElement("debit")]
                 [JsonPropertyName("debit")]
-                public double? Debit { get; set; }
+                public double? Debit 
+                { 
+                    get { return _debit; }
+                    set { _debit = Convert.ToDouble(string.Format("{0:0.00}", value)); }
+                }
 
                 [BsonElement("credit")]
                 [JsonPropertyName("credit")]
-                public double? Credit { get; set; }
+                public double? Credit
+                {
+                    get { return _credit; }
+                    set { _credit = Convert.ToDouble(string.Format("{0:0.00}", value)); }
+                }
 
                 [BsonElement("date")]
                 [JsonPropertyName("date")]
@@ -206,13 +217,19 @@ namespace API
 
             public class CategoryData
             {
+                private double _amount;
+
                 [BsonElement("category")]
                 [JsonPropertyName("category")]
                 public string Key { get; set; } = string.Empty;
                 
                 [BsonElement("amount")]
                 [JsonPropertyName("amount")]
-                public double Value { get; set; } = 0;
+                public double Value
+                {
+                    get { return _amount; }
+                    set { _amount = Convert.ToDouble(string.Format("{0:0.00}", value)); }
+                }
             } 
 
             public class CategoryWiseData
