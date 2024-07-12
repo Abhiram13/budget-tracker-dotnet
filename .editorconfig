@@ -1,0 +1,13 @@
+root = true
+
+# Applies to all files
+[*]
+indent_style = space
+indent_size = 4
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+
+# Applies to all JavaScript files specifically
+# [*.js]
+# max_len = 80
