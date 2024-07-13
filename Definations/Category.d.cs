@@ -2,13 +2,17 @@ using System.Text.Json.Serialization;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Defination;
-
-public class Category : MongoObject
+namespace BudgetTracker.Defination
 {
-    [BsonElement("name")]
-    [JsonPropertyName("name")]
-    public string Name { get; set; } = "";
+    public class Category : MongoObject
+    {
+        [BsonElement("name")]
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = "";
+    }
 }
 
-public interface ICategoryService : IService<Category> { };
+namespace BudgetTracker.Injectors
+{
+    public interface ICategoryService : IMongoService<BudgetTracker.Defination.Category> { };
+}

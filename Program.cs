@@ -1,8 +1,8 @@
 using System.Net;
-using Application;
-using Services;
-using Defination;
-using Global;
+using BudgetTracker.Services;
+using BudgetTracker.Injectors;
+using BudgetTracker.Defination;
+using BudgetTracker.Application;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -20,15 +20,19 @@ builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IBankService, BankService>();
 builder.Services.AddScoped<IDueService, DueService>();
-builder.WebHost.ConfigureKestrel((context, server) => {
+builder.Services.AddScoped<IUserService, UserService>();
+builder.WebHost.ConfigureKestrel((context, server) =>
+{
     string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3000";
     int PORT = int.Parse(portNumber);
     server.Listen(IPAddress.Any, PORT);
 });
 
 builder.WebHost.UseKestrel(options => options.AddServerHeader = false);
-builder.Services.AddCors(options => {
-    options.AddDefaultPolicy(builder => {
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(builder =>
+    {
         builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
     });
 });
@@ -43,17 +47,19 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.Use(async (context, next) => {    
+app.Use(async (context, next) =>
+{
     context.Response.Headers.ContentType = "application/json";
-    await next.Invoke();    
+    await next.Invoke();
 });
 app.UseCors();
-// app.UseMiddleware<AuthenticationMiddleware>();
 app.MapControllers();
-app.UseStatusCodePages(async context => {
+app.UseStatusCodePages(async context =>
+{
     if (context.HttpContext.Response.StatusCode == 404)
     {
-        ApiResponse<string> response = new ApiResponse<string> {
+        ApiResponse<string> response = new ApiResponse<string>
+        {
             StatusCode = HttpStatusCode.NotFound,
             Message = "Route not found",
         };
