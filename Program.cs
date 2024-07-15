@@ -3,12 +3,16 @@ using Application;
 using Services;
 using Defination;
 using Global;
+using MongoDB.Driver;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 string root = Directory.GetCurrentDirectory();
 string dotenv = Path.Combine(root, ".env");
 DotEnv.Load(dotenv);
+
+using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
+ILogger logger = factory.CreateLogger("Program");
 
 // Add services to the container.
 builder.Configuration.AddEnvironmentVariables().Build();
@@ -20,6 +24,9 @@ builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IBankService, BankService>();
 builder.Services.AddScoped<IDueService, DueService>();
+builder.Services.AddLogging(config => {    
+    config.AddFilter(level => level >= LogLevel.Trace);
+});
 builder.WebHost.ConfigureKestrel((context, server) => {
     string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3000";
     int PORT = int.Parse(portNumber);
@@ -48,7 +55,34 @@ app.Use(async (context, next) => {
     await next.Invoke();    
 });
 app.UseCors();
-// app.UseMiddleware<AuthenticationMiddleware>();
+app.MapGet("/", async context => {
+    try
+    {
+        logger.LogInformation("This is Sample Info from ASP.NET Core");
+        logger.LogError("This is Sample Error from ASP.NET Core");
+        logger.LogCritical("This is Sample Critical from ASP.NET Core");
+        logger.LogDebug("This is Sample Debug from ASP.NET Core");
+        logger.LogTrace("This is Sample Trace from ASP.NET Core");
+        logger.LogWarning("This is Sample Warning from ASP.NET Core");
+        
+        using (IAsyncCursor<string>? collections = await Mongo.DB.ListCollectionNamesAsync())
+        {
+            List<string>? list = await collections.ToListAsync();
+
+            if (list?.Count > 0)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.OK;
+                return;
+            }
+
+            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+        }
+    }
+    catch (Exception)
+    {
+        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+    }    
+});
 app.MapControllers();
 app.UseStatusCodePages(async context => {
     if (context.HttpContext.Response.StatusCode == 404)
