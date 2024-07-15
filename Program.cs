@@ -48,6 +48,7 @@ app.Use(async (context, next) => {
     await next.Invoke();    
 });
 app.UseCors();
+app.MapGet("/", () => Environment.GetEnvironmentVariables());
 // app.UseMiddleware<AuthenticationMiddleware>();
 app.MapControllers();
 app.UseStatusCodePages(async context => {
