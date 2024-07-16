@@ -59,12 +59,14 @@ app.UseCors();
 app.MapGet("/", async context => {
     try
     {
-        logger.LogInformation("This is Sample Info from ASP.NET Core Google");
-        logger.LogError("This is Sample Error from ASP.NET Core Google");
-        logger.LogCritical("This is Sample Critical from ASP.NET Core Google");
-        logger.LogDebug("This is Sample Debug from ASP.NET Core Google");
-        logger.LogTrace("This is Sample Trace from ASP.NET Core Google");
-        logger.LogWarning("This is Sample Warning from ASP.NET Core Google");
+        // logger.LogInformation("This is Sample Info from ASP.NET Core Google");
+        // logger.LogError("This is Sample Error from ASP.NET Core Google");
+        // logger.LogCritical("This is Sample Critical from ASP.NET Core Google");
+        // logger.LogDebug("This is Sample Debug from ASP.NET Core Google");
+        // logger.LogTrace("This is Sample Trace from ASP.NET Core Google");
+        // logger.LogWarning("This is Sample Warning from ASP.NET Core Google");
+
+        throw new Exception("Test Exception at PING");
         
         using (IAsyncCursor<string>? collections = await Mongo.DB.ListCollectionNamesAsync())
         {
@@ -79,8 +81,10 @@ app.MapGet("/", async context => {
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
         }
     }
-    catch (Exception)
+    catch (Exception e)
     {
+        logger.LogError($"Exception at PING API.\nMessage: {e.Message}\nStack Trace: {e.StackTrace}");
+        logger.Log(LogLevel.Critical, e, "Exception at PING API");
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
     }    
 });
