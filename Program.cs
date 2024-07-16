@@ -13,8 +13,8 @@ string root = Directory.GetCurrentDirectory();
 string dotenv = Path.Combine(root, ".env");
 DotEnv.Load(dotenv);
 
-using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddGoogle());
-ILogger logger = factory.CreateLogger("Program");
+using ILoggerFactory _factory = LoggerFactory.Create(builder => builder.AddGoogle());
+ILogger _logger = _factory.CreateLogger("Program");
 
 // Add services to the container.
 builder.Configuration.AddEnvironmentVariables().Build();
@@ -58,16 +58,7 @@ app.Use(async (context, next) => {
 app.UseCors();
 app.MapGet("/", async context => {
     try
-    {
-        // logger.LogInformation("This is Sample Info from ASP.NET Core Google");
-        // logger.LogError("This is Sample Error from ASP.NET Core Google");
-        // logger.LogCritical("This is Sample Critical from ASP.NET Core Google");
-        // logger.LogDebug("This is Sample Debug from ASP.NET Core Google");
-        // logger.LogTrace("This is Sample Trace from ASP.NET Core Google");
-        // logger.LogWarning("This is Sample Warning from ASP.NET Core Google");
-
-        throw new Exception("Test Exception at PING");
-        
+    {   
         using (IAsyncCursor<string>? collections = await Mongo.DB.ListCollectionNamesAsync())
         {
             List<string>? list = await collections.ToListAsync();
@@ -83,8 +74,7 @@ app.MapGet("/", async context => {
     }
     catch (Exception e)
     {
-        logger.LogError($"Exception at PING API.\nMessage: {e.Message}\nStack Trace: {e.StackTrace}");
-        logger.Log(LogLevel.Critical, e, "Exception at PING API");
+        _logger.LogCritical($"Exception at PING API.\nMessage: {e.Message}\nStack Trace: {e.StackTrace}");
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
     }    
 });
