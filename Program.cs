@@ -28,10 +28,10 @@ builder.Services.AddScoped<IBankService, BankService>();
 builder.Services.AddScoped<IDueService, DueService>();
 builder.Logging.ClearProviders();
 builder.Services.AddGoogleDiagnosticsForAspNetCore();
-builder.Services.AddLogging(config => {    
-    // config.AddFilter(level => level >= LogLevel.Trace);
-    config.AddGoogle();
-});
+// builder.Services.AddLogging(config => {    
+//     // config.AddFilter(level => level >= LogLevel.Trace);
+//     config.AddGoogle();
+// });
 builder.WebHost.ConfigureKestrel((context, server) => {
     string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3000";
     int PORT = int.Parse(portNumber);
