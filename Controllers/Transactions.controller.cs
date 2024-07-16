@@ -36,18 +36,12 @@ public class TransactionsController : ControllerBase
             };
         };        
 
-        return await Handler<string>.Exception(callback);
+        return await Handler<string>.Exception(callback, _logger);
     }
 
     [HttpGet]
     public async Task<ApiResponse<TransactionListResult>> Get([FromQuery] string? date, [FromQuery] string? month, [FromQuery] string? year)
     {
-        _logger.LogError("Sample Second logger for Error");
-        _logger.LogCritical("Sample Second logger for Critical");
-        _logger.LogWarning("Sample Second logger for Warning");
-        _logger.LogDebug("Sample Second logger for Debug");
-        _logger.LogInformation("Sample Second logger for Information");
-        _logger.LogTrace("Sample Second logger for Trace");
         AsyncCallback<TransactionListResult> callback = async () => {
             API.Transactions.List.QueryParams queryParams = new API.Transactions.List.QueryParams() {
                 date = date,
@@ -63,7 +57,7 @@ public class TransactionsController : ControllerBase
             };
         };
 
-        return await Handler<TransactionListResult>.Exception(callback);
+        return await Handler<TransactionListResult>.Exception(callback, _logger);
     }
 
     [HttpGet("{date}")]
@@ -79,6 +73,6 @@ public class TransactionsController : ControllerBase
             };
         };
 
-        return await Handler<TransactionDetails>.Exception(callback);
+        return await Handler<TransactionDetails>.Exception(callback, _logger);
     }
 }

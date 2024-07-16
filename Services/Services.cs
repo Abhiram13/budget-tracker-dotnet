@@ -51,7 +51,7 @@ public static class Handler<T> where T : class
         }        
     }
 
-    public static async Task<ApiResponse<T>> Exception(AsyncCallback<T> callback)
+    public static async Task<ApiResponse<T>> Exception(AsyncCallback<T> callback, ILogger logger)
     {
         try
         {
@@ -59,6 +59,7 @@ public static class Handler<T> where T : class
         }
         catch (BadRequestException e)
         {
+            logger.LogError($"Bad Request Exception.\nMessage: {e.Message}\nStack Trace: {e.StackTrace}");
             return new ApiResponse<T>()
             {
                 StatusCode = HttpStatusCode.BadRequest,
@@ -67,6 +68,7 @@ public static class Handler<T> where T : class
         }
         catch (Exception e)
         {
+            logger.LogError($"Exception.\nMessage: {e.Message}\nStack Trace: {e.StackTrace}");
             return new ApiResponse<T>()
             {
                 StatusCode = HttpStatusCode.InternalServerError,
