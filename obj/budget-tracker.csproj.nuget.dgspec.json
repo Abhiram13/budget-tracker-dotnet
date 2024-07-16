@@ -38,6 +38,14 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "dependencies": {
+            "Google.Cloud.Diagnostics.AspNetCore3": {
+              "target": "Package",
+              "version": "[5.2.0, )"
+            },
+            "Google.Cloud.Diagnostics.Common": {
+              "target": "Package",
+              "version": "[5.2.0, )"
+            },
             "MongoDB.Driver": {
               "target": "Package",
               "version": "[2.25.0, )"

@@ -13,11 +13,13 @@ namespace budget_tracker.Controllers;
 [Route("transactions")]
 public class TransactionsController : ControllerBase
 {
-    private readonly ITransactionService service;
+    private readonly ITransactionService _service;
+    private readonly ILogger _logger;
 
-    public TransactionsController(ITransactionService _service)
+    public TransactionsController(ITransactionService service, ILogger<TransactionsController> logger)
     {
-        service = _service;
+        _service = service;
+        _logger = logger;
     }
 
     [HttpPost]
@@ -25,8 +27,8 @@ public class TransactionsController : ControllerBase
     {
         AsyncCallback<string> callback = async () => {
             Transaction transaction = body;
-            await service.Validations(body);
-            await service.InserOne(transaction);
+            await _service.Validations(body);
+            await _service.InserOne(transaction);
             return new ApiResponse<string>()
             {
                 Message = "Transaction inserted successfully",
@@ -40,6 +42,9 @@ public class TransactionsController : ControllerBase
     [HttpGet]
     public async Task<ApiResponse<TransactionListResult>> Get([FromQuery] string? date, [FromQuery] string? month, [FromQuery] string? year)
     {
+        _logger.LogError("Sample logger for Error");
+        _logger.LogCritical("Sample logger for Critical");
+        _logger.LogWarning("Sample logger for Error");
         AsyncCallback<TransactionListResult> callback = async () => {
             API.Transactions.List.QueryParams queryParams = new API.Transactions.List.QueryParams() {
                 date = date,
@@ -47,7 +52,7 @@ public class TransactionsController : ControllerBase
                 year = year
             };
 
-            TransactionListResult list = await service.List(queryParams);
+            TransactionListResult list = await _service.List(queryParams);
             return new ApiResponse<TransactionListResult>()
             {
                 StatusCode = HttpStatusCode.OK,
@@ -62,7 +67,7 @@ public class TransactionsController : ControllerBase
     public async Task<ApiResponse<TransactionDetails>> Get(string date)
     {
         AsyncCallback<TransactionDetails> callback = async () => {
-            TransactionDetails data = await service.ListByDate(date);
+            TransactionDetails data = await _service.ListByDate(date);
 
             return new ApiResponse<TransactionDetails>()
             {
