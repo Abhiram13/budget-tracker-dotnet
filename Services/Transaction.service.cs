@@ -111,18 +111,18 @@ namespace Services
                                 {"debit", "$$ROOT.debit"},
                                 {"credit", "$$ROOT.credit"},
                                 {"count", "$$ROOT.count"},
-                                {"date", new BsonDocument {
-                                    {"$dateToString", new BsonDocument {
-                                        {"format", "%B %d, %G"},
-                                        {"date", new BsonDocument {
-                                            {"$dateFromString", new BsonDocument {
-                                                { "dateString", "$$ROOT._id" },
-                                                { "format", "%Y-%m-%d" },
-                                            }}
-                                        }}
-                                    }}                            
-                                }},
-                                {"date_link", "$$ROOT._id"}
+                                // {"date", new BsonDocument {
+                                //     {"$dateToString", new BsonDocument {
+                                //         {"format", "%B %d, %G"},
+                                //         {"date", new BsonDocument {
+                                //             {"$dateFromString", new BsonDocument {
+                                //                 { "dateString", "$$ROOT._id" },
+                                //                 { "format", "%Y-%m-%d" },
+                                //             }}
+                                //         }}
+                                //     }}                            
+                                // }},
+                                {"date", "$$ROOT._id"}
                             }}
                         }}
                     }}
@@ -138,7 +138,7 @@ namespace Services
                 }
             };
             
-            ListAPI.CategoryData[] categories = await CategoryWise(match);
+            // ListAPI.CategoryData[] categories = await CategoryWise(match);
             List<ListAPI.TransactionStage> results = await collection.Aggregate<ListAPI.TransactionStage>(pipelines).ToListAsync();
 
             if (results.Any())
@@ -146,7 +146,7 @@ namespace Services
                 ListAPI.Result result = new ListAPI.Result() {
                     TotalCount = results[0].TotalCount,
                     Transactions = results[0].Transactions,
-                    Categories = categories
+                    // Categories = categories
                 };
 
                 return result;
