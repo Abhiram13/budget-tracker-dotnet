@@ -1,11 +1,12 @@
-using Defination;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Text.RegularExpressions;
+using BudgetTracker.Injectors;
+using BudgetTracker.Defination;
 
 using ListAPI = API.Transactions.List;
 
-namespace Services
+namespace BudgetTracker.Services
 {
     public class TransactionService : MongoServices<Transaction>, ITransactionService
     {

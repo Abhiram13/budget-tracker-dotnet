@@ -12,6 +12,7 @@
     <PackageReference Include="Google.Cloud.Diagnostics.Common" Version="5.2.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.25.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.3" />
   </ItemGroup>
 
 </Project>
