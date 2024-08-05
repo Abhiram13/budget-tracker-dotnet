@@ -4,7 +4,7 @@ using BudgetTracker.Attributes;
 namespace BudgetTracker.Controllers
 {
     [ApiController]
-    [Authorization]
-    [Route("api/[controller]", Name = "[controller]_")]
+    // [Authorization] // TODO (work on auth from client)
+    [Route("[controller]", Name = "[controller]_")] // TODO (work on updating controllers start point)
     public abstract class ApiBaseController : ControllerBase { }
 }

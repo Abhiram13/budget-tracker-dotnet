@@ -43,3 +43,4 @@
 /Users/abhiramnagadi/Documents/DotNet/budget-tracker/bin/Debug/net6.0/Microsoft.IdentityModel.Logging.dll
 /Users/abhiramnagadi/Documents/DotNet/budget-tracker/bin/Debug/net6.0/Microsoft.IdentityModel.Tokens.dll
 /Users/abhiramnagadi/Documents/DotNet/budget-tracker/bin/Debug/net6.0/System.IdentityModel.Tokens.Jwt.dll
+/Users/abhiramnagadi/Documents/DotNet/budget-tracker/bin/Debug/net6.0/budget-tracker.staticwebassets.runtime.json
