@@ -13,8 +13,8 @@ string root = Directory.GetCurrentDirectory();
 string dotenv = Path.Combine(root, ".env");
 DotEnv.Load(dotenv);
 
-// using ILoggerFactory _factory = LoggerFactory.Create(builder => builder.AddGoogle());
-// ILogger _logger = _factory.CreateLogger("Program");
+using ILoggerFactory _factory = LoggerFactory.Create(builder => builder.AddGoogle());
+ILogger _logger = _factory.CreateLogger("Program");
 
 // Add services to the container.
 builder.Configuration.AddEnvironmentVariables().Build();
@@ -27,8 +27,8 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IBankService, BankService>();
 builder.Services.AddScoped<IDueService, DueService>();
 builder.Services.AddScoped<IUserService, UserService>();
-// builder.Logging.ClearProviders();
-// builder.Services.AddGoogleDiagnosticsForAspNetCore();
+builder.Logging.ClearProviders();
+builder.Services.AddGoogleDiagnosticsForAspNetCore();
 builder.WebHost.ConfigureKestrel((context, server) => {
     string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3000";
     int PORT = int.Parse(portNumber);
@@ -78,7 +78,7 @@ app.MapGet("/", async context => {
     }
     catch (Exception e)
     {
-        // _logger.LogCritical($"Exception at PING API.\nMessage: {e.Message}\nStack Trace: {e.StackTrace}");
+        _logger.LogCritical($"Exception at PING API.\nMessage: {e.Message}\nStack Trace: {e.StackTrace}");
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
     }    
 });
