@@ -1,12 +1,12 @@
+using Defination;
 using Microsoft.AspNetCore.Mvc;
-using BudgetTracker.Injectors;
-using BudgetTracker.Defination;
-using BudgetTracker.Services;
+using Services;
 
-namespace BudgetTracker.Controllers;
+namespace budget_tracker.Controllers;
 
 [ApiController]
-public class DueController : ApiBaseController
+[Route("due")]
+public class DueController : ControllerBase
 {
     private readonly IDueService _service;
     private readonly ILogger _logger;

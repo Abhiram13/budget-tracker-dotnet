@@ -1,17 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
+using Defination;
 using System.Net;
-using BudgetTracker.Services;
-using BudgetTracker.Defination;
-using BudgetTracker.Injectors;
+using Services;
 
 // Alias type - similar to Typescript's Type keyword
 using TransactionListResult = API.Transactions.List.Result;
 using TransactionDetails = API.Transactions.ByDate.Detail;
 
-namespace BudgetTracker.Controllers;
+namespace budget_tracker.Controllers;
 
 [ApiController]
-public class TransactionsController : ApiBaseController
+[Route("transactions")]
+public class TransactionsController : ControllerBase
 {
     private readonly ITransactionService _service;
     private readonly ILogger _logger;

@@ -1,14 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
+using Defination;
 using System.Net;
+using Services;
 using Microsoft.Extensions.Caching.Memory;
-using BudgetTracker.Injectors;
-using BudgetTracker.Defination;
-using BudgetTracker.Services;
 
-namespace BudgetTracker.Controllers;
+namespace budget_tracker.Controllers;
 
 [ApiController]
-public class BankController : ApiBaseController
+[Route("bank")]
+public class BankController : ControllerBase
 {
     private readonly IBankService _service;
     private readonly IMemoryCache _cache;

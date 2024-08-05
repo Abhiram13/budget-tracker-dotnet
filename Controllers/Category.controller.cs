@@ -1,14 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
+using Defination;
 using System.Net;
+using Services;
 using Microsoft.Extensions.Caching.Memory;
-using BudgetTracker.Injectors;
-using BudgetTracker.Defination;
-using BudgetTracker.Services;
+using Global;
 
-namespace BudgetTracker.Controllers;
+namespace budget_tracker.Controllers;
 
 [ApiController]
-public class CategoryController : ApiBaseController
+[Route("category")]
+public class CategoryController : ControllerBase
 {
     private readonly ICategoryService _service;
     private readonly IMemoryCache _cache;

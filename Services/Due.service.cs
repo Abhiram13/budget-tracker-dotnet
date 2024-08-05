@@ -1,8 +1,7 @@
 using System.Text.RegularExpressions;
-using BudgetTracker.Defination;
-using BudgetTracker.Injectors;
+using Defination;
 
-namespace BudgetTracker.Services
+namespace Services
 {
     public class DueService : MongoServices<Due>, IDueService
     {

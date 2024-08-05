@@ -1,7 +1,9 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace BudgetTracker.Defination
+namespace Defination
 {
     public enum DueStatus
     {
@@ -34,13 +36,10 @@ namespace BudgetTracker.Defination
         [BsonElement("due_amount")]
         [JsonPropertyName("due_amount")]
         public double DueAmount { get; set; } = 0;
-    }    
-}
+    }
 
-namespace BudgetTracker.Injectors
-{
-    public interface IDueService : IMongoService<Defination.Due> 
+    public interface IDueService : IService<Due> 
     { 
-        public void Validate(Defination.Due payload);
+        public void Validate(Due payload);
     }
 }

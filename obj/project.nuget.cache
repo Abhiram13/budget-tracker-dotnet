@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "w9Z3ST+59K3q1mxnnZBp4fmGssdOJnqmwhZBvYkO35nk8hQe1s/VdzjKGAQ0TVlpMeMcn/jchlYmbHCi8Icm/A==",
+  "dgSpecHash": "uWY+zKYVNvsrs8o3EokVuzVyKiQfAfGqAyK0KN1YwQb0Q1yhEh12NOp8XJUlIeKkU/qk87mU27BZLl6oPZCzRg==",
   "success": true,
   "projectFilePath": "/Users/abhiramnagadi/Documents/DotNet/budget-tracker/budget-tracker.csproj",
   "expectedPackageFiles": [
@@ -33,10 +33,6 @@
     "/Users/abhiramnagadi/.nuget/packages/microsoft.extensions.logging.abstractions/6.0.0/microsoft.extensions.logging.abstractions.6.0.0.nupkg.sha512",
     "/Users/abhiramnagadi/.nuget/packages/microsoft.extensions.options/6.0.0/microsoft.extensions.options.6.0.0.nupkg.sha512",
     "/Users/abhiramnagadi/.nuget/packages/microsoft.extensions.primitives/6.0.0/microsoft.extensions.primitives.6.0.0.nupkg.sha512",
-    "/Users/abhiramnagadi/.nuget/packages/microsoft.identitymodel.abstractions/7.6.3/microsoft.identitymodel.abstractions.7.6.3.nupkg.sha512",
-    "/Users/abhiramnagadi/.nuget/packages/microsoft.identitymodel.jsonwebtokens/7.6.3/microsoft.identitymodel.jsonwebtokens.7.6.3.nupkg.sha512",
-    "/Users/abhiramnagadi/.nuget/packages/microsoft.identitymodel.logging/7.6.3/microsoft.identitymodel.logging.7.6.3.nupkg.sha512",
-    "/Users/abhiramnagadi/.nuget/packages/microsoft.identitymodel.tokens/7.6.3/microsoft.identitymodel.tokens.7.6.3.nupkg.sha512",
     "/Users/abhiramnagadi/.nuget/packages/microsoft.netcore.platforms/5.0.0/microsoft.netcore.platforms.5.0.0.nupkg.sha512",
     "/Users/abhiramnagadi/.nuget/packages/microsoft.netcore.targets/1.1.0/microsoft.netcore.targets.1.1.0.nupkg.sha512",
     "/Users/abhiramnagadi/.nuget/packages/microsoft.openapi/1.2.3/microsoft.openapi.1.2.3.nupkg.sha512",
@@ -62,7 +58,6 @@
     "/Users/abhiramnagadi/.nuget/packages/system.diagnostics.diagnosticsource/6.0.0/system.diagnostics.diagnosticsource.6.0.0.nupkg.sha512",
     "/Users/abhiramnagadi/.nuget/packages/system.diagnostics.stacktrace/4.3.0/system.diagnostics.stacktrace.4.3.0.nupkg.sha512",
     "/Users/abhiramnagadi/.nuget/packages/system.globalization/4.3.0/system.globalization.4.3.0.nupkg.sha512",
-    "/Users/abhiramnagadi/.nuget/packages/system.identitymodel.tokens.jwt/7.6.3/system.identitymodel.tokens.jwt.7.6.3.nupkg.sha512",
     "/Users/abhiramnagadi/.nuget/packages/system.io/4.3.0/system.io.4.3.0.nupkg.sha512",
     "/Users/abhiramnagadi/.nuget/packages/system.io.compression/4.3.0/system.io.compression.4.3.0.nupkg.sha512",
     "/Users/abhiramnagadi/.nuget/packages/system.io.filesystem/4.3.0/system.io.filesystem.4.3.0.nupkg.sha512",
@@ -88,12 +83,5 @@
     "/Users/abhiramnagadi/.nuget/packages/system.threading.tasks/4.3.0/system.threading.tasks.4.3.0.nupkg.sha512",
     "/Users/abhiramnagadi/.nuget/packages/zstdsharp.port/0.7.3/zstdsharp.port.0.7.3.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "Undefined",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Problem reading the cache file /Users/abhiramnagadi/Documents/DotNet/budget-tracker/obj/project.nuget.cache : Invalid property identifier character: <. Path 'version', line 3, position 0."
-    }
-  ]
+  "logs": []
 }
