@@ -1,40 +1,34 @@
-using BudgetTracker.Application;
-using BudgetTracker.Defination;
+using Defination;
+using Global;
 
-namespace BudgetTracker.Security
+namespace Application
 {
-    namespace Authentication
+    public class AuthenticationMiddleware
     {
-        public class AuthenticationMiddleware
+        private readonly RequestDelegate _next;
+
+        public AuthenticationMiddleware(RequestDelegate next)
         {
-            private readonly RequestDelegate _next;
+            _next = next;
+        }        
 
-            public AuthenticationMiddleware(RequestDelegate next)
+        public async Task InvokeAsync(HttpContext context)
+        {
+            string? headerKey = context.Request.Headers["API_KEY"];
+            string? APIKEY = Environment.GetEnvironmentVariable("API_KEY");
+
+            if (headerKey != APIKEY)
             {
-                _next = next;
-            }
-
-            public async Task InvokeAsync(HttpContext context)
-            {
-                string? headerKey = context.Request.Headers["API_KEY"];
-                string? APIKEY = Environment.GetEnvironmentVariable("API_KEY");
-
-                if (headerKey != APIKEY)
-                {
-                    context.Response.StatusCode = 401;
-                    ApiResponse<string> response = new ApiResponse<string>()
-                    {
-                        Message = "Invalid API key provided",
-                        StatusCode = System.Net.HttpStatusCode.Unauthorized
-                    };
-                    byte[] bytes = ResponseBytes.Convert(response);
-                    await context.Response.Body.WriteAsync(bytes);
-                }
-                else
-                {
-                    await _next(context);
-                }
-            }
+                context.Response.StatusCode = 401;
+                ApiResponse<string> response = new ApiResponse<string>() {
+                    Message = "Invalid API key provided",
+                    StatusCode = System.Net.HttpStatusCode.Unauthorized
+                };
+                byte[] bytes = ResponseBytes.Convert(response);                
+                await context.Response.Body.WriteAsync(bytes);
+            } else {
+                await _next(context);
+            }            
         }
     }
 }

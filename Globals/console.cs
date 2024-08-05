@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace BudgetTracker.Application;
+namespace Global;
 
 public static class Logger
 {

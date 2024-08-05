@@ -1,8 +1,10 @@
 using System.Text.Json.Serialization;
+using System.Transactions;
+using Defination;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace BudgetTracker.Defination
+namespace Defination
 {
     public enum TransactionType
     {
@@ -45,14 +47,29 @@ namespace BudgetTracker.Defination
         [BsonElement("category_id")]
         [JsonPropertyName("category_id")]
         public string CategoryId { get; set; } = "";
-    }    
-}
+    }
 
-namespace BudgetTracker.Injectors
-{
-    public interface ITransactionService : IMongoService<Defination.Transaction>
+    public class TransactionList<T>
     {
-        Task Validations(Defination.Transaction transaction);
+        [JsonPropertyName("debit")]
+        public T? Debit { get; set; }
+
+        [JsonPropertyName("credit")]
+        public T? Credit { get; set; }
+
+        [JsonPropertyName("date")]
+        public string Date { get; set; } = "";
+
+        [JsonPropertyName("count")]
+        public int Count { get; set; }
+
+        [JsonPropertyName("date_link")]
+        public string? DateLink { get; set; } = "";
+    }
+
+    public interface ITransactionService : IService<Transaction>
+    {
+        Task Validations(Transaction transaction);
         Task<API.Transactions.List.Result> List(API.Transactions.List.QueryParams? queryParams);
         Task<API.Transactions.ByDate.Detail> ListByDate(string date);
     }
@@ -64,7 +81,7 @@ namespace API
     {
         namespace ByDate
         {
-            public class Data : BudgetTracker.Defination.MongoObject
+            public class Data : MongoObject
             {
                 [JsonInclude]
                 [JsonPropertyName("amount")]
@@ -76,7 +93,7 @@ namespace API
 
                 [JsonInclude]
                 [JsonPropertyName("type")]
-                public BudgetTracker.Defination.TransactionType Type { get; private set; }
+                public TransactionType Type { get; private set; }
 
                 [JsonInclude]
                 [JsonPropertyName("from_bank")]
@@ -90,7 +107,7 @@ namespace API
                 [JsonPropertyName("category")]
                 public string Category { get; private set; }
 
-                public Data(double amount, string description, BudgetTracker.Defination.TransactionType type, string? fromBank, string? toBank, string category, string transactionId)
+                public Data(double amount, string description, TransactionType type, string? fromBank, string? toBank, string category, string transactionId)
                 {
                     Amount = string.Format("{0:#,##0.##}", amount);
                     Description = description;
