@@ -1,4 +1,4 @@
-namespace Application
+namespace BudgetTracker.Application
 {
     public static class DotEnv
     {

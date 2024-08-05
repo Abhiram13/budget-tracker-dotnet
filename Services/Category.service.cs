@@ -1,10 +1,7 @@
-using Microsoft.AspNetCore.Mvc;
-using Defination;
-using Services;
-using MongoDB.Driver;
-using MongoDB.Bson;
+using BudgetTracker.Defination;
+using BudgetTracker.Injectors;
 
-namespace Services;
+namespace BudgetTracker.Services;
 
 public class CategoryService : MongoServices<Category>, ICategoryService
 {

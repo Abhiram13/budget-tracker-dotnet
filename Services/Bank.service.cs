@@ -1,6 +1,7 @@
-using Defination;
+using BudgetTracker.Defination;
+using BudgetTracker.Injectors;
 
-namespace Services;
+namespace BudgetTracker.Services;
 
 public class BankService : MongoServices<Bank>, IBankService
 {
