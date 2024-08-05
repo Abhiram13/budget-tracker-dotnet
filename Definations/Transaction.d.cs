@@ -68,7 +68,7 @@ namespace API
             {
                 [JsonInclude]
                 [JsonPropertyName("amount")]
-                public string Amount { get; private set; }
+                public double Amount { get; private set; }
 
                 [JsonInclude]
                 [JsonPropertyName("description")]
@@ -92,7 +92,7 @@ namespace API
 
                 public Data(double amount, string description, BudgetTracker.Defination.TransactionType type, string? fromBank, string? toBank, string category, string transactionId)
                 {
-                    Amount = string.Format("{0:#,##0.##}", amount);
+                    Amount = amount;
                     Description = description;
                     Type = type;
                     FromBank = fromBank;
