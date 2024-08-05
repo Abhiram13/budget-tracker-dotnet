@@ -1,11 +1,11 @@
 using System.Net;
-using Application;
-using Services;
-using Defination;
-using Global;
-using MongoDB.Driver;
+using BudgetTracker.Services;
+using BudgetTracker.Injectors;
+using BudgetTracker.Defination;
+using BudgetTracker.Application;
 using Google.Cloud.Diagnostics.AspNetCore3;
 using Google.Cloud.Diagnostics.Common;
+using MongoDB.Driver;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +26,7 @@ builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IBankService, BankService>();
 builder.Services.AddScoped<IDueService, DueService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Logging.ClearProviders();
 builder.Services.AddGoogleDiagnosticsForAspNetCore();
 builder.WebHost.ConfigureKestrel((context, server) => {
@@ -35,8 +36,10 @@ builder.WebHost.ConfigureKestrel((context, server) => {
 });
 
 builder.WebHost.UseKestrel(options => options.AddServerHeader = false);
-builder.Services.AddCors(options => {
-    options.AddDefaultPolicy(builder => {
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(builder =>
+    {
         builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
     });
 });
@@ -51,9 +54,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.Use(async (context, next) => {    
+app.Use(async (context, next) =>
+{
     context.Response.Headers.ContentType = "application/json";
-    await next.Invoke();    
+    await next.Invoke();
 });
 app.UseCors();
 app.MapGet("/", async context => {
@@ -79,10 +83,12 @@ app.MapGet("/", async context => {
     }    
 });
 app.MapControllers();
-app.UseStatusCodePages(async context => {
+app.UseStatusCodePages(async context =>
+{
     if (context.HttpContext.Response.StatusCode == 404)
     {
-        ApiResponse<string> response = new ApiResponse<string> {
+        ApiResponse<string> response = new ApiResponse<string>
+        {
             StatusCode = HttpStatusCode.NotFound,
             Message = "Route not found",
         };
