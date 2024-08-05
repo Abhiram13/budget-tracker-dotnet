@@ -3,12 +3,17 @@ using BudgetTracker.Services;
 using BudgetTracker.Injectors;
 using BudgetTracker.Defination;
 using BudgetTracker.Application;
+using Google.Cloud.Diagnostics.AspNetCore3;
+using Google.Cloud.Diagnostics.Common;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 string root = Directory.GetCurrentDirectory();
 string dotenv = Path.Combine(root, ".env");
 DotEnv.Load(dotenv);
+
+// using ILoggerFactory _factory = LoggerFactory.Create(builder => builder.AddGoogle());
+// ILogger _logger = _factory.CreateLogger("Program");
 
 // Add services to the container.
 builder.Configuration.AddEnvironmentVariables().Build();
@@ -21,8 +26,9 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IBankService, BankService>();
 builder.Services.AddScoped<IDueService, DueService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.WebHost.ConfigureKestrel((context, server) =>
-{
+// builder.Logging.ClearProviders();
+// builder.Services.AddGoogleDiagnosticsForAspNetCore();
+builder.WebHost.ConfigureKestrel((context, server) => {
     string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3000";
     int PORT = int.Parse(portNumber);
     server.Listen(IPAddress.Any, PORT);
@@ -53,6 +59,28 @@ app.Use(async (context, next) =>
     await next.Invoke();
 });
 app.UseCors();
+// app.MapGet("/", async context => {
+//     try
+//     {   
+//         using (var collections = await Mongo.DB.ListCollectionNamesAsync())
+//         {
+//             List<string>? list = await collections.ToListAsync();
+
+//             if (list?.Count > 0)
+//             {
+//                 context.Response.StatusCode = (int)HttpStatusCode.OK;
+//                 return;
+//             }
+
+//             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+//         }
+//     }
+//     catch (Exception e)
+//     {
+//         _logger.LogCritical($"Exception at PING API.\nMessage: {e.Message}\nStack Trace: {e.StackTrace}");
+//         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+//     }    
+// });
 app.MapControllers();
 app.UseStatusCodePages(async context =>
 {

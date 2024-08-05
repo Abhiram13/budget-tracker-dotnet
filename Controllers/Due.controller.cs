@@ -8,25 +8,27 @@ namespace BudgetTracker.Controllers;
 [ApiController]
 public class DueController : ApiBaseController
 {
-    private readonly IDueService service;
+    private readonly IDueService _service;
+    private readonly ILogger _logger;
 
-    public DueController(IDueService _service)
+    public DueController(IDueService service, ILogger<DueController> logger)
     {
-        service = _service;
+        _service = service;
+        _logger = logger;
     }
 
     [HttpPost]
     public async Task<ApiResponse<string>> Insert([FromBody] Due due)
     {
         AsyncCallback<string> callback = async () => {
-            service.Validate(due);
-            await service.InserOne(due);
+            _service.Validate(due);
+            await _service.InserOne(due);
             return new ApiResponse<string>() {
                 Message = "Due inserted successfully",
                 StatusCode = System.Net.HttpStatusCode.Created
             };
         };
 
-        return await Handler<string>.Exception(callback);
+        return await Handler<string>.Exception(callback, _logger);
     }
 }

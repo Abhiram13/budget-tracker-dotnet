@@ -159,9 +159,9 @@ namespace API
 
             public class Result : TransactionStage
             {
-                [BsonElement("categories")]
-                [JsonPropertyName("categories")]
-                public CategoryData[] Categories { get; set; } = Array.Empty<CategoryData>();
+                // [BsonElement("categories")]
+                // [JsonPropertyName("categories")]
+                // public CategoryData[] Categories { get; set; } = Array.Empty<CategoryData>();
             }
 
             public class TransactionDetails
@@ -193,9 +193,9 @@ namespace API
                 [JsonPropertyName("count")]
                 public int Count { get; set; }
 
-                [BsonElement("date_link")]
-                [JsonPropertyName("date_link")]
-                public string? DateLink { get; set; } = "";
+                // [BsonElement("date_link")]
+                // [JsonPropertyName("date_link")]
+                // public string? DateLink { get; set; } = "";
             }
 
             public class CategoryData

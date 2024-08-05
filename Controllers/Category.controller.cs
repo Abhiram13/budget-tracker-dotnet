@@ -10,14 +10,16 @@ namespace BudgetTracker.Controllers;
 [ApiController]
 public class CategoryController : ApiBaseController
 {
-    private readonly ICategoryService service;
-    private readonly IMemoryCache cache;
-    private readonly string cacheKey = "category_cache";
+    private readonly ICategoryService _service;
+    private readonly IMemoryCache _cache;
+    private readonly ILogger _logger;
+    private readonly string _cacheKey = "category_cache";
 
-    public CategoryController(ICategoryService _service, IMemoryCache memoryCache)
+    public CategoryController(ICategoryService service, IMemoryCache memoryCache, ILogger<CategoryController> logger)
     {
-        service = _service;
-        cache = memoryCache;        
+        _service = service;
+        _cache = memoryCache;
+        _logger = logger;
     }
 
     [HttpPost]
@@ -25,7 +27,7 @@ public class CategoryController : ApiBaseController
     {
         AsyncCallback<string> callback = async () => {
             Category category = body;
-            await service.InserOne(category);
+            await _service.InserOne(category);
             return new ApiResponse<string>()
             {
                 Message = "Category inserted successfully",
@@ -33,14 +35,14 @@ public class CategoryController : ApiBaseController
             };
         };
 
-        return await Handler<string>.Exception(callback);
+        return await Handler<string>.Exception(callback, _logger);
     }
 
     [HttpGet("{id}")]
     public async Task<ApiResponse<Category>> SearcById(string id)
     {
         AsyncCallback<Category> callback = async () => {
-            Category category = await service.SearchById(id);
+            Category category = await _service.SearchById(id);
             return new ApiResponse<Category>()
             {
                 StatusCode = HttpStatusCode.OK,
@@ -48,17 +50,17 @@ public class CategoryController : ApiBaseController
             };
         };
 
-        return await Handler<Category>.Exception(callback);
+        return await Handler<Category>.Exception(callback, _logger);
     }
 
     [HttpGet]
     public async Task<ApiResponse<List<Category>>> GetList()
     {
         AsyncCallback<List<Category>> callback = async () => {
-            if (!cache.TryGetValue(cacheKey, out List<Category> categories))
+            if (!_cache.TryGetValue(_cacheKey, out List<Category> categories))
             {
-                categories = await service.GetList();
-                cache.Set(cacheKey, categories);
+                categories = await _service.GetList();
+                _cache.Set(_cacheKey, categories);
             }
 
             return new ApiResponse<List<Category>>()
@@ -68,14 +70,14 @@ public class CategoryController : ApiBaseController
             };
         };
 
-        return await Handler<List<Category>>.Exception(callback);
+        return await Handler<List<Category>>.Exception(callback, _logger);
     }
 
     [HttpPatch("{id}")]
     public async Task<ApiResponse<string>> Update(string id, [FromBody] dynamic body)
     {
         AsyncCallback<string> callback = async () => {
-            bool isUpdated = await service.UpdateById(id, body);
+            bool isUpdated = await _service.UpdateById(id, body);
             HttpStatusCode statusCode = isUpdated ? HttpStatusCode.Created : HttpStatusCode.NotModified;
             string message = isUpdated ? "Category updated successfully" : "Category couldn't be updated";
 
@@ -86,14 +88,14 @@ public class CategoryController : ApiBaseController
             };
         };
 
-        return await Handler<string>.Exception(callback);
+        return await Handler<string>.Exception(callback, _logger);
     }
 
     [HttpDelete("{id}")]
     public async Task<ApiResponse<string>> Delete(string id)
     {
         AsyncCallback<string> callback = async () => {
-            bool isDeleted = await service.DeleteById(id);
+            bool isDeleted = await _service.DeleteById(id);
             string message = isDeleted ? "Category deleted successfully" : "Cannot delete selected category";
             HttpStatusCode statusCode = isDeleted ? HttpStatusCode.OK : HttpStatusCode.NotModified;
 
@@ -104,6 +106,6 @@ public class CategoryController : ApiBaseController
             };
         };
 
-        return await Handler<string>.Exception(callback);
+        return await Handler<string>.Exception(callback, _logger);
     }
 }

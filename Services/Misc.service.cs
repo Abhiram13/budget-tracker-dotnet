@@ -40,7 +40,7 @@ namespace BudgetTracker.Services
             }
         }
 
-        public static async Task<ApiResponse<T>> Exception(AsyncCallback<T> callback)
+        public static async Task<ApiResponse<T>> Exception(AsyncCallback<T> callback, ILogger logger)
         {
             try
             {
@@ -48,6 +48,7 @@ namespace BudgetTracker.Services
             }
             catch (BadRequestException e)
             {
+                logger.LogError($"Bad Request Exception.\nMessage: {e.Message}\nStack Trace: {e.StackTrace}");
                 return new ApiResponse<T>()
                 {
                     StatusCode = HttpStatusCode.BadRequest,
@@ -56,6 +57,7 @@ namespace BudgetTracker.Services
             }
             catch (Exception e)
             {
+                logger.LogError($"Exception.\nMessage: {e.Message}\nStack Trace: {e.StackTrace}");
                 return new ApiResponse<T>()
                 {
                     StatusCode = HttpStatusCode.InternalServerError,

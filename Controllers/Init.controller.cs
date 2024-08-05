@@ -11,10 +11,12 @@ namespace BudgetTracker.Controllers;
 public class InitController : ControllerBase
 {
     private readonly IUserService service;
+    private readonly ILogger _logger;
 
-    public InitController(IUserService _service)
+    public InitController(IUserService _service, ILogger logger)
     {
         service = _service;
+        _logger = logger;
     }
 
     [HttpPost("login")]
@@ -35,6 +37,6 @@ public class InitController : ControllerBase
             };
         };
 
-        return await Handler<string>.Exception(callback);
+        return await Handler<string>.Exception(callback, _logger);
     }
 }
