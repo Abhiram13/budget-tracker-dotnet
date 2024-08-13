@@ -54,86 +54,68 @@ namespace BudgetTracker.Injectors
     {
         Task Validations(Defination.Transaction transaction);
         Task<API.Transactions.List.Result> List(API.Transactions.List.QueryParams? queryParams);
-        Task<API.Transactions.ByDate.Detail> ListByDate(string date);
+        Task<API.Transactions.ByDate.Data> ListByDate(string date);
     }
 }
 
-namespace API
+namespace BudgetTracker.API
 {
     namespace Transactions
     {
         namespace ByDate
         {
-            public class Data : BudgetTracker.Defination.MongoObject
-            {
-                [JsonInclude]
+            public class Transactions
+            {                
+                [BsonElement("amount")]
                 [JsonPropertyName("amount")]
-                public double Amount { get; private set; }
-
-                [JsonInclude]
+                public double Amount { get; set; }
+             
+                [BsonElement("description")]
                 [JsonPropertyName("description")]
-                public string Description { get; private set; } = "";
+                public string Description { get; set; } = string.Empty;
 
-                [JsonInclude]
+                [BsonElement("type")]
                 [JsonPropertyName("type")]
-                public BudgetTracker.Defination.TransactionType Type { get; private set; }
+                public Defination.TransactionType Type { get; set; }
 
-                [JsonInclude]
+                [BsonElement("id")]
+                [JsonPropertyName("id")]
+                public string TransactionId { get; set; } = string.Empty;
+
+                [BsonElement("from_bank")]
                 [JsonPropertyName("from_bank")]
-                public string? FromBank { get; private set; }
+                public string? FromBank { get; set; }
 
-                [JsonInclude]
+                [BsonElement("to_bank")]
                 [JsonPropertyName("to_bank")]
-                public string? ToBank { get; private set; }
+                public string? ToBank { get; set; }
 
-                [JsonInclude]
+                [BsonElement("category")]
                 [JsonPropertyName("category")]
-                public string Category { get; private set; }
-
-                public Data(double amount, string description, BudgetTracker.Defination.TransactionType type, string? fromBank, string? toBank, string category, string transactionId)
-                {
-                    Amount = amount;
-                    Description = description;
-                    Type = type;
-                    FromBank = fromBank;
-                    ToBank = toBank;
-                    Category = category;
-                    Id = transactionId;
-                }
+                public string Category { get; set; } = string.Empty;                
             }
 
-            public class GroupAmounts
+            public class Data
             {
+                [BsonElement("debit")]
                 [JsonPropertyName("debit")]
-                public double Debit { get; private set; }
+                public double Debit { get; set; }
 
+                [BsonElement("credit")]
                 [JsonPropertyName("credit")]
-                public double Credit { get; private set; }
+                public double Credit { get; set; }
 
+                [BsonElement("partial_debit")]
                 [JsonPropertyName("partial_debit")]
-                public double PartialDebit { get; private set; }
+                public double PartialDebit { get; set; }
 
+                [BsonElement("partial_credit")]
                 [JsonPropertyName("partial_credit")]
-                public double PartialCredit { get; private set; }
+                public double PartialCredit { get; set; }
 
-                public GroupAmounts(double debit, double credit, double partialDebit, double partialCredit)
-                {
-                    Debit = debit;
-                    Credit = credit;
-                    PartialCredit = partialCredit;
-                    PartialDebit = partialDebit;
-                }
-            }
-
-            public class Detail : GroupAmounts
-            {
+                [BsonElement("transactions")]
                 [JsonPropertyName("transactions")]
-                public List<Data> Transactions { get; private set; } = new List<Data>();
-
-                public Detail(GroupAmounts group, List<Data> transactions) : base(group.Debit, group.Credit, group.PartialDebit, group.PartialCredit)
-                {
-                    Transactions = transactions;
-                }
+                public List<Transactions> Transactions { get; set; } = new List<Transactions>();
             }
         }
 
@@ -144,9 +126,10 @@ namespace API
                 public string? date { get; set; }
                 public string? month { get; set; }
                 public string? year { get; set; }
+                public string? type { get; set; }
             }
 
-            public class TransactionStage
+            public class Result
             {
                 [BsonElement("total_count")]
                 [JsonPropertyName("total_count")]
@@ -154,14 +137,13 @@ namespace API
 
                 [BsonElement("transactions")]
                 [JsonPropertyName("transactions")]
-                public List<TransactionDetails> Transactions { get; set; } = new List<TransactionDetails>();
-            }
+                [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+                public List<TransactionDetails>? Transactions { get; set; } = null;
 
-            public class Result : TransactionStage
-            {
-                // [BsonElement("categories")]
-                // [JsonPropertyName("categories")]
-                // public CategoryData[] Categories { get; set; } = Array.Empty<CategoryData>();
+                [BsonElement("categories")]
+                [JsonPropertyName("categories")]
+                [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+                public List<CategoryData>? Categories { get; set; } = null;
             }
 
             public class TransactionDetails
@@ -192,10 +174,6 @@ namespace API
                 [BsonElement("count")]
                 [JsonPropertyName("count")]
                 public int Count { get; set; }
-
-                // [BsonElement("date_link")]
-                // [JsonPropertyName("date_link")]
-                // public string? DateLink { get; set; } = "";
             }
 
             public class CategoryData
@@ -213,7 +191,14 @@ namespace API
                     get { return _amount; }
                     set { _amount = Convert.ToDouble(string.Format("{0:0.00}", value)); }
                 }
-            } 
+            }
+
+            public class TransactionCount
+            {
+                [BsonElement("count")]
+                [JsonPropertyName("count")]
+                public int Count { get; set; }
+            }
 
             public class CategoryWiseData
             {

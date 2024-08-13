@@ -3,10 +3,10 @@ using System.Net;
 using BudgetTracker.Services;
 using BudgetTracker.Defination;
 using BudgetTracker.Injectors;
+using BudgetTracker.API.Transactions.ByDate;
 
 // Alias type - similar to Typescript's Type keyword
-using TransactionListResult = API.Transactions.List.Result;
-using TransactionDetails = API.Transactions.ByDate.Detail;
+using TransactionListResult = BudgetTracker.API.Transactions.List.Result;
 
 namespace BudgetTracker.Controllers;
 
@@ -40,13 +40,19 @@ public class TransactionsController : ApiBaseController
     }
 
     [HttpGet]
-    public async Task<ApiResponse<TransactionListResult>> Get([FromQuery] string? date, [FromQuery] string? month, [FromQuery] string? year)
+    public async Task<ApiResponse<TransactionListResult>> Get(
+        [FromQuery] string? date, 
+        [FromQuery] string? month, 
+        [FromQuery] string? year,
+        [FromQuery] string? type
+    )
     {
         AsyncCallback<TransactionListResult> callback = async () => {
             API.Transactions.List.QueryParams queryParams = new API.Transactions.List.QueryParams() {
                 date = date,
                 month = month,
-                year = year
+                year = year,
+                type = type
             };
 
             TransactionListResult list = await _service.List(queryParams);
@@ -61,18 +67,18 @@ public class TransactionsController : ApiBaseController
     }
 
     [HttpGet("{date}")]
-    public async Task<ApiResponse<TransactionDetails>> Get(string date)
+    public async Task<ApiResponse<Data>> Get(string date)
     {
-        AsyncCallback<TransactionDetails> callback = async () => {
-            TransactionDetails data = await _service.ListByDate(date);
+        AsyncCallback<Data> callback = async () => {
+            Data data = await _service.ListByDate(date);
 
-            return new ApiResponse<TransactionDetails>()
+            return new ApiResponse<Data>()
             {
                 StatusCode = HttpStatusCode.OK,
                 Result = data
             };
         };
 
-        return await Handler<TransactionDetails>.Exception(callback, _logger);
+        return await Handler<Data>.Exception(callback, _logger);
     }
 }

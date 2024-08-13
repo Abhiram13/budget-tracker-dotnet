@@ -22,7 +22,7 @@ namespace BudgetTracker.Services
         public static IMongoCollection<User> User { get { return Mongo.DB.GetCollection<User>("users"); } }
     }
 
-    public abstract class MongoServices<T> : IMongoService<T> where T : class
+    public abstract class MongoServices<T> : IMongoService<T> where T : MongoObject
     {
         protected IMongoCollection<T> collection;
 
