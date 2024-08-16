@@ -48,7 +48,7 @@ namespace BudgetTracker.Services
             }
             catch (BadRequestException e)
             {
-                logger.LogError($"Bad Request Exception.\nMessage: {e.Message}\nStack Trace: {e.StackTrace}");
+                logger?.Log(LogLevel.Error, e, "Bad request exception at controller callback");
                 return new ApiResponse<T>()
                 {
                     StatusCode = HttpStatusCode.BadRequest,
@@ -57,7 +57,7 @@ namespace BudgetTracker.Services
             }
             catch (Exception e)
             {
-                logger.LogError($"Exception.\nMessage: {e.Message}\nStack Trace: {e.StackTrace}");
+                logger?.Log(LogLevel.Error, e, "Exception at controller callback");
                 return new ApiResponse<T>()
                 {
                     StatusCode = HttpStatusCode.InternalServerError,

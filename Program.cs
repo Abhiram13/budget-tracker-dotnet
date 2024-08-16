@@ -60,15 +60,6 @@ WebApplication app = builder.Build();
 
 app.UseHttpsRedirection();
 app.UseCors();
-app.Use(async (context, next) =>
-{
-    context.Response.OnStarting(() => {
-        context.Response.Headers.Add("Content-Type", "application/json");
-        return Task.FromResult(0);
-    });
-
-    await next();
-});
 app.MapGet("/", async context => {
     try
     {
@@ -88,13 +79,11 @@ app.MapGet("/", async context => {
     catch (TypeInitializationException e)
     {
         logger?.Log(LogLevel.Critical, e, "Exception at PING API");
-        logger?.LogCritical($"Mongo Configuration Exception at PING API.\nMessage: {e.Message}\nStack Trace: {e.StackTrace}\nInner Exception: {e?.InnerException?.Message}");
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
     }
     catch (Exception e)
     {
         logger?.Log(LogLevel.Critical, e, "Exception at PING API");
-        logger?.LogCritical($"Exception at PING API.\nMessage: {e.Message}\nStack Trace: {e.StackTrace}\nInner Exception: {e?.InnerException?.Message}");
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
     }
 });
