@@ -17,21 +17,21 @@ namespace BudgetTracker.Services
         {
             if (!Enum.IsDefined(typeof(TransactionType), transaction.Type))
             {
-                throw new InvalidDataException("Transaction type is invalid");
+                throw new BadRequestException("Transaction type is invalid");
             }
 
             Regex descriptionRegex = new Regex(@"^[a-zA-Z0-9 ]*$");
 
             if (!descriptionRegex.IsMatch(transaction.Description))
             {
-                throw new InvalidDataException("Description contains invalid characters");
+                throw new BadRequestException($"Description contains invalid characters. Recieved value: {transaction.Description}");
             }
 
             Category? category = await SearchById(transaction.CategoryId, Collection.Category);
 
             if (category == null || string.IsNullOrEmpty(category.Name))
             {
-                throw new InvalidDataException("Invalid category id provided");
+                throw new BadRequestException("Invalid category id provided");
             }
 
             // Bank? fromBank =  await SearchById(transaction.FromBank, Collection.Bank);

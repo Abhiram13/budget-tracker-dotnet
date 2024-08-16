@@ -14,7 +14,7 @@ namespace BudgetTracker.Controllers;
 public class TransactionsController : ApiBaseController
 {
     private readonly ITransactionService _service;
-    private readonly ILogger _logger;
+    private readonly ILogger<TransactionsController> _logger;
 
     public TransactionsController(ITransactionService service, ILogger<TransactionsController> logger)
     {
