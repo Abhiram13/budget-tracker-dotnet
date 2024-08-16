@@ -57,12 +57,12 @@ namespace BudgetTracker.Services
                 TotalCount = await repository.GetCount()
             };
 
-            if (queryParams?.type == "transaction" || string.IsNullOrEmpty(queryParams?.type))
+            if (queryParams?.Type == "transaction" || string.IsNullOrEmpty(queryParams?.Type))
             {
                 result.Transactions = await repository.GetTransactionDetails();
             }
 
-            if (queryParams?.type == "category")
+            if (queryParams?.Type == "category")
             {
                 result.Categories = await repository.GetCategories();
             }

@@ -41,7 +41,6 @@ public class TransactionsController : ApiBaseController
 
     [HttpGet]
     public async Task<ApiResponse<TransactionListResult>> Get(
-        [FromQuery] string? date, 
         [FromQuery] string? month, 
         [FromQuery] string? year,
         [FromQuery] string? type
@@ -49,10 +48,9 @@ public class TransactionsController : ApiBaseController
     {
         AsyncCallback<TransactionListResult> callback = async () => {
             API.Transactions.List.QueryParams queryParams = new API.Transactions.List.QueryParams() {
-                date = date,
-                month = month,
-                year = year,
-                type = type
+                Month = month,
+                Year = year,
+                Type = type
             };
 
             TransactionListResult list = await _service.List(queryParams);

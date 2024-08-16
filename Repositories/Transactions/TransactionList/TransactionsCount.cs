@@ -22,9 +22,9 @@ namespace BudgetTracker.Repository
 
         private void UpdateDateFilter()
         {
-            if (!string.IsNullOrEmpty(_params?.month) && !string.IsNullOrEmpty(_params?.year))
+            if (!string.IsNullOrEmpty(_params?.Month) && !string.IsNullOrEmpty(_params?.Year))
             {
-                _dateFilter = $"{_params?.year}-{_params?.month}";
+                _dateFilter = $"{_params?.Year}-{_params?.Month}";
             }
             else
             {

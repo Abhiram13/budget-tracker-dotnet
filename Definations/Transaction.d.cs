@@ -123,10 +123,9 @@ namespace BudgetTracker.API
         {
             public class QueryParams
             {
-                public string? date { get; set; }
-                public string? month { get; set; }
-                public string? year { get; set; }
-                public string? type { get; set; }
+                public string? Month { get; set; }
+                public string? Year { get; set; }
+                public string? Type { get; set; }
             }
 
             public class Result
