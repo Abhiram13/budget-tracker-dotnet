@@ -72,7 +72,6 @@ app.Use(async (context, next) =>
 app.MapGet("/", async context => {
     try
     {
-        throw new TypeInitializationException("", new Exception());
         using (IAsyncCursor<string>? collections = await Mongo.DB.ListCollectionNamesAsync())
         {
             List<string>? list = await collections.ToListAsync();
@@ -91,18 +90,13 @@ app.MapGet("/", async context => {
         logger?.Log(LogLevel.Critical, e, "Exception at PING API");
         logger?.LogCritical($"Mongo Configuration Exception at PING API.\nMessage: {e.Message}\nStack Trace: {e.StackTrace}\nInner Exception: {e?.InnerException?.Message}");
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-        ApiResponse<string> response = new ApiResponse<string>()
-        {
-            StatusCode = HttpStatusCode.InternalServerError,
-            Message = "Cannot connecting to DB",
-        };
     }
     catch (Exception e)
     {
         logger?.Log(LogLevel.Critical, e, "Exception at PING API");
         logger?.LogCritical($"Exception at PING API.\nMessage: {e.Message}\nStack Trace: {e.StackTrace}\nInner Exception: {e?.InnerException?.Message}");
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-    }    
+    }
 });
 app.MapControllers();
 app.UseStatusCodePages(async context =>
