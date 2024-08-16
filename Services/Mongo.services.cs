@@ -22,7 +22,7 @@ namespace BudgetTracker.Services
         public static IMongoCollection<User> User { get { return Mongo.DB.GetCollection<User>("users"); } }
     }
 
-    public abstract class MongoServices<T> : IMongoService<T> where T : class
+    public abstract class MongoServices<T> : IMongoService<T> where T : MongoObject
     {
         protected IMongoCollection<T> collection;
 
@@ -49,7 +49,7 @@ namespace BudgetTracker.Services
             return await collection.Find(filter).FirstAsync();
         }
 
-        public async Task<C> SearchById<C>(string Id, IMongoCollection<C> _collection)
+        public async Task<C> SearchById<C>(string Id, IMongoCollection<C> _collection) where C : MongoObject
         {
             FilterDefinition<C> filter = Builders<C>.Filter.Eq("_id", ObjectId.Parse(Id));
 
