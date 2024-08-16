@@ -49,7 +49,7 @@ namespace BudgetTracker.Services
             return await collection.Find(filter).FirstAsync();
         }
 
-        public async Task<C> SearchById<C>(string Id, IMongoCollection<C> _collection)
+        public async Task<C> SearchById<C>(string Id, IMongoCollection<C> _collection) where C : MongoObject
         {
             FilterDefinition<C> filter = Builders<C>.Filter.Eq("_id", ObjectId.Parse(Id));
 

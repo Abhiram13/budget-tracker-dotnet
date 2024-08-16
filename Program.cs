@@ -13,8 +13,8 @@ string root = Directory.GetCurrentDirectory();
 string dotenv = Path.Combine(root, ".env");
 DotEnv.Load(dotenv);
 
-using ILoggerFactory _factory = LoggerFactory.Create(builder => builder.AddGoogle());
-ILogger _logger = _factory.CreateLogger("Program");
+ILoggerFactory factory;
+ILogger? logger = null;
 
 // Add services to the container.
 builder.Configuration.AddEnvironmentVariables().Build();
@@ -27,12 +27,24 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IBankService, BankService>();
 builder.Services.AddScoped<IDueService, DueService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Logging.ClearProviders();
-builder.Services.AddGoogleDiagnosticsForAspNetCore();
 builder.WebHost.ConfigureKestrel((context, server) => {
     string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3000";
     int PORT = int.Parse(portNumber);
     server.Listen(IPAddress.Any, PORT);
+});
+
+builder.Host.ConfigureLogging(logging => {
+    if (Environment.GetEnvironmentVariable("ENV") == "Development")
+    {
+        factory = LoggerFactory.Create(log => log.AddConsole());
+        logger = factory.CreateLogger("Program");
+        return;
+    }
+
+    factory = LoggerFactory.Create(log => log.AddGoogle());
+    logger = factory.CreateLogger("Program");
+    logging.Services.AddGoogleDiagnosticsForAspNetCore();
+    return;
 });
 
 builder.WebHost.UseKestrel(options => options.AddServerHeader = false);
@@ -46,23 +58,21 @@ builder.Services.AddCors(options =>
 
 WebApplication app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
 app.UseHttpsRedirection();
+app.UseCors();
 app.Use(async (context, next) =>
 {
-    context.Response.Headers.ContentType = "application/json";
-    await next.Invoke();
+    context.Response.OnStarting(() => {
+        context.Response.Headers.Add("Content-Type", "application/json");
+        return Task.FromResult(0);
+    });
+
+    await next();
 });
-app.UseCors();
 app.MapGet("/", async context => {
     try
-    {   
+    {
+        throw new TypeInitializationException("", new Exception());
         using (IAsyncCursor<string>? collections = await Mongo.DB.ListCollectionNamesAsync())
         {
             List<string>? list = await collections.ToListAsync();
@@ -76,9 +86,21 @@ app.MapGet("/", async context => {
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
         }
     }
+    catch (TypeInitializationException e)
+    {
+        logger?.Log(LogLevel.Critical, e, "Exception at PING API");
+        logger?.LogCritical($"Mongo Configuration Exception at PING API.\nMessage: {e.Message}\nStack Trace: {e.StackTrace}\nInner Exception: {e?.InnerException?.Message}");
+        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+        ApiResponse<string> response = new ApiResponse<string>()
+        {
+            StatusCode = HttpStatusCode.InternalServerError,
+            Message = "Cannot connecting to DB",
+        };
+    }
     catch (Exception e)
     {
-        _logger.LogCritical($"Exception at PING API.\nMessage: {e.Message}\nStack Trace: {e.StackTrace}");
+        logger?.Log(LogLevel.Critical, e, "Exception at PING API");
+        logger?.LogCritical($"Exception at PING API.\nMessage: {e.Message}\nStack Trace: {e.StackTrace}\nInner Exception: {e?.InnerException?.Message}");
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
     }    
 });
@@ -92,8 +114,7 @@ app.UseStatusCodePages(async context =>
             StatusCode = HttpStatusCode.NotFound,
             Message = "Route not found",
         };
-        byte[] bytes = ResponseBytes.Convert(response);
-        await context.HttpContext.Response.Body.WriteAsync(bytes, 0, bytes.Length);
+        await CustomResponse.Send(context.HttpContext, response);
     }
 });
 app.Run();
