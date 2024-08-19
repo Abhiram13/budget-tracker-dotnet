@@ -2,18 +2,22 @@ using BudgetTracker.Defination;
 using BudgetTracker.API.Transactions.List;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using System.Text.Json;
 
 namespace BudgetTracker.Repository
 {
     public partial class TransactionList
     {
-        private BsonDocument AddFieldsStage()
+        private BsonDocument BankAddFieldsStage()
         {
             BsonDocument pipeline = new BsonDocument {
                 {"$addFields", new BsonDocument {
-                    {"categoryId", new BsonDocument {
-                        {"$toObjectId", "$category_id"}
+                    {"bankId", new BsonDocument {
+                        {"$convert", new BsonDocument {
+                            {"input", "$from_bank"},
+                            {"to", "objectId"},
+                            {"onError", "null"},
+                            {"onNull", "null"}
+                        }}
                     }}
                 }}
             };
@@ -21,28 +25,28 @@ namespace BudgetTracker.Repository
             return pipeline;
         }
 
-        private BsonDocument CategoryLookUpStage()
+        private BsonDocument BankLookUpStage()
         {
             BsonDocument pipeline = new BsonDocument {
                 {"$lookup", new BsonDocument {
-                    {"from", "categories"},
-                    {"localField", "categoryId"},
+                    {"from", "banks"},
+                    {"localField", "bankId"},
                     {"foreignField", "_id"},
-                    {"as", "category"}
+                    {"as", "bank"}
                 }}
             };
 
             return pipeline;
         }
 
-        private BsonDocument CategoryGroupStage()
+        private BsonDocument BanksGroupStage()
         {
             BsonDocument pipeline = new BsonDocument {
                 {"$group", new BsonDocument {
-                    {"_id", "$category_id"},
-                    {"category", new BsonDocument {
+                    {"_id", "$from_bank"},
+                    {"name", new BsonDocument {
                         {"$first", new BsonDocument {
-                            {"$first", "$category.name"}
+                            {"$first", "$bank.name"}
                         }}
                     }},
                     {"amount", new BsonDocument {
@@ -60,7 +64,7 @@ namespace BudgetTracker.Repository
             return pipeline;
         }
 
-        private BsonDocument CategoryNonEmptyMatchStage()
+        private BsonDocument NonEmptyMatchStage()
         {
             BsonDocument pipeline = new BsonDocument {
                 {"$match", new BsonDocument {
@@ -73,7 +77,7 @@ namespace BudgetTracker.Repository
             return pipeline;
         }
 
-        private BsonDocument CategoryProjectStage()
+        private BsonDocument BankProjectStage()
         {
             BsonDocument pipeline = new BsonDocument {
                 {"$project", new BsonDocument {
@@ -82,22 +86,22 @@ namespace BudgetTracker.Repository
             };
 
             return pipeline;
-        }
+        }        
 
-        public async Task<List<CategoryData>> GetByCategories()
+        public async Task<List<BankData>> GetByBanks()
         {
             BsonDocument[] pipelines = new BsonDocument[] {
                 MatchStage(),
-                AddFieldsStage(),
-                CategoryLookUpStage(),
-                CategoryGroupStage(),
-                CategoryNonEmptyMatchStage(),
-                CategoryProjectStage(),
+                BankAddFieldsStage(),
+                BankLookUpStage(),
+                BanksGroupStage(),
+                NonEmptyMatchStage(),
+                BankProjectStage(),
             };
 
-            List<CategoryData> result = await _collection.Aggregate<CategoryData>(pipelines).ToListAsync();
+            List<BankData> list = await _collection.Aggregate<BankData>(pipelines).ToListAsync();
 
-            return result;
+            return list;
         }
     }
 }

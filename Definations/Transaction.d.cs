@@ -143,6 +143,11 @@ namespace BudgetTracker.API
                 [JsonPropertyName("categories")]
                 [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
                 public List<CategoryData>? Categories { get; set; } = null;
+
+                [BsonElement("banks")]
+                [JsonPropertyName("banks")]
+                [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+                public List<BankData>? Banks { get; set; } = null;
             }
 
             public class TransactionDetails
@@ -181,11 +186,28 @@ namespace BudgetTracker.API
 
                 [BsonElement("category")]
                 [JsonPropertyName("category")]
-                public string Key { get; set; } = string.Empty;
+                public string Name { get; set; } = string.Empty;
                 
                 [BsonElement("amount")]
                 [JsonPropertyName("amount")]
-                public double Value
+                public double Amount
+                {
+                    get { return _amount; }
+                    set { _amount = Convert.ToDouble(string.Format("{0:0.00}", value)); }
+                }
+            }
+
+            public class BankData
+            {
+                private double _amount;
+
+                [BsonElement("name")]
+                [JsonPropertyName("name")]
+                public string Name { get; set; } = string.Empty;
+                
+                [BsonElement("amount")]
+                [JsonPropertyName("amount")]
+                public double Amount
                 {
                     get { return _amount; }
                     set { _amount = Convert.ToDouble(string.Format("{0:0.00}", value)); }
@@ -198,13 +220,6 @@ namespace BudgetTracker.API
                 [JsonPropertyName("count")]
                 public int Count { get; set; }
             }
-
-            public class CategoryWiseData
-            {
-                [BsonElement("categories")]
-                [JsonPropertyName("categories")]
-                public CategoryData[] Categories { get; set; } = Array.Empty<CategoryData>();
-            } 
         }
     }
 }
