@@ -82,7 +82,7 @@ namespace BudgetTracker.Repository
             return pipeline;
         }
 
-        public async Task<List<TransactionDetails>> GetTransactionDetails()
+        public async Task<List<TransactionDetails>> GetByTransactions()
         {
             BsonDocument[] pipelines = new BsonDocument[] {
                 MatchStage(),

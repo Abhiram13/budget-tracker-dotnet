@@ -1,5 +1,3 @@
-using MongoDB.Bson;
-using MongoDB.Driver;
 using System.Text.RegularExpressions;
 using BudgetTracker.Injectors;
 using BudgetTracker.Defination;
@@ -59,12 +57,17 @@ namespace BudgetTracker.Services
 
             if (queryParams?.Type == "transaction" || string.IsNullOrEmpty(queryParams?.Type))
             {
-                result.Transactions = await repository.GetTransactionDetails();
+                result.Transactions = await repository.GetByTransactions();
             }
 
             if (queryParams?.Type == "category")
             {
-                result.Categories = await repository.GetCategories();
+                result.Categories = await repository.GetByCategories();
+            }
+
+            if (queryParams?.Type == "bank")
+            {
+                result.Banks = await repository.GetByBanks();
             }
 
             return result;
