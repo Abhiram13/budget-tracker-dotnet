@@ -7,9 +7,11 @@ using BudgetTracker.API.Transactions.ByDate;
 
 // Alias type - similar to Typescript's Type keyword
 using TransactionListResult = BudgetTracker.API.Transactions.List.Result;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BudgetTracker.Controllers;
 
+[Authorize(Roles = "user")]
 [ApiController]
 public class TransactionsController : ApiBaseController
 {

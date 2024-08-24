@@ -1,4 +1,5 @@
 using System.Net;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using BudgetTracker.Services;
 using BudgetTracker.Injectors;
 using BudgetTracker.Defination;
@@ -6,6 +7,8 @@ using BudgetTracker.Application;
 using Google.Cloud.Diagnostics.AspNetCore3;
 using Google.Cloud.Diagnostics.Common;
 using MongoDB.Driver;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +34,21 @@ builder.WebHost.ConfigureKestrel((context, server) => {
     string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3000";
     int PORT = int.Parse(portNumber);
     server.Listen(IPAddress.Any, PORT);
+});
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
+    string privateKey = "bAafd@A7d9#@F4*V!LHZs#ebKQrkE6pad2f3kj34c3dXy@";
+    byte[] key = Encoding.UTF8.GetBytes(privateKey);
+
+    options.IncludeErrorDetails = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidIssuer = "localhost.com",
+        ValidAudience = "localhost.com",
+        ValidateIssuer = true,
+        ValidateIssuerSigningKey = true,
+        ValidateAudience = true
+    };
 });
 
 builder.Host.ConfigureLogging(logging => {
@@ -58,6 +76,8 @@ builder.Services.AddCors(options =>
 
 WebApplication app = builder.Build();
 
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseHttpsRedirection();
 app.UseCors();
 app.MapGet("/", async context => {

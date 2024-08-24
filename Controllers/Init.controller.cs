@@ -3,6 +3,7 @@ using System.Net;
 using BudgetTracker.Services;
 using BudgetTracker.Defination;
 using BudgetTracker.Injectors;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BudgetTracker.Controllers;
 
@@ -11,9 +12,9 @@ namespace BudgetTracker.Controllers;
 public class InitController : ControllerBase
 {
     private readonly IUserService service;
-    private readonly ILogger _logger;
+    private readonly ILogger<InitController> _logger;
 
-    public InitController(IUserService _service, ILogger logger)
+    public InitController(IUserService _service, ILogger<InitController> logger)
     {
         service = _service;
         _logger = logger;
