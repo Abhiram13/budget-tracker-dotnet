@@ -6,6 +6,7 @@ using BudgetTracker.Application;
 using Google.Cloud.Diagnostics.AspNetCore3;
 using Google.Cloud.Diagnostics.Common;
 using MongoDB.Driver;
+using Microsoft.AspNetCore.Mvc;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +20,15 @@ ILogger? logger = null;
 // Add services to the container.
 builder.Configuration.AddEnvironmentVariables().Build();
 builder.Services.AddSingleton(s => Mongo.DB);
-builder.Services.AddControllers();
+builder.Services.AddControllers().ConfigureApiBehaviorOptions(options => {
+    options.SuppressModelStateInvalidFilter = false;
+    options.InvalidModelStateResponseFactory = action => {
+        var modelState = action.ModelState.Single();
+        string errorAt = modelState.Key;
+        string errorMessage = modelState.Value?.Errors[0]?.ErrorMessage ?? $"Something went wrong at {errorAt}";
+        return new BadRequestObjectResult(new ApiResponse<string> {Message = errorMessage, StatusCode = HttpStatusCode.BadRequest});
+    };
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
@@ -59,7 +68,6 @@ builder.Services.AddCors(options =>
 WebApplication app = builder.Build();
 
 app.UseHttpsRedirection();
-app.UseCors();
 app.MapGet("/", async context => {
     try
     {
@@ -87,17 +95,7 @@ app.MapGet("/", async context => {
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
     }
 });
+app.UseStatusCodePagesWithReExecute("/error/{0}");
+app.UseCors();
 app.MapControllers();
-app.UseStatusCodePages(async context =>
-{
-    if (context.HttpContext.Response.StatusCode == 404)
-    {
-        ApiResponse<string> response = new ApiResponse<string>
-        {
-            StatusCode = HttpStatusCode.NotFound,
-            Message = "Route not found",
-        };
-        await CustomResponse.Send(context.HttpContext, response);
-    }
-});
 app.Run();

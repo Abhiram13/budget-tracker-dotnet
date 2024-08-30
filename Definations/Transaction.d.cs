@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
@@ -22,6 +23,9 @@ namespace BudgetTracker.Defination
         [JsonPropertyName("type")]
         public TransactionType Type { get; set; } = TransactionType.Debit;
 
+        [Required]
+        [StringLength(10)]
+        [RegularExpression(@"^[A-Za-z\s]+$", ErrorMessage = "Please provide valid description :)")]
         [BsonElement("description")]
         [JsonPropertyName("description")]
         public string Description { get; set; } = "";
@@ -53,7 +57,7 @@ namespace BudgetTracker.Injectors
     public interface ITransactionService : IMongoService<Defination.Transaction>
     {
         Task Validations(Defination.Transaction transaction);
-        Task<API.Transactions.List.Result> List(API.Transactions.List.QueryParams? queryParams);
+        Task<API.Transactions.List.Result> List(API.Transactions.List.QueryParams? queryParams, CancellationToken? cancellationToken = default);
         Task<API.Transactions.ByDate.Data> ListByDate(string date);
     }
 }

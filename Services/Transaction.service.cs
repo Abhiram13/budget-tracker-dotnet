@@ -47,9 +47,9 @@ namespace BudgetTracker.Services
             // }
         }
 
-        public async Task<Result> List(QueryParams? queryParams)
+        public async Task<Result> List(QueryParams? queryParams, CancellationToken? cancellationToken)
         {
-            TransactionList repository = new TransactionList(queryParams, collection);
+            TransactionList repository = new TransactionList(queryParams, collection, cancellationToken);
             Result result = new Result
             {
                 TotalCount = await repository.GetCount()

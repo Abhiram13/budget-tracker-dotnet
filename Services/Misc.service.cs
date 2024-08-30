@@ -55,6 +55,15 @@ namespace BudgetTracker.Services
                     Message = $"Bad request. Message: {e.Message}",
                 };
             }
+            catch (OperationCanceledException e)
+            {
+                logger?.Log(LogLevel.Error, e, "Operation cancellation request exception at controller callback");
+                return new ApiResponse<T>()
+                {
+                    StatusCode = HttpStatusCode.Conflict,
+                    Message = $"Operation cancellation request. Message: {e.Message}",
+                };
+            }
             catch (Exception e)
             {
                 logger?.Log(LogLevel.Error, e, "Exception at controller callback");
