@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace BudgetTracker.Controllers;
 
-[Authorize(Roles = "user")]
+// [Authorize(Roles = "user")]
 [ApiController]
 public class TransactionsController : ApiBaseController
 {

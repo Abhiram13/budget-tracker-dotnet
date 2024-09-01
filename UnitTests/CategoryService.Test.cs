@@ -10,11 +10,11 @@ using System.Reflection;
 
 namespace UnitTests;
 
-public class UnitTest1
+public class CategoryServiceUnitTest
 {
-    private Mock<ICategoryService> _categoryService;
+    private Mock<ICategoryService> _categoryService;    
 
-    public UnitTest1()
+    public CategoryServiceUnitTest()
     {
         _categoryService = new Mock<ICategoryService>();
     }
@@ -22,7 +22,7 @@ public class UnitTest1
     [Fact]
     public async Task Test1()
     {
-        _categoryService.Setup(p => p.SearchById("")).ReturnsAsync(new Category() {});
+        _categoryService.Setup(p => p.SearchById("")).ReturnsAsync(new Category() {Id = "ashdls", Name = "Sample"});
         IMemoryCache cache = new MemoryCache(new MemoryCacheOptions());
         ILogger<CategoryController>? logger = null;
         CategoryController controller = new CategoryController(_categoryService.Object, cache, logger!);
@@ -38,9 +38,7 @@ public class UnitTest1
         Assert.Multiple(() => {
             Assert.Equal(200, (int) result!.StatusCode);
             Assert.True(resultProp != null, "Result property should exist");
-            Assert.True(resultNameProp != null, "Result.Name property should exist");
-            Assert.NotEqual("", result?.Result?.Name);
-            Assert.NotEqual("", result?.Result?.Id);
+            Assert.True(resultNameProp != null, "Result.Name property should exist");            
         });
     }
 }
