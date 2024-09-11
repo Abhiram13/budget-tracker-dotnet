@@ -19,17 +19,19 @@ namespace BudgetTracker.Defination
         [JsonPropertyName("amount")]
         public double Amount { get; set; } = 0;
 
+        [Required]
+        [EnumDataType(typeof(TransactionType), ErrorMessage = "Invalid transaction type.")]
         [BsonElement("type")]
         [JsonPropertyName("type")]
         public TransactionType Type { get; set; } = TransactionType.Debit;
 
         [Required]
-        [StringLength(10)]
-        [RegularExpression(@"^[A-Za-z\s]+$", ErrorMessage = "Please provide valid description :)")]
+        [RegularExpression(@"^[A-Za-z\s]+$", ErrorMessage = "Please provide valid description.")]
         [BsonElement("description")]
         [JsonPropertyName("description")]
         public string Description { get; set; } = "";
 
+        [Required]
         [BsonElement("date")]
         [JsonPropertyName("date")]
         public string Date { get; set; } = "";
@@ -46,6 +48,7 @@ namespace BudgetTracker.Defination
         [JsonPropertyName("to_bank")]
         public string ToBank { get; set; } = "";
 
+        [Required]
         [BsonElement("category_id")]
         [JsonPropertyName("category_id")]
         public string CategoryId { get; set; } = "";
