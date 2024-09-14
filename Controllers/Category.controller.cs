@@ -42,6 +42,8 @@ public class CategoryController : ApiBaseController
     public async Task<ApiResponse<Category>> SearchById(string id)
     {
         AsyncCallback<Category> callback = async () => {
+            if (string.IsNullOrEmpty(id)) { throw new BadRequestException("Category id is missing"); };
+                        
             Category category = await _service.SearchById(id);
             return new ApiResponse<Category>()
             {
