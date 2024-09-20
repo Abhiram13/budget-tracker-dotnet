@@ -10,6 +10,7 @@ using TransactionListResult = BudgetTracker.API.Transactions.List.Result;
 
 namespace BudgetTracker.Controllers;
 
+// [Authorize(Roles = "user")]
 [ApiController]
 public class TransactionsController : ApiBaseController
 {

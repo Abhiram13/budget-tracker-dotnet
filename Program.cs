@@ -2,6 +2,7 @@ using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using MongoDB.Driver;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using BudgetTracker.Services;
 using BudgetTracker.Injectors;
 using BudgetTracker.Defination;
@@ -9,6 +10,9 @@ using BudgetTracker.Application;
 using Google.Cloud.Diagnostics.AspNetCore3;
 using Google.Cloud.Diagnostics.Common;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using MongoDB.Driver;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +49,21 @@ builder.WebHost.ConfigureKestrel((context, server) => {
     int PORT = int.Parse(portNumber);
     server.Listen(IPAddress.Any, PORT);
 });
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
+    string privateKey = "bAafd@A7d9#@F4*V!LHZs#ebKQrkE6pad2f3kj34c3dXy@";
+    byte[] key = Encoding.UTF8.GetBytes(privateKey);
+
+    options.IncludeErrorDetails = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidIssuer = "localhost.com",
+        ValidAudience = "localhost.com",
+        ValidateIssuer = true,
+        ValidateIssuerSigningKey = true,
+        ValidateAudience = true
+    };
+});
 
 builder.Host.ConfigureLogging(logging => {
     if (Environment.GetEnvironmentVariable("ENV") == "Development")
@@ -71,6 +90,8 @@ builder.Services.AddCors(options =>
 
 WebApplication app = builder.Build();
 
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseHttpsRedirection();
 app.MapHealthChecks("/health", new HealthCheckOptions () {
     ResultStatusCodes = {

@@ -36,9 +36,11 @@ namespace BudgetTracker.Security
                 SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor {
                     Subject = new ClaimsIdentity(new Claim [] {
                         new Claim("user_id", $"{id}"),
-                        new Claim("user_name", $"{username}")
+                        new Claim("user_name", $"{username}"),
+                        new Claim(ClaimTypes.Role, "admin"),
                     }),
-                    Issuer = "Nagadi",
+                    Issuer = "localhost.com",
+                    Audience = "localhost.com",
                     Expires = DateTime.UtcNow.AddMinutes(10),
                     SigningCredentials = new SigningCredentials(symmetricSecurity, SecurityAlgorithms.HmacSha256Signature)
                 };

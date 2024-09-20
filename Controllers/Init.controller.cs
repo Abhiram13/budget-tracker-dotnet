@@ -3,6 +3,7 @@ using System.Net;
 using BudgetTracker.Services;
 using BudgetTracker.Defination;
 using BudgetTracker.Injectors;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BudgetTracker.Controllers;
 
