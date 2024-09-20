@@ -27,7 +27,7 @@ public class TransactionsController : ApiBaseController
     {
         AsyncCallback<string> callback = async () => {
             Transaction transaction = body;
-            await _service.Validations(body);
+            // await _service.Validations(body);
             await _service.InserOne(transaction);
             return new ApiResponse<string>()
             {
@@ -40,7 +40,7 @@ public class TransactionsController : ApiBaseController
     }
 
     [HttpGet]
-    public async Task<ApiResponse<TransactionListResult>> Get([FromQuery] string? month, [FromQuery] string? year, [FromQuery] string? type)
+    public async Task<ApiResponse<TransactionListResult>> Get([FromQuery] string? month, [FromQuery] string? year, [FromQuery] string? type, CancellationToken ct)
     {
         AsyncCallback<TransactionListResult> callback = async () => {
             API.Transactions.List.QueryParams queryParams = new API.Transactions.List.QueryParams() {
@@ -49,7 +49,7 @@ public class TransactionsController : ApiBaseController
                 Type = type
             };
 
-            TransactionListResult list = await _service.List(queryParams);
+            TransactionListResult list = await _service.List(queryParams, ct);
             return new ApiResponse<TransactionListResult>()
             {
                 StatusCode = HttpStatusCode.OK,

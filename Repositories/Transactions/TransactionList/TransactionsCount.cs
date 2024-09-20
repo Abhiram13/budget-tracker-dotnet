@@ -12,11 +12,13 @@ namespace BudgetTracker.Repository
         private string? _dateFilter;
         private readonly IMongoCollection<Transaction> _collection;
         private readonly QueryParams? _params;
+        private readonly CancellationToken? _cancellationToken;
 
-        public TransactionList(QueryParams? queryParams, IMongoCollection<Transaction> collection)
+        public TransactionList(QueryParams? queryParams, IMongoCollection<Transaction> collection, CancellationToken? cancellationToken = default)
         {
             _params = queryParams;
             _collection = collection;
+            _cancellationToken = cancellationToken;
             UpdateDateFilter();
         }
 
@@ -76,7 +78,7 @@ namespace BudgetTracker.Repository
                 CountStage()
             };
 
-            List<TransactionCount> list = await _collection.Aggregate<TransactionCount>(pipelines).ToListAsync();
+            List<TransactionCount> list = await _collection.Aggregate<TransactionCount>(pipelines).ToListAsync(_cancellationToken.GetValueOrDefault());
             int count = list.Count > 0 ? list[0].Count : 0;
 
             return count;
