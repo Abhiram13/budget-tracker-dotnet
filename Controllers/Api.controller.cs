@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
-using BudgetTracker.Attributes;
+using Microsoft.AspNetCore.Authorization;
+using BudgetTracker.Security.Authentication;
 
 namespace BudgetTracker.Controllers
 {
     [ApiController]
-    // [Authorization] // TODO (work on auth from client)
+    [Authorize(AuthenticationSchemes = ApiKeySchemaOptions.DefaultSchema)]
     [Route("[controller]", Name = "[controller]_")] // TODO (work on updating controllers start point)
     public abstract class ApiBaseController : ControllerBase { }
 }

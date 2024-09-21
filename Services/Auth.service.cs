@@ -1,39 +1,56 @@
+using System.Security.Claims;
+using System.Text.Encodings.Web;
 using BudgetTracker.Application;
 using BudgetTracker.Defination;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Options;
 
 namespace BudgetTracker.Security
 {
     namespace Authentication
     {
-        public class AuthenticationMiddleware
+        public class ApiKeySchemaOptions : AuthenticationSchemeOptions
         {
-            private readonly RequestDelegate _next;
+            public const string DefaultSchema = "ApiKeySchema";
+            public const string HeaderName = "API_KEY";
+        }
 
-            public AuthenticationMiddleware(RequestDelegate next)
+        public class ApiKeyHandler : AuthenticationHandler<ApiKeySchemaOptions>
+        {
+            public ApiKeyHandler(
+                IOptionsMonitor<ApiKeySchemaOptions> options, 
+                ILoggerFactory logger, 
+                UrlEncoder encoder, 
+                ISystemClock clock
+            ) : base(options, logger, encoder, clock) { }
+
+            protected override Task<AuthenticateResult> HandleAuthenticateAsync()
             {
-                _next = next;
-            }
+                bool isHeaderExist = Request.Headers.ContainsKey(ApiKeySchemaOptions.HeaderName);
 
-            public async Task InvokeAsync(HttpContext context)
-            {
-                string? headerKey = context.Request.Headers["API_KEY"];
-                string? APIKEY = Environment.GetEnvironmentVariable("API_KEY");
+                if (!isHeaderExist) 
+                {              
+                    return Task.FromResult(AuthenticateResult.Fail("No Key"));
+                }
 
-                if (headerKey != APIKEY)
+                string HEADER_API_KEY = Request.Headers[ApiKeySchemaOptions.HeaderName];
+                string? API_KEY = Environment.GetEnvironmentVariable("API_KEY");
+
+                if (HEADER_API_KEY != API_KEY)
                 {
-                    context.Response.StatusCode = 401;
-                    ApiResponse<string> response = new ApiResponse<string>()
-                    {
-                        Message = "Invalid API key provided",
-                        StatusCode = System.Net.HttpStatusCode.Unauthorized
-                    };
-                    byte[] bytes = ResponseBytes.Convert(response);
-                    await context.Response.Body.WriteAsync(bytes);
+                    return Task.FromResult(AuthenticateResult.Fail("Invalid key provided"));
                 }
-                else
+
+                List<Claim> claims = new ()
                 {
-                    await _next(context);
-                }
+                    new (ClaimTypes.Name, "Api User")
+                };
+
+                ClaimsIdentity identity = new (claims, Scheme.Name);
+                ClaimsPrincipal principal = new (identity);
+                AuthenticationTicket ticket = new AuthenticationTicket(principal, Scheme.Name);
+
+                return Task.FromResult(AuthenticateResult.Success(ticket));
             }
         }
     }
