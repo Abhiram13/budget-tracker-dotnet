@@ -3,6 +3,7 @@ using System.Net;
 using BudgetTracker.Services;
 using BudgetTracker.Defination;
 using BudgetTracker.Injectors;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BudgetTracker.Controllers;
 
@@ -11,9 +12,9 @@ namespace BudgetTracker.Controllers;
 public class InitController : ControllerBase
 {
     private readonly IUserService service;
-    private readonly ILogger _logger;
+    private readonly ILogger<InitController> _logger;
 
-    public InitController(IUserService _service, ILogger logger)
+    public InitController(IUserService _service, ILogger<InitController> logger)
     {
         service = _service;
         _logger = logger;
@@ -38,5 +39,31 @@ public class InitController : ControllerBase
         };
 
         return await Handler<string>.Exception(callback, _logger);
+    }
+
+    [Route("error/{code}")]
+    public IActionResult Error(int code)
+    {
+        Dictionary<int, string> messages = new()
+        {
+            { 400, "Invalid data provided" },
+            { 401, "Unauthorise" },
+            { 403, "The current user is forbidden to access this content" },
+            { 404, "Route not found" },
+            { 405, "Method not allowed" },
+            { 500, "Something went wrong" }
+        };
+
+        Console.WriteLine(code);
+        
+        switch (code)
+        {
+            case 400: return BadRequest(new ApiResponse<string> { Message = messages[code], StatusCode = HttpStatusCode.BadRequest });
+            case 401: return Unauthorized(new ApiResponse<string> { Message = messages[code], StatusCode = HttpStatusCode.Unauthorized });
+            case 403: return new ObjectResult(403) {Value = new ApiResponse<string> { Message = messages[code], StatusCode = HttpStatusCode.Forbidden }};
+            case 404: return NotFound(new ApiResponse<string> { Message = messages[code], StatusCode = HttpStatusCode.NotFound });
+            case 405: return new ObjectResult(405) {Value = new ApiResponse<string> { Message = messages[code], StatusCode = HttpStatusCode.MethodNotAllowed }};
+            default: return Ok(new ApiResponse<string> { StatusCode = HttpStatusCode.OK });
+        }
     }
 }

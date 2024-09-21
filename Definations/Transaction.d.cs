@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
@@ -18,14 +19,19 @@ namespace BudgetTracker.Defination
         [JsonPropertyName("amount")]
         public double Amount { get; set; } = 0;
 
+        [Required]
+        [EnumDataType(typeof(TransactionType), ErrorMessage = "Invalid transaction type.")]
         [BsonElement("type")]
         [JsonPropertyName("type")]
         public TransactionType Type { get; set; } = TransactionType.Debit;
 
+        [Required]
+        [RegularExpression(@"^[A-Za-z\s]+$", ErrorMessage = "Please provide valid description.")]
         [BsonElement("description")]
         [JsonPropertyName("description")]
         public string Description { get; set; } = "";
 
+        [Required]
         [BsonElement("date")]
         [JsonPropertyName("date")]
         public string Date { get; set; } = "";
@@ -42,6 +48,7 @@ namespace BudgetTracker.Defination
         [JsonPropertyName("to_bank")]
         public string ToBank { get; set; } = "";
 
+        [Required]
         [BsonElement("category_id")]
         [JsonPropertyName("category_id")]
         public string CategoryId { get; set; } = "";
@@ -53,7 +60,7 @@ namespace BudgetTracker.Injectors
     public interface ITransactionService : IMongoService<Defination.Transaction>
     {
         Task Validations(Defination.Transaction transaction);
-        Task<API.Transactions.List.Result> List(API.Transactions.List.QueryParams? queryParams);
+        Task<API.Transactions.List.Result> List(API.Transactions.List.QueryParams? queryParams, CancellationToken? cancellationToken = default);
         Task<API.Transactions.ByDate.Data> ListByDate(string date);
     }
 }
