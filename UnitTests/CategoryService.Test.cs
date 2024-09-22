@@ -55,6 +55,7 @@ public class CategoryServiceUnitTest
         Assert.Multiple(() => {
             Assert.Equal(400, (int) result!.StatusCode);
             Assert.NotNull(result.Message);
+            Assert.NotEmpty(result.Message);
         });
     }
 }

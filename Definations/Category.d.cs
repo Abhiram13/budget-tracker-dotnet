@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
@@ -8,6 +9,7 @@ namespace BudgetTracker.Defination
     {
         [BsonElement("name")]
         [JsonPropertyName("name")]
+        [RegularExpression(@"^[A-Za-z\s]+$", ErrorMessage = "Please provide valid description.")]
         public string Name { get; set; } = "";
     }
 }
