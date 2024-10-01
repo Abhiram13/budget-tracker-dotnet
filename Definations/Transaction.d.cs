@@ -32,6 +32,7 @@ namespace BudgetTracker.Defination
         public string Description { get; set; } = "";
 
         [Required]
+        [RegularExpression(@"^\d{4}-\d{2}-\d{2}$", ErrorMessage = "Please provide valid date.")]
         [BsonElement("date")]
         [JsonPropertyName("date")]
         public string Date { get; set; } = "";

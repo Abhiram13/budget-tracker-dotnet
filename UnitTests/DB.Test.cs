@@ -58,6 +58,9 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 [CollectionDefinition("category")]
 public class CategoryCollection : ICollectionFixture<MongoDBFixture> { }
 
+[CollectionDefinition("transaction")]
+public class TransactionCollection : ICollectionFixture<MongoDBFixture> { }
+
 public abstract class IntegrationTests
 {
     protected readonly MongoDBFixture _fixture;

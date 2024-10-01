@@ -32,7 +32,6 @@ public class CategoryServiceUnitTest : IntegrationTests
         _logger = null;
         _controller = new (_categoryService.Object, _cache, _logger!);
         _collection = fixture.Database.GetCollection<Category>("categories");
-
         _client.DefaultRequestHeaders.Add("API_KEY", _API_KEY);
     }
 
