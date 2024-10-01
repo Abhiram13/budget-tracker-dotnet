@@ -7,6 +7,7 @@ namespace BudgetTracker.Defination
 {
     public class Category : MongoObject
     {
+        [Required]
         [BsonElement("name")]
         [JsonPropertyName("name")]
         [RegularExpression(@"^[A-Za-z\s]+$", ErrorMessage = "Please provide valid description.")]

@@ -43,7 +43,6 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
     protected override void ConfigureWebHost(Microsoft.AspNetCore.Hosting.IWebHostBuilder builder)
     {
-        Console.WriteLine("this was added");        
         builder.ConfigureTestServices(services => {
             var dbDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IMongoDatabase));        
             services.Remove(dbDescriptor);
@@ -56,42 +55,25 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
     }
 }
 
-public class TestClass : IClassFixture<MongoDBFixture>
-{
-    private readonly MongoDBFixture _fixture;
-    private readonly HttpClient _client;
+[CollectionDefinition("category")]
+public class CategoryCollection : ICollectionFixture<MongoDBFixture> { }
 
-    public TestClass(MongoDBFixture fixture)
+public abstract class IntegrationTests
+{
+    protected readonly MongoDBFixture _fixture;
+    protected readonly HttpClient _client;
+    protected readonly string _API_KEY = "MJAhQCrhaP5bJXUaywYUUhKgEUWb5C6HFimIpIg9zsOZCvHugRH9lgAlDi1MZ31iel5R";
+
+    public IntegrationTests(MongoDBFixture fixture)
     {
         _fixture = fixture;
         Environment.SetEnvironmentVariable("PORT", "3002");
         Environment.SetEnvironmentVariable("ENV", "Test");
         Environment.SetEnvironmentVariable("DB", "admin");
-        Environment.SetEnvironmentVariable("API_KEY", "MJAhQCrhaP5bJXUaywYUUhKgEUWb5C6HFimIpIg9zsOZCvHugRH9lgAlDi1MZ31iel5R");
-        // var factory = new WebApplicationFactory<Program>()
-        //     .WithWebHostBuilder(builder => {
-        //         builder.ConfigureServices((services) => {
-        //             services.RemoveAll<IMongoClient>();
-        //             services.AddSingleton(_ => _fixture.Database);
-        //         });
-        //     });
+        Environment.SetEnvironmentVariable("API_KEY", _API_KEY);
+
         CustomWebApplicationFactory factory = new CustomWebApplicationFactory(_fixture);
         
-        _client = factory.CreateClient();        
-    }
-
-    [Fact]
-    public async Task Init()
-    {
-        // var db = _fixture.Database;
-        // var collection = db.GetCollection<Category>("categories");
-        // await collection.InsertOneAsync(new Category() {Name = "Sample category"});
-
-        _client.DefaultRequestHeaders.Add("API_KEY", "MJAhQCrhaP5bJXUaywYUUhKgEUWb5C6HFimIpIg9zsOZCvHugRH9lgAlDi1MZ31iel5R");
-        HttpResponseMessage data = await _client.GetAsync("/category");
-        string result = await data.Content.ReadAsStringAsync();
-
-        Console.WriteLine(data.StatusCode);
-        Console.WriteLine(result);
+        _client = factory.CreateClient();
     }
 }
