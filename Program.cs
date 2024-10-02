@@ -2,7 +2,6 @@ using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using MongoDB.Driver;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using BudgetTracker.Services;
 using BudgetTracker.Injectors;
 using BudgetTracker.Defination;
@@ -23,7 +22,7 @@ ILogger? logger = null;
 
 // Add services to the container.
 builder.Configuration.AddEnvironmentVariables().Build();
-builder.Services.AddSingleton(s => Mongo.DB);
+builder.Services.AddSingleton(_ => Mongo.DB);
 builder.Services.AddControllers()
     .ConfigureApiBehaviorOptions(options => {
         options.SuppressModelStateInvalidFilter = false;
@@ -48,26 +47,11 @@ builder.WebHost.ConfigureKestrel((context, server) => {
     server.Listen(IPAddress.Any, PORT);
 });
 
-// builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
-//     string privateKey = "bAafd@A7d9#@F4*V!LHZs#ebKQrkE6pad2f3kj34c3dXy@";
-//     byte[] key = Encoding.UTF8.GetBytes(privateKey);
-
-//     options.IncludeErrorDetails = true;
-//     options.TokenValidationParameters = new TokenValidationParameters
-//     {
-//         IssuerSigningKey = new SymmetricSecurityKey(key),
-//         ValidIssuer = "localhost.com",
-//         ValidAudience = "localhost.com",
-//         ValidateIssuer = true,
-//         ValidateIssuerSigningKey = true,
-//         ValidateAudience = true
-//     };
-// });
 
 builder.Services.AddAuthentication().AddScheme<ApiKeySchemaOptions, ApiKeyHandler>(ApiKeySchemaOptions.DefaultSchema, options => {});
 
 builder.Host.ConfigureLogging(logging => {
-    if (Environment.GetEnvironmentVariable("ENV") == "Development")
+    if (Environment.GetEnvironmentVariable("ENV") == "Development" || Environment.GetEnvironmentVariable("ENV") == "Test")
     {
         factory = LoggerFactory.Create(log => log.AddConsole());
         logger = factory.CreateLogger("Program");
@@ -105,3 +89,5 @@ app.UseStatusCodePagesWithReExecute("/error/{0}");
 app.UseCors();
 app.MapControllers();
 app.Run();
+
+public partial class Program { }
