@@ -94,6 +94,12 @@ namespace BudgetTracker.Repository
 
             List<BsonDocument> results = await _collection.Aggregate<BsonDocument>(pipelines).ToListAsync();
             BsonDocument document = results.Count > 0 ? results[0] : new BsonDocument();
+
+            if (document.Count() == 0)
+            {
+                return new List<TransactionDetails>();
+            }
+
             string json = document["transactions"].ToJson();
             List<TransactionDetails>? list = JsonSerializer.Deserialize<List<TransactionDetails>>(json);
             return list ?? new List<TransactionDetails>();

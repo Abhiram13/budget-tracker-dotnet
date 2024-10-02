@@ -17,7 +17,10 @@ namespace UnitTests;
 
 #pragma warning disable
 
+// dotnet test --filter "Category=Transaction"
+
 [Collection("transaction")]
+[Trait("Category", "Transaction")]
 public class TransactionServiceUnitTest : IntegrationTests
 {
     private readonly Mock<ITransactionService> _transactionService;
@@ -44,7 +47,7 @@ public class TransactionServiceUnitTest : IntegrationTests
             Amount = 23,
             CategoryId = "665aa292930ad7888c6766f9",
             Date = "2024-09-18",
-            Description = "Test transaction",
+            Description = "Sample test transaction",
             Due = false,
             FromBank = "",
             ToBank = "",
@@ -55,7 +58,7 @@ public class TransactionServiceUnitTest : IntegrationTests
         HttpResponseMessage data = await _client.PostAsync("transactions", payload1);
         string response = await data.Content.ReadAsStringAsync();
         ApiResponse<string> apiResponse = JsonSerializer.Deserialize<ApiResponse<string>>(response);
-        FilterDefinition<Transaction> descriptionFilter = Builders<Transaction>.Filter.Eq(t => t.Description, "Test transaction");
+        FilterDefinition<Transaction> descriptionFilter = Builders<Transaction>.Filter.Eq(t => t.Description, "Sample test transaction");
         FilterDefinition<Transaction> dateFilter = Builders<Transaction>.Filter.Eq(t => t.Date, "2024-09-18");
         List<Transaction> list = await _collection.Find(descriptionFilter & dateFilter).ToListAsync();
 
@@ -63,7 +66,7 @@ public class TransactionServiceUnitTest : IntegrationTests
         Assert.NotNull(apiResponse.Message);
         Assert.True(list.Count > 0);
         Assert.Equal("2024-09-18", list?[0].Date);
-        Assert.Equal("Test description", list?[0].Description);
+        Assert.Equal("Sample test transaction", list?[0].Description);
     }
 
     [Theory]
@@ -121,5 +124,41 @@ public class TransactionServiceUnitTest : IntegrationTests
         Assert.Equal(400, (int) apiResponse.StatusCode);
         Assert.NotNull(apiResponse.Message);
         Assert.True(list.Count == 0);
+    }
+
+    [Fact]
+    public async Task Positive_Transactions_List()
+    {
+        HttpResponseMessage httpResponse = await _client.GetAsync("/transactions?type=transaction&month=09&year=2024");
+        string jsonResponse = await httpResponse.Content.ReadAsStringAsync();
+        ApiResponse<Result> apiResponse = JsonSerializer.Deserialize<ApiResponse<Result>>(jsonResponse);
+        PropertyInfo categoryProp = apiResponse.Result.GetType().GetProperty("categories");
+        PropertyInfo banksProp = apiResponse.Result.GetType().GetProperty("banks");
+
+        Assert.NotNull(apiResponse.Result);
+        Assert.Equal(200, (int) apiResponse.StatusCode);
+        Assert.NotNull(apiResponse.Result.Transactions);
+        Assert.NotNull(apiResponse.Result.TotalCount);
+        Assert.Null(categoryProp);
+        Assert.Null(banksProp);
+        Assert.True(apiResponse.Result.Transactions.Count > 0);
+    }
+
+    [Fact]
+    public async Task Test_Transactions_List_With_New_Month()
+    {
+        HttpResponseMessage httpResponse = await _client.GetAsync("/transactions?type=transaction&month=10&year=2024");
+        string jsonResponse = await httpResponse.Content.ReadAsStringAsync();
+        ApiResponse<Result> apiResponse = JsonSerializer.Deserialize<ApiResponse<Result>>(jsonResponse);
+        PropertyInfo categoryProp = apiResponse.Result.GetType().GetProperty("categories");
+        PropertyInfo banksProp = apiResponse.Result.GetType().GetProperty("banks");
+
+        Assert.NotNull(apiResponse.Result);
+        Assert.Equal(200, (int) apiResponse.StatusCode);
+        Assert.NotNull(apiResponse.Result.Transactions);
+        Assert.NotNull(apiResponse.Result.TotalCount);
+        Assert.Null(categoryProp);
+        Assert.Null(banksProp);
+        Assert.True(apiResponse.Result.Transactions.Count == 0);
     }
 }
