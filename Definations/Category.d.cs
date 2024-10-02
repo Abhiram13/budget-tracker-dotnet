@@ -10,7 +10,7 @@ namespace BudgetTracker.Defination
         [Required]
         [BsonElement("name")]
         [JsonPropertyName("name")]
-        [RegularExpression(@"^[A-Za-z\s]+$", ErrorMessage = "Please provide valid description.")]
+        [RegularExpression(@"^[A-Za-z\s]+$", ErrorMessage = "Please provide valid category name.")]
         public string Name { get; set; } = "";
     }
 }
