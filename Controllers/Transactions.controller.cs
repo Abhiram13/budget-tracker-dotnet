@@ -4,6 +4,7 @@ using BudgetTracker.Services;
 using BudgetTracker.Defination;
 using BudgetTracker.Injectors;
 using BudgetTracker.API.Transactions.ByDate;
+using BudgetTracker.Application;
 
 // Alias type - similar to Typescript's Type keyword
 using TransactionListResult = BudgetTracker.API.Transactions.List.Result;
@@ -74,5 +75,23 @@ public class TransactionsController : ApiBaseController
         };
 
         return await Handler<Data>.Exception(callback, _logger);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ApiResponse<string>> Update(string id, [FromBody] dynamic body)
+    {
+        AsyncCallback<string> callback = async () => {
+            bool isUpdated = await _service.UpdateById(id, body);
+            HttpStatusCode statusCode = isUpdated ? HttpStatusCode.Created : HttpStatusCode.NotModified;
+            string message = isUpdated ? "Transaction updated successfully" : "Transaction couldn't be updated";
+
+            return new ApiResponse<string>()
+            {
+                Message = message,
+                StatusCode = statusCode,
+            };
+        };
+
+        return await Handler<string>.Exception(callback, _logger);
     }
 }
