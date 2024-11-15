@@ -4,7 +4,6 @@ using BudgetTracker.Services;
 using BudgetTracker.Defination;
 using BudgetTracker.Injectors;
 using BudgetTracker.API.Transactions.ByDate;
-using BudgetTracker.Application;
 
 // Alias type - similar to Typescript's Type keyword
 using TransactionListResult = BudgetTracker.API.Transactions.List.Result;
@@ -93,5 +92,24 @@ public class TransactionsController : ApiBaseController
         };
 
         return await Handler<string>.Exception(callback, _logger);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ApiResponse<string>> Delete(string id)
+    {
+        async Task<ApiResponse<string>> Callback()
+        {
+            bool isDeleted = await _service.DeleteById(id);
+            HttpStatusCode statusCode = isDeleted ? HttpStatusCode.OK : HttpStatusCode.NotModified;
+            string message = isDeleted ? "Transaction deleted successfully" : "Transaction couldn't be deleted";
+
+            return new ApiResponse<string>()
+            {
+                Message = message,
+                StatusCode = statusCode,
+            };
+        }
+        
+        return await Handler<string>.Exception(Callback, _logger);
     }
 }

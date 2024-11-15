@@ -9,6 +9,7 @@ using BudgetTracker.Application;
 using BudgetTracker.Security.Authentication;
 using Google.Cloud.Diagnostics.AspNetCore3;
 using Google.Cloud.Diagnostics.Common;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -27,12 +28,13 @@ builder.Services.AddControllers()
     .ConfigureApiBehaviorOptions(options => {
         options.SuppressModelStateInvalidFilter = false;
         options.InvalidModelStateResponseFactory = action => {
-            var modelState = action.ModelState.FirstOrDefault();
+            KeyValuePair<string, ModelStateEntry> modelState = action.ModelState.FirstOrDefault();
             string errorAt = modelState.Key;
             string errorMessage = modelState.Value?.Errors[0]?.ErrorMessage ?? $"Something went wrong at {errorAt}";
             return new BadRequestObjectResult(new ApiResponse<string> {Message = errorMessage, StatusCode = HttpStatusCode.BadRequest});
         };
     });
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddMemoryCache();
 builder.Services.AddRouting();
@@ -43,10 +45,9 @@ builder.Services.AddScoped<IDueService, DueService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.WebHost.ConfigureKestrel((context, server) => {
     string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3000";
-    int PORT = int.Parse(portNumber);
-    server.Listen(IPAddress.Any, PORT);
+    int port = int.Parse(portNumber);
+    server.Listen(IPAddress.Any, port);
 });
-
 
 builder.Services.AddAuthentication().AddScheme<ApiKeySchemaOptions, ApiKeyHandler>(ApiKeySchemaOptions.DefaultSchema, options => {});
 
