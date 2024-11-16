@@ -60,7 +60,7 @@ public class TransactionsController : ApiBaseController
         return await Handler<TransactionListResult>.Exception(callback, _logger);
     }
 
-    [HttpGet("{date}")]
+    [HttpGet("date/{date}")]
     public async Task<ApiResponse<Data>> Get(string date)
     {
         AsyncCallback<Data> callback = async () => {
@@ -76,7 +76,7 @@ public class TransactionsController : ApiBaseController
         return await Handler<Data>.Exception(callback, _logger);
     }
 
-    [HttpPut("{id}")]
+    [HttpPatch("{id}")]
     public async Task<ApiResponse<string>> Update(string id, [FromBody] dynamic body)
     {
         AsyncCallback<string> callback = async () => {
@@ -111,5 +111,22 @@ public class TransactionsController : ApiBaseController
         }
         
         return await Handler<string>.Exception(Callback, _logger);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ApiResponse<Transaction>> GetById(string id)
+    {
+        async Task<ApiResponse<Transaction>> Callback()
+        {
+            Transaction transaction = await _service.SearchById(id);
+
+            return new ApiResponse<Transaction>()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Result = transaction
+            };
+        }
+        
+        return await Handler<Transaction>.Exception(Callback, _logger);
     }
 }

@@ -177,8 +177,7 @@ namespace BudgetTracker.Repository
             };
 
             List<Data> list = await _collection.Aggregate<Data>(pipelines).ToListAsync();
-
-            return list?[0] ?? new Data();
+            return list.FirstOrDefault() ?? new Data();
         }
     }
 }
