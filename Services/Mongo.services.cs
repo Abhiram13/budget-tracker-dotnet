@@ -70,7 +70,7 @@ namespace BudgetTracker.Services
             Dictionary<string, string> dictionary = JsonSerializer.Deserialize<Dictionary<string, string>>(document);
             UpdateDefinition<T>? update = null;
 
-            foreach (var prop in dictionary)
+            foreach (KeyValuePair<string, string> prop in dictionary)
             {
                 if (update == null)
                 {
@@ -83,7 +83,6 @@ namespace BudgetTracker.Services
             }
 
             UpdateResult result = await collection.UpdateOneAsync(filter, update);
-
             return result.ModifiedCount > 0;
         }
     }

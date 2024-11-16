@@ -60,7 +60,7 @@ public class TransactionsController : ApiBaseController
         return await Handler<TransactionListResult>.Exception(callback, _logger);
     }
 
-    [HttpGet("{date}")]
+    [HttpGet("date/{date}")]
     public async Task<ApiResponse<Data>> Get(string date)
     {
         AsyncCallback<Data> callback = async () => {
@@ -74,5 +74,59 @@ public class TransactionsController : ApiBaseController
         };
 
         return await Handler<Data>.Exception(callback, _logger);
+    }
+
+    [HttpPatch("{id}")]
+    public async Task<ApiResponse<string>> Update(string id, [FromBody] dynamic body)
+    {
+        AsyncCallback<string> callback = async () => {
+            bool isUpdated = await _service.UpdateById(id, body);
+            HttpStatusCode statusCode = isUpdated ? HttpStatusCode.Created : HttpStatusCode.NotModified;
+            string message = isUpdated ? "Transaction updated successfully" : "Transaction couldn't be updated";
+
+            return new ApiResponse<string>()
+            {
+                Message = message,
+                StatusCode = statusCode,
+            };
+        };
+
+        return await Handler<string>.Exception(callback, _logger);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ApiResponse<string>> Delete(string id)
+    {
+        async Task<ApiResponse<string>> Callback()
+        {
+            bool isDeleted = await _service.DeleteById(id);
+            HttpStatusCode statusCode = isDeleted ? HttpStatusCode.OK : HttpStatusCode.NotModified;
+            string message = isDeleted ? "Transaction deleted successfully" : "Transaction couldn't be deleted";
+
+            return new ApiResponse<string>()
+            {
+                Message = message,
+                StatusCode = statusCode,
+            };
+        }
+        
+        return await Handler<string>.Exception(Callback, _logger);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ApiResponse<Transaction>> GetById(string id)
+    {
+        async Task<ApiResponse<Transaction>> Callback()
+        {
+            Transaction transaction = await _service.SearchById(id);
+
+            return new ApiResponse<Transaction>()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Result = transaction
+            };
+        }
+        
+        return await Handler<Transaction>.Exception(Callback, _logger);
     }
 }
