@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using BudgetTracker.Attributes;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -26,13 +27,14 @@ namespace BudgetTracker.Defination
         public TransactionType Type { get; set; } = TransactionType.Debit;
 
         [Required]
-        [RegularExpression(@"^[A-Za-z\s]+$", ErrorMessage = "Please provide valid description.")]
+        [RegularExpression(@"^[A-Za-z0-9,.\s]+$", ErrorMessage = "Please provide valid description.")]
         [BsonElement("description")]
         [JsonPropertyName("description")]
         public string Description { get; set; } = "";
 
         [Required]
         [RegularExpression(@"^\d{4}-\d{2}-\d{2}$", ErrorMessage = "Please provide valid date.")]
+        [MaxDate(ErrorMessage = "Provided date is out of range.")]
         [BsonElement("date")]
         [JsonPropertyName("date")]
         public string Date { get; set; } = "";
