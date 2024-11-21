@@ -1,44 +1,25 @@
-using Xunit;
-using Moq;
-using BudgetTracker.Defination;
-using BudgetTracker.Controllers;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
-using BudgetTracker.Injectors;
-using System.Text.Json;
 using System.Reflection;
-using BudgetTracker.API.Transactions.List;
-using BudgetTracker.Application;
-using BudgetTracker.API.Transactions.ByDate;
-using MongoDB.Driver;
 using System.Text;
+using System.Text.Json;
+using BudgetTracker.API.Transactions.List;
+using BudgetTracker.Defination;
+using MongoDB.Driver;
+using Xunit;
 
-namespace UnitTests;
-
-#pragma warning disable
-
-// dotnet test --filter "Category=Transaction"
+namespace IntegrationTests;
 
 [Collection("transaction")]
 [Trait("Category", "Transaction")]
-public class TransactionServiceUnitTest : IntegrationTests
+public class TransactionIntegrationTests : IntegrationTests
 {
-    private readonly Mock<ITransactionService> _transactionService;
-    private readonly TransactionsController _controller;
-    private readonly IMemoryCache _cache;
-    private readonly ILogger<TransactionsController>? _logger;
     private readonly IMongoCollection<Transaction> _collection;
-
-    public TransactionServiceUnitTest(MongoDBFixture fixture) : base(fixture)
+    
+    public TransactionIntegrationTests(MongoDBFixture fixture) : base(fixture)
     {
-        _logger = null;
-        _cache = new MemoryCache(new MemoryCacheOptions());
-        _transactionService = new Mock<ITransactionService>();
-        _controller = new (_transactionService.Object, _logger!);
         _collection = fixture.Database.GetCollection<Transaction>("transactions");
         _client.DefaultRequestHeaders.Add("API_KEY", _API_KEY);
     }
-
+    
     [Fact]
     public async Task Positive_Test_Add_Transaction()
     {
@@ -70,11 +51,11 @@ public class TransactionServiceUnitTest : IntegrationTests
     }
 
     [Theory]
-    [InlineData("Sample test !")]
-    [InlineData("Sample test 123")]
-    [InlineData("ajdhsah HKHKHk %&^%")]
-    [InlineData("")]
-    public async Task Validate_Description_Test_Add_Transaction(string description)
+    [InlineData("Sample test !", 400, false)]
+    [InlineData("Sample test 123", 201, true)]
+    [InlineData("ajdhsah HKHKHk %&^%", 400, false)]
+    [InlineData("", 400, false)]
+    public async Task Validate_Description_Test_Add_Transaction(string description, int statusCode, bool isExist)
     {
         string json = JsonSerializer.Serialize(new {
             amount = 23,
@@ -92,10 +73,10 @@ public class TransactionServiceUnitTest : IntegrationTests
         ApiResponse<string> apiResponse = JsonSerializer.Deserialize<ApiResponse<string>>(response);
         FilterDefinition<Transaction> filter = Builders<Transaction>.Filter.Eq(t => t.Description, description);
         List<Transaction> list = await _collection.Find(filter).ToListAsync();
-
-        Assert.Equal(400, (int) apiResponse.StatusCode);
+        
+        Assert.Equal(statusCode, (int) apiResponse.StatusCode);
         Assert.NotNull(apiResponse.Message);
-        Assert.True(list.Count == 0);
+        Assert.Equal(isExist, list.Count > 0);
     }
 
     [Theory]
@@ -162,3 +143,4 @@ public class TransactionServiceUnitTest : IntegrationTests
         Assert.True(apiResponse.Result.Transactions.Count == 0);
     }
 }
+
