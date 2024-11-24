@@ -25,7 +25,7 @@ public class TransactionIntegrationTests : IntegrationTests
     {
         Transaction transaction = new Transaction() 
         {
-            Amount = 23,
+            Amount = 123,
             CategoryId = "665aa292930ad7888c6766f9",
             Date = "2024-09-18",
             Description = "Sample test transaction",
@@ -58,14 +58,14 @@ public class TransactionIntegrationTests : IntegrationTests
     public async Task Validate_Description_Test_Add_Transaction(string description, int statusCode, bool isExist)
     {
         string json = JsonSerializer.Serialize(new {
-            amount = 23,
+            amount = 6754,
             category_id = "665aa292930ad7888c6766f9",
             date = "2024-09-18",
             description = description,
             due = false,
             from_bank = "",
             to_bank = "",
-            type = TransactionType.Debit
+            type = TransactionType.Credit
         });
         StringContent? payload1 = new StringContent(json, Encoding.UTF8, "application/json");
         HttpResponseMessage data = await _client.PostAsync("transactions", payload1);
@@ -80,13 +80,15 @@ public class TransactionIntegrationTests : IntegrationTests
     }
 
     [Theory]
-    [InlineData("2024-01-011#")]
-    [InlineData("ads")]
-    [InlineData("hasgds77y9-hdsk7-")]
-    public async Task Validate_Date_Test_Add_Transaction(string date)
+    [InlineData("2024-01-011#", "Please provide valid date.", 400, false)]
+    [InlineData("", "The Date field is required.", 400, false)]
+    [InlineData("hasgds77y9-hdsk7-", "Please provide valid date.", 400, false)]
+    [InlineData("2024-11-25", "Provided date is out of range or invalid.", 400, false)]
+    [InlineData("2024-09-22", "Transaction inserted successfully", 201, true)]
+    public async Task Validate_Date_Test_Add_Transaction(string date, string expectedResponse, int expectedStatusCode, bool isExist)
     {
         string json = JsonSerializer.Serialize(new {
-            amount = 23,
+            amount = 455,
             category_id = "665aa292930ad7888c6766f9",
             date = date,
             description = "asdk",
@@ -102,9 +104,10 @@ public class TransactionIntegrationTests : IntegrationTests
         FilterDefinition<Transaction> filter = Builders<Transaction>.Filter.Eq(t => t.Date, date);
         List<Transaction> list = await _collection.Find(filter).ToListAsync();
 
-        Assert.Equal(400, (int) apiResponse.StatusCode);
+        Assert.Equal(expectedStatusCode, (int) apiResponse.StatusCode);
         Assert.NotNull(apiResponse.Message);
-        Assert.True(list.Count == 0);
+        Assert.Equal(expectedResponse, apiResponse.Message);
+        Assert.Equal(isExist, list.Count > 0);
     }
 
     [Fact]
@@ -115,6 +118,8 @@ public class TransactionIntegrationTests : IntegrationTests
         ApiResponse<Result> apiResponse = JsonSerializer.Deserialize<ApiResponse<Result>>(jsonResponse);
         PropertyInfo categoryProp = apiResponse.Result.GetType().GetProperty("categories");
         PropertyInfo banksProp = apiResponse.Result.GetType().GetProperty("banks");
+        
+        Console.WriteLine(JsonSerializer.Serialize(apiResponse.Result));
 
         Assert.NotNull(apiResponse.Result);
         Assert.Equal(200, (int) apiResponse.StatusCode);
@@ -141,6 +146,13 @@ public class TransactionIntegrationTests : IntegrationTests
         Assert.Null(categoryProp);
         Assert.Null(banksProp);
         Assert.True(apiResponse.Result.Transactions.Count == 0);
+        Assert.True(apiResponse.Result.TotalCount == 0);
+    }
+
+    [Fact]
+    public async Task CheckDebitsCreditsInLimit()
+    {
+        
     }
 }
 

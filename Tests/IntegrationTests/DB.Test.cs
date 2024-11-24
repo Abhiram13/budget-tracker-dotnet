@@ -28,6 +28,8 @@ public class MongoDBFixture : IDisposable
 
     public void Dispose()
     {
+        // delete all records in "transactions" collection
+        Database?.GetCollection<Transaction>("transactions").DeleteManyAsync(FilterDefinition<Transaction>.Empty);
         _runner.Dispose();
     }
 }

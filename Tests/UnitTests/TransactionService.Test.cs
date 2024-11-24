@@ -29,6 +29,6 @@ public class TransactionServiceUnitTest
         _logger = null;
         _cache = new MemoryCache(new MemoryCacheOptions());
         _transactionService = new Mock<ITransactionService>();
-        _controller = new (_transactionService.Object, _logger!);
+        _controller = new TransactionsController(_transactionService.Object, _logger!);
     }
 }
