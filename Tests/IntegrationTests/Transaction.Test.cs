@@ -13,6 +13,7 @@ namespace IntegrationTests;
 public class TransactionIntegrationTests : IntegrationTests
 {
     private readonly IMongoCollection<Transaction> _collection;
+    private const string _categoryId = "66fc180b620148e2e36c4a07";
     
     public TransactionIntegrationTests(MongoDBFixture fixture) : base(fixture)
     {
@@ -26,7 +27,7 @@ public class TransactionIntegrationTests : IntegrationTests
         Transaction transaction = new Transaction() 
         {
             Amount = 123,
-            CategoryId = "665aa292930ad7888c6766f9",
+            CategoryId = _categoryId,
             Date = "2024-09-18",
             Description = "Sample test transaction",
             Due = false,
@@ -59,7 +60,7 @@ public class TransactionIntegrationTests : IntegrationTests
     {
         string json = JsonSerializer.Serialize(new {
             amount = 6754,
-            category_id = "665aa292930ad7888c6766f9",
+            category_id = _categoryId,
             date = "2024-09-18",
             description = description,
             due = false,
@@ -83,13 +84,13 @@ public class TransactionIntegrationTests : IntegrationTests
     [InlineData("2024-01-011#", "Please provide valid date.", 400, false)]
     [InlineData("", "The Date field is required.", 400, false)]
     [InlineData("hasgds77y9-hdsk7-", "Please provide valid date.", 400, false)]
-    [InlineData("2024-11-25", "Provided date is out of range or invalid.", 400, false)]
+    [InlineData("2024-11-28", "Provided date is out of range or invalid.", 400, false)]
     [InlineData("2024-09-22", "Transaction inserted successfully", 201, true)]
     public async Task Validate_Date_Test_Add_Transaction(string date, string expectedResponse, int expectedStatusCode, bool isExist)
     {
         string json = JsonSerializer.Serialize(new {
             amount = 455,
-            category_id = "665aa292930ad7888c6766f9",
+            category_id = _categoryId,
             date = date,
             description = "asdk",
             due = false,
@@ -118,8 +119,6 @@ public class TransactionIntegrationTests : IntegrationTests
         ApiResponse<Result> apiResponse = JsonSerializer.Deserialize<ApiResponse<Result>>(jsonResponse);
         PropertyInfo categoryProp = apiResponse.Result.GetType().GetProperty("categories");
         PropertyInfo banksProp = apiResponse.Result.GetType().GetProperty("banks");
-        
-        Console.WriteLine(JsonSerializer.Serialize(apiResponse.Result));
 
         Assert.NotNull(apiResponse.Result);
         Assert.Equal(200, (int) apiResponse.StatusCode);
@@ -131,7 +130,7 @@ public class TransactionIntegrationTests : IntegrationTests
     }
 
     [Fact]
-    public async Task Test_Transactions_List_With_New_Month()
+    public async Task Transactions_List_With_New_Month()
     {
         HttpResponseMessage httpResponse = await _client.GetAsync("/transactions?type=transaction&month=10&year=2024");
         string jsonResponse = await httpResponse.Content.ReadAsStringAsync();
@@ -149,10 +148,41 @@ public class TransactionIntegrationTests : IntegrationTests
         Assert.True(apiResponse.Result.TotalCount == 0);
     }
 
-    [Fact]
-    public async Task CheckDebitsCreditsInLimit()
+    [Theory]
+    [InlineData("ASC")]
+    [InlineData("DESC")]
+    [InlineData("")]
+    public async Task Descending_Sort_Check_In_Transaction_Categories(string sortOrder)
     {
+        HttpResponseMessage httpResponse = await _client.GetAsync($"/transactions?type=category&month=09&year=2024&sort={sortOrder}");
+        string response = await httpResponse.Content.ReadAsStringAsync();
+        ApiResponse<Result> apiResponse = JsonSerializer.Deserialize<ApiResponse<Result>>(response);
+        PropertyInfo categoryProp = apiResponse.Result.GetType().GetProperty("categories");
+        PropertyInfo banksProp = apiResponse.Result.GetType().GetProperty("banks");
+        PropertyInfo transactionProp = apiResponse.Result.GetType().GetProperty("transactions");
+        List<CategoryData>? sortedList;
+
+        if (sortOrder == "ASC")
+        {
+            sortedList = apiResponse.Result.Categories.OrderBy(c => c.Amount).ToList();
+        }
+        else
+        {
+            sortedList = apiResponse.Result.Categories.OrderByDescending(c => c.Amount).ToList();
+        }
         
+        Assert.True(apiResponse.Result.Categories.Count > 0);
+        Assert.Equal(sortedList, apiResponse.Result.Categories);
+        Assert.Null(transactionProp);
+        Assert.Null(banksProp);
+        Assert.True(apiResponse.Result.TotalCount > 0);
+
+        foreach (CategoryData category in apiResponse.Result.Categories)
+        {
+            Assert.NotEmpty(category.Name);
+            Assert.NotNull(category.Name);
+            Assert.True(category.Amount > 0);
+        }
     }
 }
 
