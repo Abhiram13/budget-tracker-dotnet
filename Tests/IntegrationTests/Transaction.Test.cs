@@ -1,50 +1,31 @@
-using Xunit;
-using Moq;
-using BudgetTracker.Defination;
-using BudgetTracker.Controllers;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
-using BudgetTracker.Injectors;
-using System.Text.Json;
 using System.Reflection;
-using BudgetTracker.API.Transactions.List;
-using BudgetTracker.Application;
-using BudgetTracker.API.Transactions.ByDate;
-using MongoDB.Driver;
 using System.Text;
+using System.Text.Json;
+using BudgetTracker.API.Transactions.List;
+using BudgetTracker.Defination;
+using MongoDB.Driver;
+using Xunit;
 
-namespace UnitTests;
-
-#pragma warning disable
-
-// dotnet test --filter "Category=Transaction"
+namespace IntegrationTests;
 
 [Collection("transaction")]
 [Trait("Category", "Transaction")]
-public class TransactionServiceUnitTest : IntegrationTests
+public class TransactionIntegrationTests : IntegrationTests
 {
-    private readonly Mock<ITransactionService> _transactionService;
-    private readonly TransactionsController _controller;
-    private readonly IMemoryCache _cache;
-    private readonly ILogger<TransactionsController>? _logger;
     private readonly IMongoCollection<Transaction> _collection;
-
-    public TransactionServiceUnitTest(MongoDBFixture fixture) : base(fixture)
+    
+    public TransactionIntegrationTests(MongoDBFixture fixture) : base(fixture)
     {
-        _logger = null;
-        _cache = new MemoryCache(new MemoryCacheOptions());
-        _transactionService = new Mock<ITransactionService>();
-        _controller = new (_transactionService.Object, _logger!);
         _collection = fixture.Database.GetCollection<Transaction>("transactions");
         _client.DefaultRequestHeaders.Add("API_KEY", _API_KEY);
     }
-
+    
     [Fact]
     public async Task Positive_Test_Add_Transaction()
     {
         Transaction transaction = new Transaction() 
         {
-            Amount = 23,
+            Amount = 123,
             CategoryId = "665aa292930ad7888c6766f9",
             Date = "2024-09-18",
             Description = "Sample test transaction",
@@ -70,21 +51,21 @@ public class TransactionServiceUnitTest : IntegrationTests
     }
 
     [Theory]
-    [InlineData("Sample test !")]
-    [InlineData("Sample test 123")]
-    [InlineData("ajdhsah HKHKHk %&^%")]
-    [InlineData("")]
-    public async Task Validate_Description_Test_Add_Transaction(string description)
+    [InlineData("Sample test !", 400, false)]
+    [InlineData("Sample test 123", 201, true)]
+    [InlineData("ajdhsah HKHKHk %&^%", 400, false)]
+    [InlineData("", 400, false)]
+    public async Task Validate_Description_Test_Add_Transaction(string description, int statusCode, bool isExist)
     {
         string json = JsonSerializer.Serialize(new {
-            amount = 23,
+            amount = 6754,
             category_id = "665aa292930ad7888c6766f9",
             date = "2024-09-18",
             description = description,
             due = false,
             from_bank = "",
             to_bank = "",
-            type = TransactionType.Debit
+            type = TransactionType.Credit
         });
         StringContent? payload1 = new StringContent(json, Encoding.UTF8, "application/json");
         HttpResponseMessage data = await _client.PostAsync("transactions", payload1);
@@ -92,20 +73,22 @@ public class TransactionServiceUnitTest : IntegrationTests
         ApiResponse<string> apiResponse = JsonSerializer.Deserialize<ApiResponse<string>>(response);
         FilterDefinition<Transaction> filter = Builders<Transaction>.Filter.Eq(t => t.Description, description);
         List<Transaction> list = await _collection.Find(filter).ToListAsync();
-
-        Assert.Equal(400, (int) apiResponse.StatusCode);
+        
+        Assert.Equal(statusCode, (int) apiResponse.StatusCode);
         Assert.NotNull(apiResponse.Message);
-        Assert.True(list.Count == 0);
+        Assert.Equal(isExist, list.Count > 0);
     }
 
     [Theory]
-    [InlineData("2024-01-011#")]
-    [InlineData("ads")]
-    [InlineData("hasgds77y9-hdsk7-")]
-    public async Task Validate_Date_Test_Add_Transaction(string date)
+    [InlineData("2024-01-011#", "Please provide valid date.", 400, false)]
+    [InlineData("", "The Date field is required.", 400, false)]
+    [InlineData("hasgds77y9-hdsk7-", "Please provide valid date.", 400, false)]
+    [InlineData("2024-11-25", "Provided date is out of range or invalid.", 400, false)]
+    [InlineData("2024-09-22", "Transaction inserted successfully", 201, true)]
+    public async Task Validate_Date_Test_Add_Transaction(string date, string expectedResponse, int expectedStatusCode, bool isExist)
     {
         string json = JsonSerializer.Serialize(new {
-            amount = 23,
+            amount = 455,
             category_id = "665aa292930ad7888c6766f9",
             date = date,
             description = "asdk",
@@ -121,9 +104,10 @@ public class TransactionServiceUnitTest : IntegrationTests
         FilterDefinition<Transaction> filter = Builders<Transaction>.Filter.Eq(t => t.Date, date);
         List<Transaction> list = await _collection.Find(filter).ToListAsync();
 
-        Assert.Equal(400, (int) apiResponse.StatusCode);
+        Assert.Equal(expectedStatusCode, (int) apiResponse.StatusCode);
         Assert.NotNull(apiResponse.Message);
-        Assert.True(list.Count == 0);
+        Assert.Equal(expectedResponse, apiResponse.Message);
+        Assert.Equal(isExist, list.Count > 0);
     }
 
     [Fact]
@@ -134,6 +118,8 @@ public class TransactionServiceUnitTest : IntegrationTests
         ApiResponse<Result> apiResponse = JsonSerializer.Deserialize<ApiResponse<Result>>(jsonResponse);
         PropertyInfo categoryProp = apiResponse.Result.GetType().GetProperty("categories");
         PropertyInfo banksProp = apiResponse.Result.GetType().GetProperty("banks");
+        
+        Console.WriteLine(JsonSerializer.Serialize(apiResponse.Result));
 
         Assert.NotNull(apiResponse.Result);
         Assert.Equal(200, (int) apiResponse.StatusCode);
@@ -160,5 +146,13 @@ public class TransactionServiceUnitTest : IntegrationTests
         Assert.Null(categoryProp);
         Assert.Null(banksProp);
         Assert.True(apiResponse.Result.Transactions.Count == 0);
+        Assert.True(apiResponse.Result.TotalCount == 0);
+    }
+
+    [Fact]
+    public async Task CheckDebitsCreditsInLimit()
+    {
+        
     }
 }
+

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace UnitTests;
+namespace IntegrationTests;
 
 #pragma warning disable
 /// <summary>
@@ -28,6 +28,8 @@ public class MongoDBFixture : IDisposable
 
     public void Dispose()
     {
+        // delete all records in "transactions" collection
+        Database?.GetCollection<Transaction>("transactions").DeleteManyAsync(FilterDefinition<Transaction>.Empty);
         _runner.Dispose();
     }
 }
@@ -44,10 +46,10 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
     protected override void ConfigureWebHost(Microsoft.AspNetCore.Hosting.IWebHostBuilder builder)
     {
         builder.ConfigureTestServices(services => {
-            var dbDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IMongoDatabase));        
+            ServiceDescriptor? dbDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IMongoDatabase));        
             services.Remove(dbDescriptor);
 
-            var clientDescriptior = services.SingleOrDefault(d => d.ServiceType == typeof(IMongoClient));
+            ServiceDescriptor? clientDescriptior = services.SingleOrDefault(d => d.ServiceType == typeof(IMongoClient));
             services.Remove(clientDescriptior);
             
             services.AddSingleton(_ => _fixture.Database);

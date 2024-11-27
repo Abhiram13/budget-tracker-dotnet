@@ -34,7 +34,7 @@ namespace BudgetTracker.Defination
 
         [Required]
         [RegularExpression(@"^\d{4}-\d{2}-\d{2}$", ErrorMessage = "Please provide valid date.")]
-        [MaxDate(ErrorMessage = "Provided date is out of range.")]
+        [MaxDate(ErrorMessage = "Provided date is out of range or invalid.")]
         [BsonElement("date")]
         [JsonPropertyName("date")]
         public string Date { get; set; } = "";
