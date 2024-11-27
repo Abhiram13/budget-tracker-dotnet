@@ -86,7 +86,20 @@ namespace BudgetTracker.Repository
             };
 
             return pipeline;
-        }        
+        }
+
+        private BsonDocument BankSortStage()
+        {
+            int sortOrder =_params.SortOrder == "ASC" ? 1 : -1;
+
+            BsonDocument pipeline = new BsonDocument {
+                {"$sort", new BsonDocument { 
+                    { "amount", sortOrder }
+                }}
+            };
+
+            return pipeline;
+        }
 
         public async Task<List<BankData>> GetByBanks()
         {
@@ -97,6 +110,7 @@ namespace BudgetTracker.Repository
                 BanksGroupStage(),
                 NonEmptyMatchStage(),
                 BankProjectStage(),
+                BankSortStage()
             };
 
             List<BankData> list = await _collection.Aggregate<BankData>(pipelines).ToListAsync();

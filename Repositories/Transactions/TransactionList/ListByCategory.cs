@@ -84,6 +84,19 @@ namespace BudgetTracker.Repository
             return pipeline;
         }
 
+        private BsonDocument CategorySortStage()
+        {
+            int sortOrder =_params.SortOrder == "ASC" ? 1 : -1;
+            
+            BsonDocument pipeline = new BsonDocument {
+                {"$sort", new BsonDocument {
+                    {"amount", sortOrder}
+                }}
+            };
+
+            return pipeline;
+        }
+
         public async Task<List<CategoryData>> GetByCategories()
         {
             BsonDocument[] pipelines = new BsonDocument[] {
@@ -93,6 +106,7 @@ namespace BudgetTracker.Repository
                 CategoryGroupStage(),
                 CategoryNonEmptyMatchStage(),
                 CategoryProjectStage(),
+                CategorySortStage(),
             };
 
             List<CategoryData> result = await _collection.Aggregate<CategoryData>(pipelines).ToListAsync();
