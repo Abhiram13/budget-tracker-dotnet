@@ -136,6 +136,7 @@ namespace BudgetTracker.API
                 public string? Month { get; set; }
                 public string? Year { get; set; }
                 public string? Type { get; set; }
+                public string? SortOrder { get; set; }
             }
 
             public class Result
