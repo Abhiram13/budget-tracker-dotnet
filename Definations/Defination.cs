@@ -11,6 +11,7 @@ namespace BudgetTracker.Defination
         public static readonly string? DB = Environment.GetEnvironmentVariable("DB");
         public static readonly string? PASSWORD = Environment.GetEnvironmentVariable("PASSWORD");
         public static readonly string? USERNAME = Environment.GetEnvironmentVariable("USERNAME");
+        public static readonly string? APP_NAME = Environment.GetEnvironmentVariable("APP_NAME");
     }
 
     public abstract class MongoObject

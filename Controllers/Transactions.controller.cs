@@ -135,4 +135,22 @@ public class TransactionsController : ApiBaseController
         
         return await Handler<Transaction>.Exception(Callback, _logger);
     }
+
+    [HttpGet("category/{categoryId}")]
+    public async Task<ApiResponse<API.Transactions.ByCategory.Result>> GetByCategory(string categoryId, [FromQuery] string? month, [FromQuery] string? year)
+    {
+        async Task<ApiResponse<API.Transactions.ByCategory.Result>> Callback()
+        {
+            API.Transactions.ByCategory.Result result = await _service.GetByCategory(categoryId, new API.Transactions.List.QueryParams() {
+                Month = month, Year = year
+            });
+            return new ApiResponse<API.Transactions.ByCategory.Result>()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Result = result,
+            };
+        };
+
+        return await Handler<API.Transactions.ByCategory.Result>.Exception(Callback, _logger);
+    }
 }

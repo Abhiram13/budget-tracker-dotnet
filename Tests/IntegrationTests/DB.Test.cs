@@ -1,3 +1,4 @@
+using BudgetTracker.Application;
 using MongoDB.Driver;
 using Mongo2Go;
 using Xunit;
@@ -21,15 +22,25 @@ public class MongoDBFixture : IDisposable
 
     public MongoDBFixture()
     {
+        _setEnvironmentVariables();
         _runner = MongoDbRunner.Start();
-        _client = new MongoClient("mongodb://localhost:27017/");
-        Database = _client.GetDatabase("admin");
+        _client = new MongoClient($"mongodb+srv://{Env.USERNAME}:{Env.PASSWORD}@{Env.HOST}/?retryWrites=true&w=majority&appName=Trsnactions");
+        Database = _client.GetDatabase("Development");
+    }
+
+    private void _setEnvironmentVariables()
+    {
+        var currentParent = Directory.GetParent(Directory.GetCurrentDirectory());
+        var mainParent = Directory.GetParent(currentParent.Parent.FullName);
+        string root = Directory.GetCurrentDirectory();
+        string dotenv = Path.Combine(mainParent.Parent.FullName, ".env");
+        DotEnv.Load(dotenv);
     }
 
     public void Dispose()
     {
         // delete all records in "transactions" collection
-        Database?.GetCollection<Transaction>("transactions").DeleteManyAsync(FilterDefinition<Transaction>.Empty);
+        // Database?.GetCollection<Transaction>("transactions").DeleteManyAsync(FilterDefinition<Transaction>.Empty);
         _runner.Dispose();
     }
 }
@@ -73,8 +84,7 @@ public abstract class IntegrationTests
     {
         _fixture = fixture;
         Environment.SetEnvironmentVariable("PORT", "3002");
-        Environment.SetEnvironmentVariable("ENV", "Test");
-        Environment.SetEnvironmentVariable("DB", "admin");
+        Environment.SetEnvironmentVariable("ENV", "Development");
         Environment.SetEnvironmentVariable("API_KEY", _API_KEY);
 
         CustomWebApplicationFactory factory = new CustomWebApplicationFactory(_fixture);

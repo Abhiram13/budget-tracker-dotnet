@@ -79,5 +79,11 @@ namespace BudgetTracker.Services
 
             return data;
         }
+
+        public async Task<API.Transactions.ByCategory.Result> GetByCategory(string categoryId, QueryParams? queryParams)
+        {
+            API.Transactions.ByCategory.Result result = await new TransactionsByCategory(categoryId, collection, queryParams, new CategoryService()).GetData();
+            return result;
+        }
     }
 }
