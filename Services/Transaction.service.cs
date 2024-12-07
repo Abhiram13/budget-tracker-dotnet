@@ -4,6 +4,7 @@ using BudgetTracker.Defination;
 using BudgetTracker.Repository;
 using BudgetTracker.API.Transactions.List;
 using BudgetTracker.API.Transactions.ByDate;
+using ByBankResult = BudgetTracker.API.Transactions.ByBank.Result;
 
 namespace BudgetTracker.Services
 {
@@ -83,6 +84,12 @@ namespace BudgetTracker.Services
         public async Task<API.Transactions.ByCategory.Result> GetByCategory(string categoryId, QueryParams? queryParams)
         {
             API.Transactions.ByCategory.Result result = await new TransactionsByCategory(categoryId, collection, queryParams, new CategoryService()).GetData();
+            return result;
+        }
+
+        public async Task<ByBankResult> GetByBank(string bankId, QueryParams queryParams)
+        {
+            ByBankResult result = await new TransactionsByBank(bankId, collection, queryParams, new BankService()).GetData();
             return result;
         }
     }

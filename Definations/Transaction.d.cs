@@ -68,6 +68,7 @@ namespace BudgetTracker.Injectors
         Task<API.Transactions.List.Result> List(API.Transactions.List.QueryParams? queryParams, CancellationToken? cancellationToken = default);
         Task<API.Transactions.ByDate.Data> ListByDate(string date);
         Task<API.Transactions.ByCategory.Result> GetByCategory(string categoryId, QueryParams queryParams);
+        Task<API.Transactions.ByBank.Result> GetByBank(string bankId, QueryParams queryParams);
     }
 }
 
@@ -198,6 +199,10 @@ namespace BudgetTracker.API
             {
                 private double _amount;
 
+                [BsonElement("id")]
+                [JsonPropertyName("id")]
+                public string CategoryId { get; set; } = string.Empty;
+
                 [BsonElement("category")]
                 [JsonPropertyName("category")]
                 public string Name { get; set; } = string.Empty;
@@ -214,6 +219,10 @@ namespace BudgetTracker.API
             public class BankData
             {
                 private double _amount;
+
+                [BsonElement("id")]
+                [JsonPropertyName("id")]
+                public string BankId { get; set; } = string.Empty;
 
                 [BsonElement("name")]
                 [JsonPropertyName("name")]
@@ -273,6 +282,20 @@ namespace BudgetTracker.API
                 [BsonElement("data")]
                 [JsonPropertyName("data")]
                 public List<CategoryData> CategoryData { get; set; } = new List<CategoryData>();
+            }
+        }
+
+        namespace ByBank
+        {
+            public class Result
+            {
+                [BsonElement("bank")]
+                [JsonPropertyName("bank")]
+                public string Bank { get; set; } = string.Empty;
+
+                [BsonElement("data")]
+                [JsonPropertyName("data")]
+                public List<ByCategory.CategoryData> BankData { get; set; } = new List<ByCategory.CategoryData>();
             }
         }
     }
