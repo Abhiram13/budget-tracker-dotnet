@@ -77,7 +77,10 @@ namespace BudgetTracker.Repository
         {
             BsonDocument pipeline = new BsonDocument {
                 {"$project", new BsonDocument {
+                    {"id", "$_id"},
                     {"_id", 0},
+                    {"amount", 1},
+                    {"category", 1}
                 }}
             };
 
@@ -86,7 +89,7 @@ namespace BudgetTracker.Repository
 
         private BsonDocument CategorySortStage()
         {
-            int sortOrder =_params.SortOrder == "ASC" ? 1 : -1;
+            int sortOrder = _params?.SortOrder == "ASC" ? 1 : -1;
             
             BsonDocument pipeline = new BsonDocument {
                 {"$sort", new BsonDocument {

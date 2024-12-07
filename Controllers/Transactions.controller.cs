@@ -4,9 +4,8 @@ using BudgetTracker.Services;
 using BudgetTracker.Defination;
 using BudgetTracker.Injectors;
 using BudgetTracker.API.Transactions.ByDate;
-
-// Alias type - similar to Typescript's Type keyword
 using TransactionListResult = BudgetTracker.API.Transactions.List.Result;
+using ByBankResult = BudgetTracker.API.Transactions.ByBank.Result;
 
 namespace BudgetTracker.Controllers;
 
@@ -134,5 +133,41 @@ public class TransactionsController : ApiBaseController
         }
         
         return await Handler<Transaction>.Exception(Callback, _logger);
+    }
+
+    [HttpGet("category/{categoryId}")]
+    public async Task<ApiResponse<API.Transactions.ByCategory.Result>> GetByCategory(string categoryId, [FromQuery] string? month, [FromQuery] string? year)
+    {
+        async Task<ApiResponse<API.Transactions.ByCategory.Result>> Callback()
+        {
+            API.Transactions.ByCategory.Result result = await _service.GetByCategory(categoryId, new API.Transactions.List.QueryParams() {
+                Month = month, Year = year
+            });
+            return new ApiResponse<API.Transactions.ByCategory.Result>()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Result = result,
+            };
+        };
+
+        return await Handler<API.Transactions.ByCategory.Result>.Exception(Callback, _logger);
+    }
+
+    [HttpGet("bank/{bankId}")]
+    public async Task<ApiResponse<ByBankResult>> GetByBankId(string bankId, [FromQuery] string? month, [FromQuery] string? year)
+    {
+        async Task<ApiResponse<ByBankResult>> Callback()
+        {
+            ByBankResult result = await _service.GetByBank(bankId, new API.Transactions.List.QueryParams() {
+                Month = month, Year = year
+            });
+            return new ApiResponse<ByBankResult>()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Result = result,
+            };
+        };
+
+        return await Handler<ByBankResult>.Exception(Callback, _logger);
     }
 }

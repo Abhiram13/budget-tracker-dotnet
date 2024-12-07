@@ -22,4 +22,10 @@
     <PackageReference Include="xunit" Version="2.9.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Tests\obj\Debug\net6.0\MvcTestingAppManifest.json" />
+    <_ContentIncludedByDefault Remove="Tests\obj\project.assets.json" />
+    <_ContentIncludedByDefault Remove="Tests\obj\UnitTests.csproj.nuget.dgspec.json" />
+  </ItemGroup>
+
 </Project>
