@@ -57,6 +57,10 @@ namespace BudgetTracker.Defination
         [BsonElement("category_id")]
         [JsonPropertyName("category_id")]
         public string CategoryId { get; set; } = "";
+
+        [BsonElement("due_id")]
+        [JsonPropertyName("due_id")]
+        public string? DueId { get; set; } = null;
     }    
 }
 

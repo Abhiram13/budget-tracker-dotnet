@@ -1,43 +1,76 @@
-using System.Text.RegularExpressions;
 using BudgetTracker.Defination;
 using BudgetTracker.Injectors;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using BudgetTracker.API.Dues;
 
-namespace BudgetTracker.Services
+namespace BudgetTracker.Services;
+
+public class DueService : MongoServices<Due>, IDues
 {
-    public class DueService : MongoServices<Due>, IDueService
+    private IBankService _bankService;
+    
+    public DueService(IBankService bankService) : base(Collection.Dues) 
     {
-        public DueService() : base(Collection.Due) {}
+        _bankService = bankService;
+    }
 
-        public void Validate(Due payload)
+    public async Task InsertOneAsync(Due body)
+    {
+        if (!string.IsNullOrEmpty(body.ToBank))
         {
-            if (!Enum.IsDefined(typeof(DueStatus), payload.Status))
+            Bank toBank = await _bankService.SearchById(body.ToBank);
+            if (string.IsNullOrEmpty(toBank.Name))
             {
-                throw new BadRequestException("Invalid due status defined");
-            }
-
-            if (string.IsNullOrEmpty(payload.From))
-            {
-                throw new BadRequestException("From field is required");
-            }
-
-            if (string.IsNullOrEmpty(payload.To))
-            {
-                throw new BadRequestException("To field is required");
-            }
-
-            // allowing alphabets and single quote
-            string pattern = "^[a-zA-Z]*$";
-            Regex nameRegex = new Regex(pattern);
-
-            if (!nameRegex.IsMatch(payload.From))
-            {
-                throw new BadRequestException("From field contains invalid characters");
-            }
-
-            if (!nameRegex.IsMatch(payload.To))
-            {
-                throw new BadRequestException("To field contains invalid characters");
+                throw new BadRequestException("Invalid To bank id provided");
             }
         }
+
+        await InserOne(body);
+    }
+
+    public async Task<DueTransactions> GetDueTransactionsAsync(string dueId)
+    {
+        BsonDocument[] pipelines = new BsonDocument[] {
+            new BsonDocument {
+                {"$match", new BsonDocument {
+                    {"_id", ObjectId.Parse(dueId)}
+                }}
+            },
+            new BsonDocument {
+                {"$addFields", new BsonDocument {
+                    {"id", new BsonDocument {
+                        {"$toString", "$_id"}
+                    }}
+                }}
+            },
+            new BsonDocument {
+                {"$lookup", new BsonDocument {
+                    {"from", "transactions"},
+                    {"localField", "id"},
+                    {"foreignField", "due_id"},
+                    {"as", "transactions"}
+                }}
+            },
+            new BsonDocument {
+                {"$project", new BsonDocument {
+                    {"_id", 0},
+                    {"description", 1},
+                    {"amount", 1},
+                    {"status", 1},
+                    {"transactions", new BsonDocument {
+                        {"amount", 1},
+                        {"type", 1},
+                        {"description", 1},
+                        {"date", 1},
+                        {"from_bank", 1},
+                        {"to_bank", 1},
+                    }},
+                }}
+            }
+        };
+
+        List<DueTransactions> list = await collection.Aggregate<DueTransactions>(pipelines).ToListAsync();
+        return list.FirstOrDefault() ?? new DueTransactions();
     }
 }
