@@ -28,7 +28,7 @@ builder.Services.AddControllers()
     .ConfigureApiBehaviorOptions(options => {
         options.SuppressModelStateInvalidFilter = false;
         options.InvalidModelStateResponseFactory = action => {
-            KeyValuePair<string, ModelStateEntry> modelState = action.ModelState.FirstOrDefault();
+            KeyValuePair<string, ModelStateEntry?> modelState = action.ModelState.FirstOrDefault();
             string errorAt = modelState.Key;
             string errorMessage = modelState.Value?.Errors[0]?.ErrorMessage ?? $"Something went wrong at {errorAt}";
             return new BadRequestObjectResult(new ApiResponse<string> {Message = errorMessage, StatusCode = HttpStatusCode.BadRequest});
@@ -41,8 +41,7 @@ builder.Services.AddRouting();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IBankService, BankService>();
-builder.Services.AddScoped<IDueService, DueService>();
-builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IDues, DueService>();
 builder.WebHost.ConfigureKestrel((context, server) => {
     string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3000";
     int port = int.Parse(portNumber);

@@ -2,6 +2,7 @@ using System.Net;
 using System.Text.Json.Serialization;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Driver;
 
 namespace BudgetTracker.Defination
 {
@@ -53,7 +54,7 @@ namespace BudgetTracker.Injectors
     public interface IMongoService<T> where T : class
     {
         Task InserOne(T document);
-        Task<List<T>> GetList();
+        Task<List<T>> GetList(ProjectionDefinition<T>? excludeProjection = null);
         Task<T> SearchById(string id);
         Task<bool> DeleteById(string id);
         Task<bool> UpdateById(string id, dynamic document);

@@ -1,46 +1,67 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using BudgetTracker.API.Dues;
+using BudgetTracker.Defination;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace BudgetTracker.Defination
 {
     public enum DueStatus
     {
-        Completed = 1,
-        Pending = 2
+        Active = 1,
+        Ended = 2,
+        Hold = 3,
     }
 
     public class Due : MongoObject
     {
-        [BsonElement("from")]
-        [JsonPropertyName("from")]
-        public string From { get; set; } = "";
+        [Required, BsonElement("description"), JsonPropertyName("description")]
+        public string Description { get; set; } = string.Empty;
+        
+        [BsonElement("to_bank"), JsonPropertyName("to_bank")]
+        public string? ToBank { get; set; } = null;
+        
+        /// <summary>
+        /// To Whom the due amount should be credited
+        /// </summary>
+        [BsonElement("payee"), JsonPropertyName("payee"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public string? Payee { get; set; } = null;
 
-        [BsonElement("to")]
-        [JsonPropertyName("to")]
-        public string To { get; set; } = "";
+        [BsonElement("amount"), JsonPropertyName("amount")]
+        public int? Amount { get; set; } = null;
 
-        [BsonElement("transaction_id")]
-        [JsonPropertyName("transaction_id")]
-        public string TransactionId { get; set; } = "";
+        [Required, BsonElement("status"), JsonPropertyName("status")]
+        public DueStatus? Status { get; set; } = DueStatus.Active;
+    }
+}
+
+namespace BudgetTracker.API.Dues
+{
+    public class DueTransactions
+    {
+        [BsonElement("description")]
+        [JsonPropertyName("description")]
+        public string Description { get; set; } = string.Empty;
+
+        [BsonElement("amount")]
+        [JsonPropertyName("amount")]
+        public int Amount { get; set; }
 
         [BsonElement("status")]
         [JsonPropertyName("status")]
-        public DueStatus Status { get; set; } = DueStatus.Pending;
+        public DueStatus? Status { get; set; }
 
-        [BsonElement("total_amount")]
-        [JsonPropertyName("total_amount")]
-        public double TotalAmount { get; set; } = 0;
-
-        [BsonElement("due_amount")]
-        [JsonPropertyName("due_amount")]
-        public double DueAmount { get; set; } = 0;
-    }    
+        [BsonElement("transactions")]
+        [JsonPropertyName("transactions")]
+        public List<Transaction> Transactions { get; set; } = new List<Transaction>();
+    }
 }
 
 namespace BudgetTracker.Injectors
 {
-    public interface IDueService : IMongoService<Defination.Due> 
+    public interface IDues : IMongoService<Due>
     { 
-        public void Validate(Defination.Due payload);
+        public Task InsertOneAsync(Due body);
+        public Task<DueTransactions> GetDueTransactionsAsync(string dueId);
     }
 }

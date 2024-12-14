@@ -18,8 +18,7 @@ namespace BudgetTracker.Services
         public static IMongoCollection<Transaction> Transaction { get { return Mongo.DB.GetCollection<Transaction>("transactions"); } }
         public static IMongoCollection<Category> Category { get { return Mongo.DB.GetCollection<Category>("categories"); } }
         public static IMongoCollection<Bank> Bank { get { return Mongo.DB.GetCollection<Bank>("banks"); } }
-        public static IMongoCollection<Due> Due { get { return Mongo.DB.GetCollection<Due>("dues"); } }
-        public static IMongoCollection<User> User { get { return Mongo.DB.GetCollection<User>("users"); } }
+        public static IMongoCollection<Due> Dues { get { return Mongo.DB.GetCollection<Due>("dues"); } }
     }
 
     public abstract class MongoServices<T> : IMongoService<T> where T : MongoObject
@@ -36,10 +35,17 @@ namespace BudgetTracker.Services
             await collection.InsertOneAsync(document);
         }
 
-        public async Task<List<T>> GetList()
+        public async Task<List<T>> GetList(ProjectionDefinition<T>? excludeProjection = null)
         {
             FilterDefinition<T> filter = Builders<T>.Filter.Empty;
-            return await collection.Aggregate().Match(filter).ToListAsync();
+            IAggregateFluent<T> aggregate = collection.Aggregate().Match(filter);
+
+            if (excludeProjection != null)
+            {
+                aggregate = aggregate.Project<T>(excludeProjection);
+            }
+
+            return await aggregate.ToListAsync();
         }
 
         public async Task<T> SearchById(string Id)
