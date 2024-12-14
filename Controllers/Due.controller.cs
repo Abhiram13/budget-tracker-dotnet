@@ -53,7 +53,7 @@ public class DueController : ApiBaseController
         return await Handler<List<Due>>.Exception(Callback, _logger);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id}/transactions")]
     public async Task<ApiResponse<DueTransactions>> GetByIdAsync(string id)
     {
         async Task<ApiResponse<DueTransactions>> Callback()
