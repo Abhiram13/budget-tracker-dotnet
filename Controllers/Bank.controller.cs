@@ -78,7 +78,7 @@ public class BankController : ApiBaseController
     }
 
     [HttpPatch("{id}")]
-    public async Task<ApiResponse<string>> Update(string id, [FromBody] dynamic body)
+    public async Task<ApiResponse<string>> Update(string id, [FromBody] Bank body)
     {
         AsyncCallback<string> callback = async () => {
             bool isUpdated = await _service.UpdateById(id, body);

@@ -57,6 +57,6 @@ namespace BudgetTracker.Injectors
         Task<List<T>> GetList(ProjectionDefinition<T>? excludeProjection = null);
         Task<T> SearchById(string id);
         Task<bool> DeleteById(string id);
-        Task<bool> UpdateById(string id, dynamic document);
+        Task<bool> UpdateById(string id, T document);
     }
 }

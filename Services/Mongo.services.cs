@@ -70,25 +70,11 @@ namespace BudgetTracker.Services
             return result.DeletedCount > 0;
         }
 
-        public async Task<bool> UpdateById(string id, dynamic document)
+        public async Task<bool> UpdateById(string id, T document)
         {
             FilterDefinition<T> filter = Builders<T>.Filter.Eq("_id", ObjectId.Parse(id));
-            Dictionary<string, string> dictionary = JsonSerializer.Deserialize<Dictionary<string, string>>(document);
-            UpdateDefinition<T>? update = null;
-
-            foreach (KeyValuePair<string, string> prop in dictionary)
-            {
-                if (update == null)
-                {
-                    update = Builders<T>.Update.Set(prop.Key, prop.Value);
-                }
-                else
-                {
-                    update = update?.Set(prop.Key, prop.Value);
-                }
-            }
-
-            UpdateResult result = await collection.UpdateOneAsync(filter, update);
+            document.Id = id;
+            ReplaceOneResult result = await collection.ReplaceOneAsync(filter, document);
             return result.ModifiedCount > 0;
         }
     }
