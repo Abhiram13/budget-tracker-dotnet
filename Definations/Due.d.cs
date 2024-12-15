@@ -28,7 +28,7 @@ namespace BudgetTracker.Defination
         public string? Payee { get; set; } = null;
 
         [BsonElement("amount"), JsonPropertyName("amount")]
-        public int? Amount { get; set; } = null;
+        public double? Amount { get; set; } = null;
 
         [Required, BsonElement("status"), JsonPropertyName("status")]
         public DueStatus? Status { get; set; } = DueStatus.Active;
@@ -45,7 +45,7 @@ namespace BudgetTracker.API.Dues
 
         [BsonElement("amount")]
         [JsonPropertyName("amount")]
-        public int Amount { get; set; }
+        public double Amount { get; set; }
 
         [BsonElement("status")]
         [JsonPropertyName("status")]
