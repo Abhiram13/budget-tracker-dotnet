@@ -1,3 +1,4 @@
+using System.Net;
 using BudgetTracker.API.Dues;
 using BudgetTracker.Defination;
 using BudgetTracker.Injectors;
@@ -54,7 +55,7 @@ public class DueController : ApiBaseController
     }
 
     [HttpGet("{id}/transactions")]
-    public async Task<ApiResponse<DueTransactions>> GetByIdAsync(string id)
+    public async Task<ApiResponse<DueTransactions>> TransactionsByDueIdAsync(string id)
     {
         async Task<ApiResponse<DueTransactions>> Callback()
         {
@@ -67,5 +68,35 @@ public class DueController : ApiBaseController
         }
 
         return await Handler<DueTransactions>.Exception(Callback, _logger);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ApiResponse<Due>> GetByIdAsync(string id)
+    {
+        async Task<ApiResponse<Due>> Callback()
+        {
+            Due result = await _service.SearchById(id);
+            return new ApiResponse<Due>()
+            {
+                Result = result,
+                StatusCode = System.Net.HttpStatusCode.OK,
+            };
+        };
+
+        return await Handler<Due>.Exception(Callback, _logger);
+    }
+
+    [HttpPatch("{id}")]
+    public async Task<ApiResponse<string>> UpdateByIdAsync(string id, [FromBody] dynamic due)
+    {
+        async Task<ApiResponse<string>> Callback()
+        {
+            bool result = await _service.UpdateById(id, due);
+            HttpStatusCode statusCode = result ? HttpStatusCode.Created : HttpStatusCode.NotModified;
+            string message = result ? "Due updated successfully" : "Due couldn't be updated";
+            return new ApiResponse<string>() { Message = message, StatusCode = statusCode};
+        };
+
+        return await Handler<string>.Exception(Callback, _logger);
     }
 }

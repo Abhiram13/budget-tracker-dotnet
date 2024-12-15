@@ -30,7 +30,8 @@ builder.Services.AddControllers()
         options.InvalidModelStateResponseFactory = action => {
             KeyValuePair<string, ModelStateEntry?> modelState = action.ModelState.FirstOrDefault();
             string errorAt = modelState.Key;
-            string errorMessage = modelState.Value?.Errors[0]?.ErrorMessage ?? $"Something went wrong at {errorAt}";
+            // string errorMessage = modelState.Value?.Errors?[0]?.ErrorMessage ?? $"Something went wrong at {errorAt}";
+            string errorMessage = $"Something went wrong at {errorAt}";
             return new BadRequestObjectResult(new ApiResponse<string> {Message = errorMessage, StatusCode = HttpStatusCode.BadRequest});
         };
     });
