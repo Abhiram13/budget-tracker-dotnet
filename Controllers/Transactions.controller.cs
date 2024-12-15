@@ -82,7 +82,7 @@ public class TransactionsController : ApiBaseController
     }
 
     [HttpPatch("{id}")]
-    public async Task<ApiResponse<string>> Update(string id, [FromBody] dynamic body)
+    public async Task<ApiResponse<string>> Update(string id, [FromBody] Transaction body)
     {
         AsyncCallback<string> callback = async () => {
             bool isUpdated = await _service.UpdateById(id, body);

@@ -87,7 +87,7 @@ public class DueController : ApiBaseController
     }
 
     [HttpPatch("{id}")]
-    public async Task<ApiResponse<string>> UpdateByIdAsync(string id, [FromBody] dynamic due)
+    public async Task<ApiResponse<string>> UpdateByIdAsync(string id, [FromBody] Due due)
     {
         async Task<ApiResponse<string>> Callback()
         {
