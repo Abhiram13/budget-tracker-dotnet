@@ -15,9 +15,15 @@ namespace BudgetTracker.Defination
 
     public class Due : MongoObject
     {
+        /// <summary>
+        /// Generic description of what the due amount for
+        /// </summary>
         [Required, BsonElement("description"), JsonPropertyName("description")]
         public string Description { get; set; } = string.Empty;
         
+        /// <summary>
+        /// To which back the due amount should be credited. Can be null at times
+        /// </summary>
         [BsonElement("to_bank"), JsonPropertyName("to_bank")]
         public string? ToBank { get; set; } = null;
         
@@ -27,6 +33,9 @@ namespace BudgetTracker.Defination
         [BsonElement("payee"), JsonPropertyName("payee"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public string? Payee { get; set; } = null;
 
+        /// <summary>
+        /// Total amount of due owed to the payee
+        /// </summary>
         [BsonElement("amount"), JsonPropertyName("amount")]
         public double? Amount { get; set; } = null;
 
@@ -57,7 +66,7 @@ namespace BudgetTracker.API.Dues
     }
 }
 
-namespace BudgetTracker.Injectors
+namespace BudgetTracker.Interface
 {
     public interface IDues : IMongoService<Due>
     { 

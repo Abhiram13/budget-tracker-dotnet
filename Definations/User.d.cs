@@ -30,7 +30,7 @@ namespace BudgetTracker.Defination
     } 
 }
 
-namespace BudgetTracker.Injectors
+namespace BudgetTracker.Interface
 {
     public interface IUserService : IMongoService<Defination.User>
     {

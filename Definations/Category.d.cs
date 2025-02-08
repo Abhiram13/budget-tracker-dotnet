@@ -15,7 +15,7 @@ namespace BudgetTracker.Defination
     }
 }
 
-namespace BudgetTracker.Injectors
+namespace BudgetTracker.Interface
 {
     public interface ICategoryService : IMongoService<Defination.Category> { };
 }

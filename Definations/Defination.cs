@@ -45,7 +45,7 @@ namespace BudgetTracker.Defination
     }
 }
 
-namespace BudgetTracker.Injectors
+namespace BudgetTracker.Interface
 {
     /// <summary>
     /// All Common DB Actions like CRUD Actions are integrated into this service.
@@ -58,5 +58,10 @@ namespace BudgetTracker.Injectors
         Task<T> SearchById(string id);
         Task<bool> DeleteById(string id);
         Task<bool> UpdateById(string id, T document);
+    }
+
+    public interface ICustomMiddleware
+    {
+        Task InvokeAsync(HttpContext httpContext);
     }
 }

@@ -3,9 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using MongoDB.Driver;
 using BudgetTracker.Services;
-using BudgetTracker.Injectors;
+using BudgetTracker.Interface;
 using BudgetTracker.Defination;
 using BudgetTracker.Application;
+using BudgetTracker.Middlewares;
 using BudgetTracker.Security.Authentication;
 using Google.Cloud.Diagnostics.AspNetCore3;
 using Google.Cloud.Diagnostics.Common;
@@ -30,8 +31,7 @@ builder.Services.AddControllers()
         options.InvalidModelStateResponseFactory = action => {
             KeyValuePair<string, ModelStateEntry?> modelState = action.ModelState.FirstOrDefault();
             string errorAt = modelState.Key;
-            // string errorMessage = modelState.Value?.Errors?[0]?.ErrorMessage ?? $"Something went wrong at {errorAt}";
-            string errorMessage = $"Something went wrong at {errorAt}";
+            string errorMessage = modelState.Value?.Errors?[0]?.ErrorMessage ?? $"Something went wrong at {errorAt}";            
             return new BadRequestObjectResult(new ApiResponse<string> {Message = errorMessage, StatusCode = HttpStatusCode.BadRequest});
         };
     });
@@ -86,7 +86,7 @@ app.MapHealthChecks("/health", new HealthCheckOptions () {
         [HealthStatus.Degraded] = StatusCodes.Status500InternalServerError,
     },
 });
-app.UseStatusCodePagesWithReExecute("/error/{0}");
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 app.UseCors();
 app.MapControllers();
 app.Run();

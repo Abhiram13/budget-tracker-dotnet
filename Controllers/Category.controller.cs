@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using Microsoft.Extensions.Caching.Memory;
-using BudgetTracker.Injectors;
+using BudgetTracker.Interface;
 using BudgetTracker.Defination;
 using BudgetTracker.Services;
 

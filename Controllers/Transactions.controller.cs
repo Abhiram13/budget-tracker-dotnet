@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using BudgetTracker.Services;
 using BudgetTracker.Defination;
-using BudgetTracker.Injectors;
+using BudgetTracker.Interface;
 using BudgetTracker.API.Transactions.ByDate;
 using TransactionListResult = BudgetTracker.API.Transactions.List.Result;
 using ByBankResult = BudgetTracker.API.Transactions.ByBank.Result;
@@ -24,18 +24,14 @@ public class TransactionsController : ApiBaseController
     [HttpPost]
     public async Task<ApiResponse<string>> Add([FromBody] Transaction body)
     {
-        AsyncCallback<string> callback = async () => {
-            Transaction transaction = body;
-            // await _service.Validations(body);
-            await _service.InserOne(transaction);
-            return new ApiResponse<string>()
-            {
-                Message = "Transaction inserted successfully",
-                StatusCode = HttpStatusCode.Created,
-            };
-        };        
-
-        return await Handler<string>.Exception(callback, _logger);
+        Transaction transaction = body;
+        await _service.Validations(body);
+        await _service.InserOne(transaction);
+        return new ApiResponse<string>()
+        {
+            Message = "Transaction inserted successfully",
+            StatusCode = HttpStatusCode.Created,
+        };
     }
 
     [HttpGet]

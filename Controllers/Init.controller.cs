@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using BudgetTracker.Services;
 using BudgetTracker.Defination;
-using BudgetTracker.Injectors;
+using BudgetTracker.Interface;
 using Microsoft.AspNetCore.Authorization;
 
 namespace BudgetTracker.Controllers;

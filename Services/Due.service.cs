@@ -1,5 +1,5 @@
 using BudgetTracker.Defination;
-using BudgetTracker.Injectors;
+using BudgetTracker.Interface;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using BudgetTracker.API.Dues;

@@ -1,5 +1,5 @@
 using BudgetTracker.Defination;
-using BudgetTracker.Injectors;
+using BudgetTracker.Interface;
 
 namespace BudgetTracker.Services;
 

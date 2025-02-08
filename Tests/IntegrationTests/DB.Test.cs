@@ -3,10 +3,8 @@ using MongoDB.Driver;
 using Mongo2Go;
 using Xunit;
 using BudgetTracker.Defination;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace IntegrationTests;
 
@@ -40,7 +38,7 @@ public class MongoDBFixture : IDisposable
     public void Dispose()
     {
         // delete all records in "transactions" collection
-        // Database?.GetCollection<Transaction>("transactions").DeleteManyAsync(FilterDefinition<Transaction>.Empty);
+        Database?.GetCollection<Transaction>("transactions").DeleteMany(FilterDefinition<Transaction>.Empty);
         _runner.Dispose();
     }
 }

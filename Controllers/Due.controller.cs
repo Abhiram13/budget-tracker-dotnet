@@ -1,7 +1,7 @@
 using System.Net;
 using BudgetTracker.API.Dues;
 using BudgetTracker.Defination;
-using BudgetTracker.Injectors;
+using BudgetTracker.Interface;
 using BudgetTracker.Services;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;

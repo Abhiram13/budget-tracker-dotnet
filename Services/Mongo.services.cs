@@ -1,7 +1,7 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Text.Json;
-using BudgetTracker.Injectors;
+using BudgetTracker.Interface;
 using BudgetTracker.Defination;
 
 namespace BudgetTracker.Services
@@ -50,9 +50,11 @@ namespace BudgetTracker.Services
 
         public async Task<T> SearchById(string Id)
         {
+            if (string.IsNullOrEmpty(Id)) return default!;
+
             FilterDefinition<T> filter = Builders<T>.Filter.Eq("_id", ObjectId.Parse(Id));
 
-            return await collection.Find(filter).FirstAsync();
+            return await collection.Find(filter).FirstOrDefaultAsync();
         }
 
         public async Task<C> SearchById<C>(string Id, IMongoCollection<C> _collection) where C : MongoObject

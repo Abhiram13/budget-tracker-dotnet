@@ -70,8 +70,13 @@ namespace BudgetTracker.Services
         }
     }
 
+    /// <summary>
+    /// Throws when the request payload contains invalid values for any given property
+    /// </summary>
     public class BadRequestException : Exception
     {
+        public BadRequestException() : base ("Invalid data provided") { }
+
         public BadRequestException(string message) : base(message) { }
     }
 

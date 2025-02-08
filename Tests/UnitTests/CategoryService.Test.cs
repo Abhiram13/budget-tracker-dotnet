@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Memory;
 using BudgetTracker.Defination;
 using BudgetTracker.Controllers;
-using BudgetTracker.Injectors;
+using BudgetTracker.Interface;
 using Xunit;
 using Moq;
 using BudgetTracker.Application;

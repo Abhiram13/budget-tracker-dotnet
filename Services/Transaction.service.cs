@@ -1,51 +1,63 @@
 using System.Text.RegularExpressions;
-using BudgetTracker.Injectors;
+using BudgetTracker.Interface;
 using BudgetTracker.Defination;
 using BudgetTracker.Repository;
 using BudgetTracker.API.Transactions.List;
 using BudgetTracker.API.Transactions.ByDate;
 using ByBankResult = BudgetTracker.API.Transactions.ByBank.Result;
+using BudgetTracker.Application;
 
 namespace BudgetTracker.Services
 {
     public class TransactionService : MongoServices<Transaction>, ITransactionService
     {
-        public TransactionService() : base(Collection.Transaction) { }
+        private readonly ICategoryService _categoryService;
+        private readonly IBankService _bankService;
+        private readonly ILogger<TransactionService> _logger;
+
+        public TransactionService(IBankService bankService, ICategoryService categoryService, ILogger<TransactionService> logger) : base(Collection.Transaction)
+        {
+            _logger = logger;
+            _categoryService = categoryService;
+            _bankService = bankService;
+        }
 
         public async Task Validations(Transaction transaction)
         {
-            if (!Enum.IsDefined(typeof(TransactionType), transaction.Type))
-            {
-                throw new BadRequestException("Transaction type is invalid");
-            }
-
-            Regex descriptionRegex = new Regex(@"^[a-zA-Z0-9 ]*$");
-
-            if (!descriptionRegex.IsMatch(transaction.Description))
-            {
-                throw new BadRequestException($"Description contains invalid characters. Recieved value: {transaction.Description}");
-            }
-
-            Category? category = await SearchById(transaction.CategoryId, Collection.Category);
-
+            Category category = await _categoryService.SearchById(transaction.CategoryId);
             if (category == null || string.IsNullOrEmpty(category.Name))
             {
-                throw new BadRequestException("Invalid category id provided");
+                // _logger.LogError("Invalid Category Id ({0}) provided", transaction.CategoryId);
+                throw new BadRequestException($"Invalid Category Id ({transaction.CategoryId}) provided");
             }
 
-            // Bank? fromBank =  await SearchById(transaction.FromBank, Collection.Bank);
+            // throw error if both from and to bank fields are empty
+            if (string.IsNullOrEmpty(transaction.FromBank) && string.IsNullOrEmpty(transaction.ToBank))
+            {
+                // _logger.LogError("Invalid From Bank ({0}) and To Bank ({1}) provided", transaction.FromBank, transaction.ToBank);
+                throw new BadRequestException($"Invalid From Bank ({transaction.FromBank}) and To Bank ({transaction.ToBank}) provided");
+            }
 
-            // if (fromBank == null || string.IsNullOrEmpty(fromBank.Name))
-            // {
-            //     throw new InvalidDataException("Invalid from bank id provided");
-            // }
+            await ValidateBanks(transaction.FromBank);
+            await ValidateBanks(transaction.ToBank);
+        }
 
-            // Bank? toBank =  await SearchById(transaction.ToBank, Collection.Bank);
+        /// <summary>
+        /// Validates if provided bank id is valid. If empty value is provided, simply returns.        
+        /// </summary>
+        /// <param name="bankId">Object ID of From bank or To bank</param>
+        /// <returns></returns>
+        /// <exception cref="BadRequestException">When invalid bank id is provided</exception>
+        private async Task ValidateBanks(string? bankId)
+        {
+            if (string.IsNullOrEmpty(bankId)) return;
 
-            // if (toBank == null || string.IsNullOrEmpty(toBank.Name))
-            // {
-            //     throw new InvalidDataException("Invalid to bank id provided");
-            // }
+            Bank bank = await _bankService.SearchById(bankId);
+            if (bank == null || string.IsNullOrEmpty(bank.Name))
+            {
+                // _logger.LogError("Invalid bank id ({0}) provided", bankId);
+                throw new BadRequestException($"Invalid bank id ({bankId}) provided");
+            }
         }
 
         public async Task<Result> List(QueryParams? queryParams, CancellationToken? cancellationToken)

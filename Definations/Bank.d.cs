@@ -12,7 +12,7 @@ namespace BudgetTracker.Defination
     }
 }
 
-namespace BudgetTracker.Injectors
+namespace BudgetTracker.Interface
 {
     public interface IBankService : IMongoService<BudgetTracker.Defination.Bank> { }
 }
