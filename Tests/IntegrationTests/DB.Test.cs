@@ -5,6 +5,7 @@ using Xunit;
 using BudgetTracker.Defination;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace IntegrationTests;
 
@@ -23,7 +24,7 @@ public class MongoDBFixture : IDisposable
         _setEnvironmentVariables();
         _runner = MongoDbRunner.Start();
         _client = new MongoClient($"mongodb+srv://{Env.USERNAME}:{Env.PASSWORD}@{Env.HOST}/?retryWrites=true&w=majority&appName=Trsnactions");
-        Database = _client.GetDatabase("Development");
+        Database = _client.GetDatabase($"{Env.DB}");
     }
 
     private void _setEnvironmentVariables()
@@ -31,14 +32,16 @@ public class MongoDBFixture : IDisposable
         var currentParent = Directory.GetParent(Directory.GetCurrentDirectory());
         var mainParent = Directory.GetParent(currentParent.Parent.FullName);
         string root = Directory.GetCurrentDirectory();
-        string dotenv = Path.Combine(mainParent.Parent.FullName, ".env");
+        string dotenv = Path.Combine(mainParent.FullName, ".env");
         DotEnv.Load(dotenv);
     }
 
     public void Dispose()
     {
         // delete all records in "transactions" collection
-        Database?.GetCollection<Transaction>("transactions").DeleteMany(FilterDefinition<Transaction>.Empty);
+        Task.Run(async () => {
+            await Database?.GetCollection<Transaction>("transactions").DeleteManyAsync(FilterDefinition<Transaction>.Empty);
+        }).Wait();        
         _runner.Dispose();
     }
 }
@@ -82,7 +85,7 @@ public abstract class IntegrationTests
     {
         _fixture = fixture;
         Environment.SetEnvironmentVariable("PORT", "3002");
-        Environment.SetEnvironmentVariable("ENV", "Development");
+        Environment.SetEnvironmentVariable("ENV", "Test");
         Environment.SetEnvironmentVariable("API_KEY", _API_KEY);
 
         CustomWebApplicationFactory factory = new CustomWebApplicationFactory(_fixture);

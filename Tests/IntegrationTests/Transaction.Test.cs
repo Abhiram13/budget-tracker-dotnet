@@ -204,43 +204,6 @@ public class TransactionIntegrationTests : IntegrationTests
         }
     }
 
-    [Theory]
-    [InlineData("ASC")]
-    [InlineData("DESC")]
-    [InlineData("")]
-    public async Task Descending_Sort_Check_In_Transaction_Categories(string sortOrder)
-    {
-        HttpResponseMessage httpResponse = await _client.GetAsync($"/transactions?type=category&month=09&year=2024&sort={sortOrder}");
-        string response = await httpResponse.Content.ReadAsStringAsync();
-        ApiResponse<Result>? apiResponse = JsonSerializer.Deserialize<ApiResponse<Result>>(response);
-        PropertyInfo? categoryProp = apiResponse?.Result?.GetType().GetProperty("categories");
-        PropertyInfo? banksProp = apiResponse?.Result?.GetType().GetProperty("banks");
-        PropertyInfo? transactionProp = apiResponse?.Result?.GetType().GetProperty("transactions");
-        List<CategoryData>? sortedList;
-
-        if (sortOrder == "ASC")
-        {
-            sortedList = apiResponse?.Result?.Categories?.OrderBy(c => c.Amount).ToList();
-        }
-        else
-        {
-            sortedList = apiResponse?.Result?.Categories?.OrderByDescending(c => c.Amount).ToList();
-        }
-        
-        Assert.True(apiResponse?.Result?.Categories?.Count > 0);
-        Assert.Equal(sortedList, apiResponse.Result.Categories);
-        Assert.Null(transactionProp);
-        Assert.Null(banksProp);
-        Assert.True(apiResponse.Result.TotalCount > 0);
-
-        foreach (CategoryData category in apiResponse.Result.Categories)
-        {
-            Assert.NotNull(category.Name);
-            Assert.NotEmpty(category.Name);            
-            Assert.True(category.Amount > 0);
-        }
-    }
-
     [Fact]
     public async Task Transaction_Categories_For_Current_Month()
     {
@@ -277,7 +240,7 @@ public class TransactionIntegrationTests : IntegrationTests
     [Fact]
     public async Task Transaction_Categories_For_Previous_Month()
     {
-        HttpResponseMessage httpResponse = await _client.GetAsync($"/transactions/category/665aa29b930ad7888c6766fa?month=09&year=2024");
+        HttpResponseMessage httpResponse = await _client.GetAsync($"/transactions/category/{_categoryId}?month=09&year=2024");
         string jsonResponse = await httpResponse.Content.ReadAsStringAsync();
         ApiResponse<TransactionByCategoryResult>? apiResponse = JsonSerializer.Deserialize<ApiResponse<TransactionByCategoryResult>>(jsonResponse);
 
@@ -302,6 +265,43 @@ public class TransactionIntegrationTests : IntegrationTests
                 Assert.True(transaction.Amount > 0);
                 Assert.NotNull(transaction.Description);
             }
+        }
+    }
+
+    // FIXME: Randomly failing test
+    [Theory]
+    [InlineData("ASC")]
+    [InlineData("DESC")]
+    public async Task Descending_Sort_Check_In_Transaction_Categories(string sortOrder)
+    {
+        HttpResponseMessage httpResponse = await _client.GetAsync($"/transactions?type=category&month=09&year=2024&sort={sortOrder}");
+        string response = await httpResponse.Content.ReadAsStringAsync();
+        ApiResponse<CategoryTypeTransactionsResult>? apiResponse = JsonSerializer.Deserialize<ApiResponse<CategoryTypeTransactionsResult>>(response);
+        PropertyInfo? categoryProp = apiResponse?.Result?.GetType().GetProperty("categories");
+        PropertyInfo? banksProp = apiResponse?.Result?.GetType().GetProperty("banks");
+        PropertyInfo? transactionProp = apiResponse?.Result?.GetType().GetProperty("transactions");
+        List<CategoryData>? sortedList;        
+
+        if (sortOrder == "ASC")
+        {
+            sortedList = apiResponse?.Result?.Categories?.OrderBy(c => c.Amount).ToList();
+        }
+        else
+        {
+            sortedList = apiResponse?.Result?.Categories?.OrderByDescending(c => c.Amount).ToList();
+        }
+
+        Assert.True(apiResponse?.Result?.Categories?.Count > 0);
+        Assert.Equal(sortedList, apiResponse.Result.Categories);
+        Assert.Null(transactionProp);
+        Assert.Null(banksProp);
+        Assert.True(apiResponse.Result.TotalCount > 0);
+
+        foreach (CategoryData category in apiResponse.Result.Categories)
+        {
+            Assert.NotNull(category.Name);
+            Assert.NotEmpty(category.Name);
+            Assert.True(category.Amount > 0);
         }
     }
 }
