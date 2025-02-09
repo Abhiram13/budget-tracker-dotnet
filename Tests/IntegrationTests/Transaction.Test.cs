@@ -31,96 +31,65 @@ public class TransactionIntegrationTests : IntegrationTests
     private const string _invalidBankId = "66483fed6c7ed85fca650000";
     private const string _description = "Sample test transaction";
     private const string _date = "2024-09-18";    
-    public static readonly TransactionTestData[] transactionTestData = new TransactionTestData[]
+    public static readonly List<object[]> TransactionInsertTestData = new List<object[]>()
     {
-        new () {
-            Transaction = new () { Amount = 123, CategoryId = _categoryId, Date = _date, Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit },
-            ResponseMessage = "Transaction inserted successfully",
-            ResponseStatusCode = 201,
-            StatusCode = 200, 
+        new object[] {
+            new Transaction () { Amount = 123, CategoryId = _categoryId, Date = _date, Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit },
+            "Transaction inserted successfully", 201, 200
         },
-        new () {
-            Transaction = new () { Amount = 123, CategoryId = "", Date = _date, Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit },
-            ResponseMessage = "The CategoryId field is required.",
-            ResponseStatusCode = 400,
-            StatusCode = 400, 
+        new object[] {
+            new Transaction () { Amount = 123, CategoryId = "", Date = _date, Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit },
+            "The CategoryId field is required.", 400, 400
         },
-        new () {
-            Transaction = new () { Amount = 123, CategoryId = _categoryId, Date = _date, Description = _description, Due = false, FromBank = "", ToBank = "", Type = TransactionType.Debit },
-            ResponseMessage = "Something went wrong. Please verify logs for more details",
-            ResponseStatusCode = 500,
-            StatusCode = 200,
+        new object[] {
+            new Transaction () { Amount = 123, CategoryId = _categoryId, Date = _date, Description = _description, Due = false, FromBank = "", ToBank = "", Type = TransactionType.Debit },
+            "Something went wrong. Please verify logs for more details", 500, 200
         },
-        new () {
-            Transaction = new () { Amount = 123, CategoryId = _invalidCategoryId, Date = _date, Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit },
-            ResponseMessage = "Something went wrong. Please verify logs for more details",
-            ResponseStatusCode = 500,
-            StatusCode = 200,
+        new object[] {
+            new Transaction () { Amount = 123, CategoryId = _invalidCategoryId, Date = _date, Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit },
+            "Something went wrong. Please verify logs for more details", 500, 200
         },
-        new () {
-            Transaction = new () { Amount = 123, CategoryId = _categoryId, Date = _date, Description = _description, Due = false, FromBank = _invalidBankId, ToBank = "", Type = TransactionType.Debit },
-            ResponseMessage = "Something went wrong. Please verify logs for more details",
-            ResponseStatusCode = 500,
-            StatusCode = 200,
+        new object[] {
+            new Transaction () { Amount = 123, CategoryId = _categoryId, Date = _date, Description = _description, Due = false, FromBank = _invalidBankId, ToBank = "", Type = TransactionType.Debit },
+            "Something went wrong. Please verify logs for more details", 500, 200
         },
-        new () {
-            Transaction = new () { Amount = 123, CategoryId = _categoryId, Date = "2024-01-011#", Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit },
-            ResponseMessage = "Please provide valid date.",
-            ResponseStatusCode = 400,
-            StatusCode = 400,
+        new object[] {
+            new Transaction () { Amount = 123, CategoryId = _categoryId, Date = "2024-01-011#", Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit },
+            "Please provide valid date.", 400, 400
         },
-        new () {
-            Transaction = new () { Amount = 123, CategoryId = _categoryId, Date = "", Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit },
-            ResponseMessage = "The Date field is required.",
-            ResponseStatusCode = 400,
-            StatusCode = 400,
+        new object[] {
+            new Transaction () { Amount = 123, CategoryId = _categoryId, Date = "", Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit },
+            "The Date field is required.", 400, 400
         },
-        new () {
-            Transaction = new () { Amount = 123, CategoryId = _categoryId, Date = "hasgds77y9-hdsk7-", Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit },
-            ResponseMessage = "Please provide valid date.",
-            ResponseStatusCode = 400,
-            StatusCode = 400,
+        new object[] {
+            new Transaction () { Amount = 123, CategoryId = _categoryId, Date = "hasgds77y9-hdsk7-", Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit },
+            "Please provide valid date.", 400, 400
         },
-        new () {
-            Transaction = new () { Amount = 123, CategoryId = _categoryId, Date = DateTime.Now.AddDays(2).ToString("yyyy-MM-dd"), Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit },
-            ResponseMessage = "Provided date is out of range or invalid.",
-            ResponseStatusCode = 400,
-            StatusCode = 400,
+        new object[] {
+            new Transaction () { Amount = 123, CategoryId = _categoryId, Date = DateTime.Now.AddDays(2).ToString("yyyy-MM-dd"), Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit },
+            "Provided date is out of range or invalid.", 400, 400
         },
-        new () {
-            Transaction = new () { Amount = 123, CategoryId = _categoryId, Date = _date, Description = "Sample test !", Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit },
-            ResponseMessage = "Please provide valid description.",
-            ResponseStatusCode = 400,
-            StatusCode = 400, 
+        new object[] {
+            new Transaction () { Amount = 123, CategoryId = _categoryId, Date = _date, Description = "Sample test !", Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit },
+            "Please provide valid description.", 400, 400
         },
-        new () {
-            Transaction = new () { Amount = 123, CategoryId = _categoryId, Date = _date, Description = "Sample test 123", Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit },
-            ResponseMessage = "Transaction inserted successfully",
-            ResponseStatusCode = 201,
-            StatusCode = 200, 
+        new object[] {
+            new Transaction () { Amount = 123, CategoryId = _categoryId, Date = _date, Description = "Sample test 123", Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit },
+            "Transaction inserted successfully", 201, 200
         },
-        new () {
-            Transaction = new () { Amount = 123, CategoryId = _categoryId, Date = _date, Description = "ajdhsah HKHKHk %&^%", Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit },
-            ResponseMessage = "Please provide valid description.",
-            ResponseStatusCode = 400,
-            StatusCode = 400, 
+        new object[] {
+            new Transaction () { Amount = 123, CategoryId = _categoryId, Date = _date, Description = "ajdhsah HKHKHk %&^%", Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit },
+            "Please provide valid description.", 400, 400
         },
-        new () {
-            Transaction = new () { Amount = 123, CategoryId = _categoryId, Date = _date, Description = "", Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit },
-            ResponseMessage = "The Description field is required.",
-            ResponseStatusCode = 400,
-            StatusCode = 400, 
+        new object[] {
+            new Transaction () { Amount = 123, CategoryId = _categoryId, Date = _date, Description = "", Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit },
+            "The Description field is required.", 400, 400
         },
-        new () {
-            Transaction = new () { Amount = 234, CategoryId = _categoryId, Date = DateTime.Now.ToString("yyyy-MM-dd"), Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit },
-            ResponseMessage = "Transaction inserted successfully",
-            ResponseStatusCode = 201,
-            StatusCode = 200, 
+        new object[] {
+            new Transaction () { Amount = 234, CategoryId = _categoryId, Date = DateTime.Now.ToString("yyyy-MM-dd"), Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit },
+            "Transaction inserted successfully", 201, 200
         },
     };
-    public static readonly List<object[]> transactionTestDataEnumerable = transactionTestData.Select(t => new object[] {
-        t.Transaction, t.ResponseMessage, t.ResponseStatusCode, t.StatusCode
-    }).ToList();
     public static readonly List<object[]> ListTestData = new List<object[]>()
     {
         // month, year, statuscode, totalcount, debit, date, count
@@ -128,6 +97,14 @@ public class TransactionIntegrationTests : IntegrationTests
         new object[] { "10", "2024", 200, 0, 0, "", 0 },
         new object[] { DateTime.Now.ToString("MM"), DateTime.Now.ToString("yyyy"), 200, 1, 234, DateTime.Now.ToString("yyyy-MM-dd"), 1 },
         new object[] { "", "", 200, 1, 234, DateTime.Now.ToString("yyyy-MM-dd"), 1 },
+    };
+    public static readonly List<object[]> TransactionListTypeCategoryTestData = new List<object[]>()
+    {
+        // month, year, statusCode, totalCount, category, amount, shouldHaveData
+        new object[] {"09", "2024", 200, 2, "Electricity ", 246, true},        
+        new object[] {DateTime.Now.ToString("MM"), DateTime.Now.ToString("yyyy"), 200, 1, "Electricity ", 234, true},
+        new object[] {"", "", 200, 1, "Electricity ", 234, true},
+        // new object[] {"11", "2024", 200, 0, "", 0, false}, // FIXME: This test is failing other tests even though, through API it is working
     };
     
     public TransactionIntegrationTests(MongoDBFixture fixture) : base(fixture)
@@ -137,7 +114,7 @@ public class TransactionIntegrationTests : IntegrationTests
     }
 
     [Theory]
-    [MemberData(nameof(transactionTestDataEnumerable))]
+    [MemberData(nameof(TransactionInsertTestData))]
     public async Task Validate_Add_Transaction(Transaction transaction, string expectedResponseMessage, int expectedResponseCode, int expectedStatusCode)
     {
         string payload = JsonSerializer.Serialize(transaction);
@@ -177,6 +154,41 @@ public class TransactionIntegrationTests : IntegrationTests
                 Assert.Equal(expectedDebit, transaction.Debit);
                 Assert.Equal(expectedDate, transaction.Date);
                 Assert.Equal(expectedCount, transaction.Count);
+            }
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(TransactionListTypeCategoryTestData))]
+    public async Task Transactions_List_Type_Categories(string month, string year, int expectedStatusCode, int expectedTotalCount, string expectedCategoryName, int expectedDebit, bool expectedDataExist)
+    {
+        HttpResponseMessage httpResponse = await _client.GetAsync($"/transactions?month={month}&year={year}&type=category");
+        string jsonResponse = await httpResponse.Content.ReadAsStringAsync();
+        ApiResponse<CategoryTypeTransactionsResult>? apiResponse = JsonSerializer.Deserialize<ApiResponse<CategoryTypeTransactionsResult>>(jsonResponse);
+        PropertyInfo? transactionsProp = apiResponse?.Result?.GetType().GetProperty("transactions");
+        PropertyInfo? banksProp = apiResponse?.Result?.GetType().GetProperty("banks");
+        Assert.Equal(expectedStatusCode, (int) apiResponse!.StatusCode);
+        Assert.NotNull(apiResponse.Result);
+        Assert.Equal(expectedTotalCount, apiResponse.Result.TotalCount);
+        Assert.Equal(expectedDataExist, apiResponse.Result.Categories?.Count > 0);
+        Assert.Null(transactionsProp);
+        Assert.Null(banksProp);
+
+        if (apiResponse.Result.TotalCount > 0)
+        {
+            Assert.NotNull(apiResponse.Result.Categories);
+            if (apiResponse.Result.Categories.Count > 0)
+            {
+                foreach (CategoryData category in apiResponse.Result.Categories)
+                {
+                    Assert.NotNull(category.Name);
+                    Assert.NotEmpty(category.Name);
+                    Assert.True(category.Amount > 0);
+                    Assert.NotEmpty(category.CategoryId);
+                    Assert.NotNull(category.CategoryId);
+                    Assert.Equal(expectedCategoryName, category.Name);
+                    Assert.Equal(expectedDebit, category.Amount);
+                }
             }
         }
     }
