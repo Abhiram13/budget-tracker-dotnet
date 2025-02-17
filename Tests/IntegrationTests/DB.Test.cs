@@ -41,7 +41,7 @@ public class MongoDBFixture : IDisposable
         // delete all records in "transactions" collection
         Task.Run(async () => {
             await Database?.GetCollection<Transaction>("transactions").DeleteManyAsync(FilterDefinition<Transaction>.Empty);
-        }).Wait();        
+        }).Wait();
         _runner.Dispose();
     }
 }
