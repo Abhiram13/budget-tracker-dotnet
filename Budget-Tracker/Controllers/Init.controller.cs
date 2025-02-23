@@ -20,6 +20,7 @@ public class InitController : ControllerBase
         _logger = logger;
     }
 
+    [Obsolete]
     [HttpPost("login")]
     public async Task<ApiResponse<string>> Login([FromBody] Login body)
     {
@@ -41,6 +42,7 @@ public class InitController : ControllerBase
         return await Handler<string>.Exception(callback, _logger);
     }
 
+    [Obsolete]
     [Route("error/{code}")]
     public IActionResult Error(int code)
     {

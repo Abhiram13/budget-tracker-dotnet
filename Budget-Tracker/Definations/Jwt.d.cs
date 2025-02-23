@@ -4,6 +4,7 @@ namespace BudgetTracker.Security
 {
     namespace Jwt
     {
+        [Obsolete]
         public class Payload
         {
             [JsonPropertyName("user_id")]

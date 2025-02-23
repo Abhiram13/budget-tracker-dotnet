@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace BudgetTracker.Defination
 {
+    [Obsolete]
     public class User : MongoObject
     {
         [JsonPropertyName("user_name")]
@@ -20,6 +21,7 @@ namespace BudgetTracker.Defination
         public string Salt { get; set; } = "";
     }
 
+    [Obsolete]
     public class Login
     {
         [JsonPropertyName("user_name")]
@@ -32,6 +34,7 @@ namespace BudgetTracker.Defination
 
 namespace BudgetTracker.Interface
 {
+    [Obsolete]
     public interface IUserService : IMongoService<Defination.User>
     {
         Task<string?> Login(string username, string password);

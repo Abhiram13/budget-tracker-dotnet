@@ -5,9 +5,13 @@ using MongoDB.Driver;
 
 namespace BudgetTracker.Services
 {
+    [Obsolete]
     public delegate ApiResponse<T> Callback<T>() where T : class;
+    
+    [Obsolete]
     public delegate Task<ApiResponse<T>> AsyncCallback<T>() where T : class;
 
+    [Obsolete]
     public static class Handler<T> where T : class
     {
         public static ApiResponse<T> Exception(Callback<T> callback)
