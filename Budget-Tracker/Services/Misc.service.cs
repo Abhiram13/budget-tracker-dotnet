@@ -9,7 +9,7 @@ namespace BudgetTracker.Services
     public delegate ApiResponse<T> Callback<T>() where T : class;
     
     [Obsolete]
-    public delegate Task<ApiResponse<T>> AsyncCallback<T>() where T : class; 
+    public delegate Task<ApiResponse<T>> AsyncCallback<T>() where T : class;
 
     [Obsolete]
     public static class Handler<T> where T : class
