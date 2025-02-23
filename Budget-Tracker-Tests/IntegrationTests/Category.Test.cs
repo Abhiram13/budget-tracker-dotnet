@@ -40,9 +40,9 @@ public class CategoryIntegrationTests : IntegrationTests
         StringContent? payload1 = new StringContent(payload, Encoding.UTF8, "application/json");
         HttpResponseMessage data = await _client.PostAsync("category", payload1);
         string response = await data.Content.ReadAsStringAsync();
-        ApiResponse<string> apiResponse = JsonSerializer.Deserialize<ApiResponse<string>>(response);
+        ApiResponse<string>? apiResponse = JsonSerializer.Deserialize<ApiResponse<string>>(response);
 
-        Assert.Equal(400, (int) apiResponse.StatusCode);
+        Assert.Equal(400, (int) apiResponse!.StatusCode);
     }
 
     [Fact]
@@ -52,9 +52,9 @@ public class CategoryIntegrationTests : IntegrationTests
         StringContent? payload1 = new StringContent(payload, Encoding.UTF8, "application/json");
         HttpResponseMessage data = await _client.PostAsync("category", payload1);
         string response = await data.Content.ReadAsStringAsync();
-        ApiResponse<string> apiResponse = JsonSerializer.Deserialize<ApiResponse<string>>(response);
+        ApiResponse<string>? apiResponse = JsonSerializer.Deserialize<ApiResponse<string>>(response);
 
-        Assert.Equal(400, (int) apiResponse.StatusCode);
+        Assert.Equal(400, (int) apiResponse!.StatusCode);
     }    
 
     [Fact] 
@@ -62,9 +62,9 @@ public class CategoryIntegrationTests : IntegrationTests
     {        
         HttpResponseMessage data = await _client.GetAsync("/category");
         string result = await data.Content.ReadAsStringAsync();
-        ApiResponse<List<Category>> response = JsonSerializer.Deserialize<ApiResponse<List<Category>>>(result);
+        ApiResponse<List<Category>>? response = JsonSerializer.Deserialize<ApiResponse<List<Category>>>(result);
 
-        Assert.Equal(200, (int) response.StatusCode);
+        Assert.Equal(200, (int) response!.StatusCode);
         Assert.NotNull(response.Result);
         Assert.True(response.Result.Count > 0);
     }
