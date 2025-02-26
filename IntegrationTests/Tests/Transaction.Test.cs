@@ -141,6 +141,15 @@ public class TransactionIntegrationTests : IntegrationTests
         new object[] {"", "", 200, 1, "Electricity ", 234, true},
         new object[] {"11", "2024", 200, 0, "", 0, false},
     };
+
+    public static readonly List<object[]> TransactionsListTypeBanksTestData = new List<object[]>()
+    {
+        // month, year, expectedStatusCode, expectedTotalCount, expectedBankId, expectedBankName, expectedTotalDebit, expectedIsDataExist
+        new object[] { "09", "2024", 200, 2, "66483fed6c7ed85fca653d05", "Axis Bank", 246, true },
+        new object[] { DateTime.Now.ToString("MM"), DateTime.Now.ToString("yyyy"), 200, 1, "66483fed6c7ed85fca653d05", "Axis Bank", 234, true },
+        new object[] { "", "", 200, 1, "66483fed6c7ed85fca653d05", "Axis Bank", 234, true },
+        new object[] { "10", "2024", 200, 0, "", "", 0, false },
+    };
     public static readonly List<object[]> TransactionListByCategoryIdTestData = new List<object[]>()
     {
         // month, year, category name, total dates for that month, total transactions for that date, data
@@ -168,7 +177,7 @@ public class TransactionIntegrationTests : IntegrationTests
 
     [Theory]
     [MemberData(nameof(TransactionInsertTestData))]
-    public async Task Validate_Add_Transaction(Transaction transaction, string expectedResponseMessage, int expectedResponseCode, int expectedStatusCode)
+    public async Task Insert_Transactions(Transaction transaction, string expectedResponseMessage, int expectedResponseCode, int expectedStatusCode)
     {
         string payload = JsonSerializer.Serialize(transaction);
         StringContent? payload1 = new StringContent(payload, Encoding.UTF8, "application/json");
@@ -182,6 +191,7 @@ public class TransactionIntegrationTests : IntegrationTests
         Assert.Equal(expectedStatusCode, (int) data.StatusCode);
     }
 
+    #region Transactions List APIs
     [Theory]
     [MemberData(nameof(TransactionListTypeCategoryTestData))]
     public async Task Transactions_List_Type_Categories(string month, string year, int expectedStatusCode, int expectedTotalCount, string expectedCategoryName, int expectedDebit, bool expectedDataExist)
@@ -220,37 +230,10 @@ public class TransactionIntegrationTests : IntegrationTests
             }
         }
     }
-
-    [Theory]
-    [MemberData(nameof(TransactionListByCategoryIdTestData))]
-    public async Task Transactions_Categories_List(string month, string year, string expectedCategoryName, int expectedMonthRecords, int expectedTransactions, List<TransactionsByCategoryId> data)
-    {
-        await using (TransactionDisposableTests disposableTests = new TransactionDisposableTests(_fixture, _client))
-        {
-            await disposableTests.InsertManyAsync();
-            HttpResponseMessage httpResponse = await _client.GetAsync($"/transactions/category/{_categoryId}?month={month}&year={year}");
-            string jsonResponse = await httpResponse.Content.ReadAsStringAsync();
-            ApiResponse<TransactionByCategoryResult>? apiResponse = JsonSerializer.Deserialize<ApiResponse<TransactionByCategoryResult>>(jsonResponse);
-
-            Assert.Equal(200, (int) apiResponse!.StatusCode);
-            Assert.NotEmpty(apiResponse!.Result!.Category);
-            Assert.Equal(expectedCategoryName, apiResponse!.Result!.Category);
-            Assert.Equal(expectedMonthRecords, apiResponse!.Result!.CategoryData.Count);
-
-            if (apiResponse.Result.CategoryData.Count > 0)
-            {
-                foreach (TransactionsByCategoryId? categoryData in apiResponse.Result.CategoryData)
-                {
-                    Assert.Equal(expectedTransactions, categoryData.Transactions.Count);
-                    Assert.Contains(data, d => d.Date == categoryData.Date);                                        
-                }
-            }
-        }
-    }
-
+    
     [Theory]
     [MemberData(nameof(ListTestData))]
-    public async Task Transactions_List_Positive(string month, string year, int expectedStatusCode, int expectedTotalCount, int expectedDebit, string expectedDate, int expectedCount)
+    public async Task Transactions_List_Type_Transactions(string month, string year, int expectedStatusCode, int expectedTotalCount, int expectedDebit, string expectedDate, int expectedCount)
     {
         await using (TransactionDisposableTests disposableTest = new TransactionDisposableTests(_fixture, _client))
         {
@@ -281,5 +264,67 @@ public class TransactionIntegrationTests : IntegrationTests
             }
         }
     }
-}
 
+    [Theory]
+    [MemberData((nameof(TransactionsListTypeBanksTestData)))]
+    public async Task Transactions_List_Type_Banks(string month, string year, int expectedStatusCode, int expectedTotalCount, string expectedBankId, string expectedBankName, int expectedDebit, bool expectedIsDataExist)
+    {
+        await using (TransactionDisposableTests disposableTests = new TransactionDisposableTests(_fixture, _client))
+        {
+            await disposableTests.InsertManyAsync();
+            HttpResponseMessage httpResponse = await _client.GetAsync($"/transactions?month={month}&year={year}&type=bank");
+            string jsonResponse = await httpResponse.Content.ReadAsStringAsync();
+            ApiResponse<BudgetTracker.API.Transactions.List.Result> apiResponse = JsonSerializer.Deserialize<ApiResponse<BudgetTracker.API.Transactions.List.Result>>(jsonResponse);
+            PropertyInfo? categoryProp = apiResponse?.Result?.GetType().GetProperty("categories");
+            PropertyInfo? transactionProp = apiResponse?.Result?.GetType().GetProperty("transactions");
+            
+            Assert.NotNull(apiResponse?.Result);
+            Assert.Equal(expectedStatusCode, (int)apiResponse.StatusCode);
+            Assert.NotNull(apiResponse.Result.TotalCount);
+            Assert.NotNull(apiResponse.Result.Banks);
+            Assert.Null(categoryProp);
+            Assert.Null(transactionProp);
+            Assert.Equal(expectedTotalCount, apiResponse.Result.TotalCount);
+            Assert.Equal(expectedIsDataExist, apiResponse.Result.Banks.Count > 0);
+
+            if (apiResponse.Result.Banks.Count > 0)
+            {
+                foreach (var bank in apiResponse.Result.Banks)
+                {
+                    Assert.NotNull(bank.Name);
+                    Assert.Equal(expectedBankName, bank.Name);
+                    Assert.Equal(expectedDebit, bank.Amount);
+                    Assert.Equal(expectedBankId, bank.BankId);
+                }
+            }
+        }
+    }
+    #endregion
+
+    [Theory]
+    [MemberData(nameof(TransactionListByCategoryIdTestData))]
+    public async Task Transactions_By_Category(string month, string year, string expectedCategoryName, int expectedMonthRecords, int expectedTransactions, List<TransactionsByCategoryId> data)
+    {
+        await using (TransactionDisposableTests disposableTests = new TransactionDisposableTests(_fixture, _client))
+        {
+            await disposableTests.InsertManyAsync();
+            HttpResponseMessage httpResponse = await _client.GetAsync($"/transactions/category/{_categoryId}?month={month}&year={year}");
+            string jsonResponse = await httpResponse.Content.ReadAsStringAsync();
+            ApiResponse<TransactionByCategoryResult>? apiResponse = JsonSerializer.Deserialize<ApiResponse<TransactionByCategoryResult>>(jsonResponse);
+
+            Assert.Equal(200, (int) apiResponse!.StatusCode);
+            Assert.NotEmpty(apiResponse!.Result!.Category);
+            Assert.Equal(expectedCategoryName, apiResponse!.Result!.Category);
+            Assert.Equal(expectedMonthRecords, apiResponse!.Result!.CategoryData.Count);
+
+            if (apiResponse.Result.CategoryData.Count > 0)
+            {
+                foreach (TransactionsByCategoryId? categoryData in apiResponse.Result.CategoryData)
+                {
+                    Assert.Equal(expectedTransactions, categoryData.Transactions.Count);
+                    Assert.Contains(data, d => d.Date == categoryData.Date);                                        
+                }
+            }
+        }
+    }
+}

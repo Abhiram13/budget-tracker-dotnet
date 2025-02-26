@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "budget-tracker", "Budget-Tr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "Budget-Tracker-Tests\UnitTests.csproj", "{2396262A-2764-4BB2-B56D-AE028601763C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{E3C7AD0E-D14D-42E9-8674-69B26B85F507}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{2396262A-2764-4BB2-B56D-AE028601763C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2396262A-2764-4BB2-B56D-AE028601763C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2396262A-2764-4BB2-B56D-AE028601763C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3C7AD0E-D14D-42E9-8674-69B26B85F507}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3C7AD0E-D14D-42E9-8674-69B26B85F507}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3C7AD0E-D14D-42E9-8674-69B26B85F507}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3C7AD0E-D14D-42E9-8674-69B26B85F507}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

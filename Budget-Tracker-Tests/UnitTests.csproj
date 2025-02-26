@@ -27,4 +27,8 @@
     <ProjectReference Include="..\Budget-Tracker\budget-tracker.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="IntegrationTests\" />
+  </ItemGroup>
+
 </Project>
