@@ -1,3 +1,4 @@
+using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
@@ -6,11 +7,15 @@ using BudgetTracker.API.Transactions.ByCategory;
 using BudgetTracker.Defination;
 using MongoDB.Driver;
 using Xunit;
+using IntegrationTests.Data.Transactions;
 
 using TransactionByCategoryResult = BudgetTracker.API.Transactions.ByCategory.Result;
 using CategoryTypeTransactionsResult = BudgetTracker.API.Transactions.List.Result;
 using TransactionsByCategoryId = BudgetTracker.API.Transactions.ByCategory.CategoryData;
+using ByDateTransactions = BudgetTracker.API.Transactions.ByDate;
 using BudgetTracker.Application;
+using BudgetTracker.Repository;
+using IntegrationTests.Definations.Transactions;
 using Xunit.Abstractions;
 
 namespace IntegrationTests;
@@ -141,7 +146,6 @@ public class TransactionIntegrationTests : IntegrationTests
         new object[] {"", "", 200, 1, "Electricity ", 234, true},
         new object[] {"11", "2024", 200, 0, "", 0, false},
     };
-
     public static readonly List<object[]> TransactionsListTypeBanksTestData = new List<object[]>()
     {
         // month, year, expectedStatusCode, expectedTotalCount, expectedBankId, expectedBankName, expectedTotalDebit, expectedIsDataExist
@@ -166,6 +170,60 @@ public class TransactionIntegrationTests : IntegrationTests
                 new () { Date = DateTime.Now.ToString("yyyy-MM-dd"), Transactions = new List<CategoryTransactions>() {
                     new () { Amount = 234, Description = _description, Type = TransactionType.Debit },
                 }},
+            }
+        }
+    };
+    public static readonly List<object[]> TransactionsByDateTestData = new List<object[]>()
+    {
+        new object[] 
+        {
+            new ByDateTestData()
+            {
+                Date = _date,
+                ExpectedStatusCode = 200, 
+                ExpectedHttpStatusCode = 200,
+                ExpectedCredit = 0, 
+                ExpectedDebit = 246, 
+                ExpectedPartialCredit = 0,
+                ExpectedPartialDebit = 0,
+                ExpectedTotalTransactions = 2,
+                ExpectedTransactions = new []
+                {
+                    new ByDateTransactions.Transactions { Amount = 123, Description = _description, Type = TransactionType.Debit, FromBank = "Axis Bank", Category = "Electricity " }
+                }
+            }
+        },
+        new object[] 
+        {
+            new ByDateTestData()
+            {
+                Date = DateTime.Now.ToString("yyyy-MM-dd"),
+                ExpectedStatusCode = 200, 
+                ExpectedHttpStatusCode = 200,
+                ExpectedCredit = 0, 
+                ExpectedDebit = 234, 
+                ExpectedPartialCredit = 0,
+                ExpectedPartialDebit = 0,
+                ExpectedTotalTransactions = 1,
+                ExpectedTransactions = new []
+                {
+                    new ByDateTransactions.Transactions { Amount = 234, Description = _description, Type = TransactionType.Debit, FromBank = "Axis Bank", Category = "Electricity " }
+                }
+            }
+        },
+        new object[] 
+        {
+            new ByDateTestData()
+            {
+                Date = "",
+                ExpectedStatusCode = 500, 
+                ExpectedHttpStatusCode = 200,
+                ExpectedCredit = 0, 
+                ExpectedDebit = 0, 
+                ExpectedPartialCredit = 0,
+                ExpectedPartialDebit = 0,
+                ExpectedTotalTransactions = 0,
+                ExpectedTransactions = new ByDateTransactions.Transactions[] {}
             }
         }
     };
@@ -323,6 +381,60 @@ public class TransactionIntegrationTests : IntegrationTests
                 {
                     Assert.Equal(expectedTransactions, categoryData.Transactions.Count);
                     Assert.Contains(data, d => d.Date == categoryData.Date);                                        
+                }
+            }
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(TransactionsByDateTestData))]
+    public async Task Transactions_By_Date(ByDateTestData data)
+    {
+        await using (TransactionDisposableTests disposableTests = new TransactionDisposableTests(_fixture, _client))
+        {
+            await disposableTests.InsertManyAsync();
+            string dateInput = string.IsNullOrEmpty(data.Date) ? data.Date : "";
+            HttpResponseMessage httpResponse = await _client.GetAsync($"/transactions/date/{dateInput}");
+            string jsonResponse = await httpResponse.Content.ReadAsStringAsync();
+            ApiResponse<ByDateTransactions.Data>? apiResponse = JsonSerializer.Deserialize<ApiResponse<ByDateTransactions.Data>>(jsonResponse);
+            PropertyInfo? debitProp = apiResponse?.Result?.GetType().GetProperty("Debit");
+            PropertyInfo? creditProp = apiResponse?.Result?.GetType().GetProperty("Credit");
+            PropertyInfo? partialDebitProp = apiResponse?.Result?.GetType().GetProperty("PartialDebit");
+            PropertyInfo? partialCreditProp = apiResponse?.Result?.GetType().GetProperty("PartialCredit");
+            PropertyInfo? transactionsProp = apiResponse?.Result?.GetType().GetProperty("Transactions");
+            PropertyInfo? messageProp = apiResponse?.GetType().GetProperty("Message");
+
+            if (apiResponse.StatusCode != HttpStatusCode.OK)
+            {
+                Assert.NotNull(messageProp);
+                Assert.NotNull(apiResponse.Message);
+                return;
+            }
+            
+            Assert.Equal(data.ExpectedHttpStatusCode, (int) httpResponse.StatusCode);
+            Assert.Equal(data.ExpectedStatusCode, (int) apiResponse.StatusCode);
+            Assert.Equal(data.ExpectedCredit, apiResponse.Result.Credit);
+            Assert.Equal(data.ExpectedDebit, apiResponse.Result.Debit);
+            Assert.Equal(data.ExpectedPartialCredit, apiResponse.Result.PartialCredit);
+            Assert.Equal(data.ExpectedPartialDebit, apiResponse.Result.PartialDebit);
+            Assert.Equal(data.ExpectedTotalTransactions, apiResponse.Result.Transactions.Count);
+            Assert.NotNull(debitProp);
+            Assert.NotNull(creditProp);
+            Assert.NotNull(partialDebitProp);
+            Assert.NotNull(partialCreditProp);
+            Assert.NotNull(transactionsProp);
+
+            if (apiResponse.Result.Transactions.Count > 0)
+            {
+                foreach (ByDateTransactions.Transactions transaction in apiResponse.Result.Transactions)
+                {
+                    Assert.True(data.ExpectedTransactions.Any(expTransaction => expTransaction.Description == transaction.Description));
+                    Assert.True(data.ExpectedTransactions.Any(expTransaction => expTransaction.Category == transaction.Category));
+                    Assert.True(data.ExpectedTransactions.Any(expTransaction => expTransaction.Amount == transaction.Amount));
+                    Assert.True(data.ExpectedTransactions.Any(expTransaction => expTransaction.FromBank == transaction.FromBank));
+                    Assert.True(data.ExpectedTransactions.Any(expTransaction => expTransaction.Type == transaction.Type));
+                    Assert.NotNull(transaction.TransactionId);
+                    
                 }
             }
         }
