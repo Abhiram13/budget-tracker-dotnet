@@ -7,7 +7,6 @@ using BudgetTracker.API.Transactions.ByCategory;
 using BudgetTracker.Defination;
 using MongoDB.Driver;
 using Xunit;
-using IntegrationTests.Data.Transactions;
 
 using TransactionByCategoryResult = BudgetTracker.API.Transactions.ByCategory.Result;
 using CategoryTypeTransactionsResult = BudgetTracker.API.Transactions.List.Result;
@@ -71,6 +70,8 @@ public class TransactionIntegrationTests : IntegrationTests
     private const string _invalidBankId = "66483fed6c7ed85fca650000";
     private const string _description = "Sample test transaction";
     private const string _date = "2024-09-18";
+
+    #region Test Data
     public static readonly List<object[]> TransactionInsertTestData = new List<object[]>()
     {
         new object[] {
@@ -227,6 +228,7 @@ public class TransactionIntegrationTests : IntegrationTests
             }
         }
     };
+    #endregion
     
     public TransactionIntegrationTests(MongoDBFixture fixture) : base(fixture)
     {
@@ -380,7 +382,7 @@ public class TransactionIntegrationTests : IntegrationTests
                 foreach (TransactionsByCategoryId? categoryData in apiResponse.Result.CategoryData)
                 {
                     Assert.Equal(expectedTransactions, categoryData.Transactions.Count);
-                    Assert.Contains(data, d => d.Date == categoryData.Date);                                        
+                    Assert.Contains(data, d => d.Date == categoryData.Date);
                 }
             }
         }

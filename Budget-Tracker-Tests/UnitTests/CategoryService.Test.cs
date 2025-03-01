@@ -14,8 +14,6 @@ using System.Text;
 
 namespace UnitTests;
 
-#pragma warning disable
-
 public class CategoryServiceUnitTest
 {
     private readonly Mock<ICategoryService> _categoryService;
