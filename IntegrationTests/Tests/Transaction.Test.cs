@@ -236,6 +236,8 @@ public class TransactionIntegrationTests : IntegrationTests
             new ByBankTestData()
             {
                 BankId = _bankId,
+                Month = "09",
+                Year = "2024",
                 ExpectedStatusCode = 200,
                 ExcpectedHttpStatusCode = 200,
                 ExpectedTotalTransactions = 2,
@@ -262,6 +264,8 @@ public class TransactionIntegrationTests : IntegrationTests
             new ByBankTestData()
             {
                 BankId = _bankId,
+                Month = DateTime.Now.ToString("MM"),
+                Year = DateTime.Now.ToString("yyyy"),
                 ExpectedStatusCode = 200,
                 ExcpectedHttpStatusCode = 200,
                 ExpectedTotalTransactions = 1,
@@ -504,7 +508,7 @@ public class TransactionIntegrationTests : IntegrationTests
         await using (TransactionDisposableTests disposableTests = new TransactionDisposableTests(_fixture, _client))
         {
             await disposableTests.InsertManyAsync();
-            HttpResponseMessage httpResponse = await _client.GetAsync($"/transactions/bank/{data.BankId}");
+            HttpResponseMessage httpResponse = await _client.GetAsync($"/transactions/bank/{data.BankId}?month={data.Month}&year={data.Year}");
             string jsonResponse = await httpResponse.Content.ReadAsStringAsync();
             ApiResponse<ByBankResult> apiResponse = JsonSerializer.Deserialize<ApiResponse<ByBankResult>>(jsonResponse);
             PropertyInfo bankNameProp = apiResponse?.Result?.GetType().GetProperty("Bank");
@@ -513,6 +517,12 @@ public class TransactionIntegrationTests : IntegrationTests
             Assert.Equal(data.ExpectedStatusCode, (int) apiResponse.StatusCode);
             Assert.Equal(data.ExcpectedHttpStatusCode, (int) httpResponse.StatusCode);
             Assert.Equal(data.ExpectedResult.BankData.Count, apiResponse.Result.BankData!.Count);
+            // Assert.True(Enumerable.SequenceEqual(apiResponse.Result.BankData, data.ExpectedResult.BankData));
+
+            foreach (TransactionsByCategoryId bankData in apiResponse.Result.BankData)
+            {
+                Assert.True(data.ExpectedResult.BankData.Any(expectedBank => expectedBank.Date == bankData.Date));
+            }
         }
     }
 }

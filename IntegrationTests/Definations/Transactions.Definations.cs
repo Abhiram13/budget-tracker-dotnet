@@ -35,6 +35,8 @@ namespace IntegrationTests.Definations.Transactions
     public record ByBankTestData
     {
         public string BankId { get; set; }
+        public string Month { get; set; }
+        public string Year { get; set; }
         public int ExpectedStatusCode { get; set; }
         public int ExcpectedHttpStatusCode { get; set; }
         public int ExpectedTotalTransactions { get; set; }
