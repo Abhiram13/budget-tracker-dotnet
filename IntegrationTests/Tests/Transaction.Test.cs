@@ -16,6 +16,7 @@ using BudgetTracker.Application;
 using BudgetTracker.Repository;
 using IntegrationTests.Definations.Transactions;
 using Xunit.Abstractions;
+using ByBankResult = BudgetTracker.API.Transactions.ByBank.Result;
 
 namespace IntegrationTests;
 
@@ -225,6 +226,60 @@ public class TransactionIntegrationTests : IntegrationTests
                 ExpectedPartialDebit = 0,
                 ExpectedTotalTransactions = 0,
                 ExpectedTransactions = new ByDateTransactions.Transactions[] {}
+            }
+        }
+    };
+    public static readonly List<object[]> TransactionsByBankTestData = new List<object[]>()
+    {
+        new object[]
+        {
+            new ByBankTestData()
+            {
+                BankId = _bankId,
+                ExpectedStatusCode = 200,
+                ExcpectedHttpStatusCode = 200,
+                ExpectedTotalTransactions = 2,
+                ExpectedResult = new ByBankResult
+                {
+                    Bank = "Axis Bank",
+                    BankData = new List<TransactionsByCategoryId>
+                    {
+                        new TransactionsByCategoryId
+                        {
+                            Date = _date, 
+                            Transactions = new List<CategoryTransactions>
+                            {
+                                new CategoryTransactions { Amount = 123, Description = _description, Type = TransactionType.Debit },
+                                new CategoryTransactions { Amount = 123, Description = _description, Type = TransactionType.Debit },
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        new object[]
+        {
+            new ByBankTestData()
+            {
+                BankId = _bankId,
+                ExpectedStatusCode = 200,
+                ExcpectedHttpStatusCode = 200,
+                ExpectedTotalTransactions = 1,
+                ExpectedResult = new ByBankResult
+                {
+                    Bank = "Axis Bank",
+                    BankData = new List<TransactionsByCategoryId>
+                    {
+                        new TransactionsByCategoryId
+                        {
+                            Date = DateTime.Now.ToString("yyyy-MM-dd"), 
+                            Transactions = new List<CategoryTransactions>
+                            {
+                                new CategoryTransactions { Amount = 234, Description = _description, Type = TransactionType.Debit },
+                            }
+                        }
+                    }
+                }
             }
         }
     };
@@ -439,6 +494,25 @@ public class TransactionIntegrationTests : IntegrationTests
                     
                 }
             }
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(TransactionsByBankTestData))]
+    public async Task Transactions_By_Bank(ByBankTestData data)
+    {
+        await using (TransactionDisposableTests disposableTests = new TransactionDisposableTests(_fixture, _client))
+        {
+            await disposableTests.InsertManyAsync();
+            HttpResponseMessage httpResponse = await _client.GetAsync($"/transactions/bank/{data.BankId}");
+            string jsonResponse = await httpResponse.Content.ReadAsStringAsync();
+            ApiResponse<ByBankResult> apiResponse = JsonSerializer.Deserialize<ApiResponse<ByBankResult>>(jsonResponse);
+            PropertyInfo bankNameProp = apiResponse?.Result?.GetType().GetProperty("Bank");
+            PropertyInfo bankDataProp = apiResponse?.Result?.GetType().GetProperty("BankData");
+            
+            Assert.Equal(data.ExpectedStatusCode, (int) apiResponse.StatusCode);
+            Assert.Equal(data.ExcpectedHttpStatusCode, (int) httpResponse.StatusCode);
+            Assert.Equal(data.ExpectedResult.BankData.Count, apiResponse.Result.BankData!.Count);
         }
     }
 }
