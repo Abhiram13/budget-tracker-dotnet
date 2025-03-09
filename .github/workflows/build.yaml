@@ -23,3 +23,14 @@ jobs:
               
             - name: Build
               run: dotnet build
+              
+            - name: Test
+              run: dotnet test
+              env:
+                  PORT: ${{secrets.PORT}}
+                  HOST: ${{secrets.HOST}}
+                  DB: ${{secrets.DB}}
+                  PASSWORD: ${{secrets.PASSWORD}}
+                  USERNAME: ${{secrets.USERNAME}}
+                  API_KEY: ${{secrets.API_KEY}}
+                  ENV: ${{secrets.ENV}}
