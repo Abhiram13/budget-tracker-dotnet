@@ -25,7 +25,8 @@ jobs:
               run: dotnet build
               
             - name: Test
-              run: dotnet test ./IntegrationTests/IntegrationTests.csproj
+#              run: dotnet test ./IntegrationTests/IntegrationTests.csproj
+              run: dotnet test
               env:
                   PORT: ${{secrets.PORT}}
                   HOST: ${{secrets.HOST}}
