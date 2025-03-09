@@ -51,4 +51,4 @@ jobs:
                   context: ./Budget-Tracker # Context is the main project directory.
                   file: ./Budget-Tracker/Dockerfile # Path to your Dockerfile.
                   push: true
-                  tags: ghcr.io/${{ github.repository }}:${{ github.sha }}
+                  tags: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.sha }}
