@@ -22,10 +22,9 @@ jobs:
               run: dotnet restore
               
             - name: Build
-              run: dotnet build
+              run: dotnet build --no-restore
               
             - name: Test
-#              run: dotnet test ./IntegrationTests/IntegrationTests.csproj
               run: dotnet test
               env:
                   PORT: ${{secrets.PORT}}
