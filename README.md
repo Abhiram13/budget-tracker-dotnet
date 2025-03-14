@@ -1,0 +1,1 @@
+[![Budget-Tracker build](https://github.com/Abhiram13/budget-tracker-dotnet/actions/workflows/build.yaml/badge.svg?event=pull_request)](https://github.com/Abhiram13/budget-tracker-dotnet/actions/workflows/build.yaml)
