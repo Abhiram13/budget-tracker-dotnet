@@ -10,6 +10,8 @@ using BudgetTracker.Middlewares;
 using BudgetTracker.Security.Authentication;
 using Google.Cloud.Diagnostics.AspNetCore3;
 using Google.Cloud.Diagnostics.Common;
+using Google.Apis.Auth;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
@@ -87,6 +89,7 @@ app.MapHealthChecks("/health", new HealthCheckOptions () {
     },
 });
 app.UseMiddleware<ExceptionHandlerMiddleware>();
+app.UseMiddleware<RouteNotFoundMiddleware>();
 app.UseCors();
 app.MapControllers();
 app.Run();

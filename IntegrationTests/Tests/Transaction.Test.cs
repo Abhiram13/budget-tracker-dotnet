@@ -272,4 +272,13 @@ public class TransactionIntegrationTests : IntegrationTests
             }
         }
     }
+
+    [Fact]
+    public async Task Transaction_By_Id()
+    {
+        await using (new TestDisposal(_fixture))
+        {
+            
+        }
+    }
 }

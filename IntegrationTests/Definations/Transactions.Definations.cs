@@ -21,13 +21,13 @@ namespace IntegrationTests.Definations.Transactions
     /// <summary>
     /// Test data object for Transactions by Id <c>/transactions/:id</c>
     /// </summary>
-    public class TransactionByIdTestData
-    {
-        public string Id { get; set; }
-        public int ExpectedHttpStatusCode { get; set; }
-        public int ExpectedStatusCode { get; set; }
-        public Transaction ExpectedResult { get; set; }
-    }
+    public record TransactionByIdTestDef
+    (
+        bool ShouldIdBeValid,
+        int ExpectedHttpStatusCode,
+        int ExpectedStatusCode,
+        Transaction Transaction
+    );
 
     /// <summary>
     /// Test data object for Transactions by Bank <br />

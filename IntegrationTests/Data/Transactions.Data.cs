@@ -302,5 +302,13 @@ namespace IntegrationTests.Data.Transactions
             ));
         }
     }
+
+    public class TransactionsByIdTestData : TheoryTestData<TransactionByIdTestDef>
+    {
+        public TransactionsByIdTestData()
+        {
+            
+        }
+    }
 }
 
