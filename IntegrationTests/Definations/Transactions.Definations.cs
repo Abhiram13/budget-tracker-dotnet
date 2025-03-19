@@ -23,9 +23,10 @@ namespace IntegrationTests.Definations.Transactions
     /// </summary>
     public record TransactionByIdTestDef
     (
-        bool ShouldIdBeValid,
+        bool ShouldIdBeValidTest,
         int ExpectedHttpStatusCode,
         int ExpectedStatusCode,
+        string date,
         Transaction Transaction
     );
 

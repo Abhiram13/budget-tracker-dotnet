@@ -307,7 +307,23 @@ namespace IntegrationTests.Data.Transactions
     {
         public TransactionsByIdTestData()
         {
-            
+            Add(new TransactionByIdTestDef(
+                ShouldIdBeValidTest: true, 
+                ExpectedStatusCode: 200, 
+                ExpectedHttpStatusCode: 200, 
+                date: _currentDate,
+                Transaction: new Transaction()
+                {
+                    Amount = 234, 
+                    CategoryId = _categoryId, 
+                    Date = _currentDate, 
+                    Description = _description, 
+                    Due = false, 
+                    FromBank = _bankId, 
+                    ToBank = "", 
+                    Type = TransactionType.Debit
+                }
+            ));
         }
     }
 }
