@@ -5,5 +5,5 @@ namespace BudgetTracker.Services;
 
 public class CategoryService : MongoServices<Category>, ICategoryService
 {
-    public CategoryService() : base(Collection.Category) { }    
+    public CategoryService(IMongoContext mongoContext) : base(mongoContext.Category) { }    
 }

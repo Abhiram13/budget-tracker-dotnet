@@ -1,5 +1,6 @@
 using System.Net;
 using BudgetTracker.Defination;
+using BudgetTracker.Interface;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using MongoDB.Driver;
 
@@ -87,17 +88,19 @@ namespace BudgetTracker.Services
     public class DataBaseHealthCheck : IHealthCheck
     {
         private readonly ILogger? _logger;
+        private readonly IMongoContext _mongoContext;
 
-        public DataBaseHealthCheck(ILogger? logger)
+        public DataBaseHealthCheck(ILogger? logger, IMongoContext context)
         {
             _logger = logger;
+            _mongoContext = context;
         }
 
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
             try
             {
-                using (IAsyncCursor<string>? collections = await Mongo.DB.ListCollectionNamesAsync(cancellationToken: cancellationToken))
+                using (IAsyncCursor<string>? collections = await _mongoContext.Database.ListCollectionNamesAsync(cancellationToken: cancellationToken))
                 {
                     List<string>? list = await collections.ToListAsync(cancellationToken: cancellationToken);
 

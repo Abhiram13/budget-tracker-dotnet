@@ -10,7 +10,7 @@ public class DueService : MongoServices<Due>, IDues
 {
     private IBankService _bankService;
     
-    public DueService(IBankService bankService) : base(Collection.Dues) 
+    public DueService(IBankService bankService, IMongoContext mongoContext) : base(mongoContext.Dues) 
     {
         _bankService = bankService;
     }

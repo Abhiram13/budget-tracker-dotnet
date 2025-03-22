@@ -6,6 +6,7 @@ using BudgetTracker.Defination;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Hosting;
 
 namespace IntegrationTests;
 
@@ -38,7 +39,6 @@ public class MongoDBFixture : IDisposable
 
     public void Dispose()
     {
-        // delete all records in "transactions" collection
         Task.Run(async () => {
             await Database?.GetCollection<Transaction>("transactions").DeleteManyAsync(FilterDefinition<Transaction>.Empty);
         }).Wait();
@@ -55,7 +55,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
         _fixture = fixture;
     }
 
-    protected override void ConfigureWebHost(Microsoft.AspNetCore.Hosting.IWebHostBuilder builder)
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureTestServices(services => {
             ServiceDescriptor? dbDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IMongoDatabase));        
