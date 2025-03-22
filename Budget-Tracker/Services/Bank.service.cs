@@ -5,5 +5,5 @@ namespace BudgetTracker.Services;
 
 public class BankService : MongoServices<Bank>, IBankService
 {
-    public BankService() : base(Collection.Bank) { }
+    public BankService(IMongoContext mongoContext) : base(mongoContext.Bank) { }
 }

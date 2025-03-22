@@ -13,13 +13,20 @@ namespace BudgetTracker.Services
     {
         private readonly ICategoryService _categoryService;
         private readonly IBankService _bankService;
+        private readonly IMongoContext _mongoContext;
         private readonly ILogger<TransactionService> _logger;
 
-        public TransactionService(IBankService bankService, ICategoryService categoryService, ILogger<TransactionService> logger) : base(Collection.Transaction)
+        public TransactionService(
+            IBankService bankService, 
+            ICategoryService categoryService, 
+            ILogger<TransactionService> logger, 
+            IMongoContext mongoContext
+        ) : base(mongoContext.Transaction)
         {
             _logger = logger;
             _categoryService = categoryService;
             _bankService = bankService;
+            _mongoContext = mongoContext;
         }
 
         public async Task Validations(Transaction transaction)
@@ -95,13 +102,13 @@ namespace BudgetTracker.Services
 
         public async Task<API.Transactions.ByCategory.Result> GetByCategory(string categoryId, QueryParams? queryParams)
         {
-            API.Transactions.ByCategory.Result result = await new TransactionsByCategory(categoryId, collection, queryParams, new CategoryService()).GetData();
+            API.Transactions.ByCategory.Result result = await new TransactionsByCategory(categoryId, collection, queryParams, new CategoryService(_mongoContext)).GetData();
             return result;
         }
 
         public async Task<ByBankResult> GetByBank(string bankId, QueryParams queryParams)
         {
-            ByBankResult result = await new TransactionsByBank(bankId, collection, queryParams, new BankService()).GetData();
+            ByBankResult result = await new TransactionsByBank(bankId, collection, queryParams, new BankService(_mongoContext)).GetData();
             return result;
         }
     }

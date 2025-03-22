@@ -10,6 +10,8 @@ using BudgetTracker.Middlewares;
 using BudgetTracker.Security.Authentication;
 using Google.Cloud.Diagnostics.AspNetCore3;
 using Google.Cloud.Diagnostics.Common;
+using Google.Apis.Auth;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
@@ -24,17 +26,16 @@ ILogger? logger = null;
 
 // Add services to the container.
 builder.Configuration.AddEnvironmentVariables().Build();
-builder.Services.AddSingleton(_ => Mongo.DB);
-builder.Services.AddControllers()
-    .ConfigureApiBehaviorOptions(options => {
-        options.SuppressModelStateInvalidFilter = false;
-        options.InvalidModelStateResponseFactory = action => {
-            KeyValuePair<string, ModelStateEntry?> modelState = action.ModelState.FirstOrDefault();
-            string errorAt = modelState.Key;
-            string errorMessage = modelState.Value?.Errors?[0]?.ErrorMessage ?? $"Something went wrong at {errorAt}";            
-            return new BadRequestObjectResult(new ApiResponse<string> {Message = errorMessage, StatusCode = HttpStatusCode.BadRequest});
-        };
-    });
+builder.Services.AddSingleton<IMongoContext, MongoDBContext>();
+builder.Services.AddControllers().ConfigureApiBehaviorOptions(options => {
+    options.SuppressModelStateInvalidFilter = false;
+    options.InvalidModelStateResponseFactory = action => {
+        KeyValuePair<string, ModelStateEntry?> modelState = action.ModelState.FirstOrDefault();
+        string errorAt = modelState.Key;
+        string errorMessage = modelState.Value?.Errors?[0]?.ErrorMessage ?? $"Something went wrong at {errorAt}";            
+        return new BadRequestObjectResult(new ApiResponse<string> {Message = errorMessage, StatusCode = HttpStatusCode.BadRequest});
+    };
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddMemoryCache();
@@ -87,6 +88,7 @@ app.MapHealthChecks("/health", new HealthCheckOptions () {
     },
 });
 app.UseMiddleware<ExceptionHandlerMiddleware>();
+app.UseMiddleware<RouteNotFoundMiddleware>();
 app.UseCors();
 app.MapControllers();
 app.Run();

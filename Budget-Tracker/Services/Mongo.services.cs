@@ -3,22 +3,34 @@ using MongoDB.Driver;
 using System.Text.Json;
 using BudgetTracker.Interface;
 using BudgetTracker.Defination;
+using BudgetTracker.Application;
 
 namespace BudgetTracker.Services
 {
-    public static class Mongo
+    public class Collection
     {
-        private static readonly string url = $"mongodb+srv://{Env.USERNAME}:{Env.PASSWORD}@{Env.HOST}/?retryWrites=true&w=majority&appName=Trsnactions";
-        private static readonly MongoClient client = new MongoClient(url);
-        public static readonly IMongoDatabase DB = client.GetDatabase(Env.DB);
+        public const string TRANSACTIONS = "transactions";
+        public const string CATEGORIES = "categories";
+        public const string BANKS = "banks";
+        public const string DUES = "dues";
     }
 
-    public static class Collection
+    public class MongoDBContext : IMongoContext
     {
-        public static IMongoCollection<Transaction> Transaction { get { return Mongo.DB.GetCollection<Transaction>("transactions"); } }
-        public static IMongoCollection<Category> Category { get { return Mongo.DB.GetCollection<Category>("categories"); } }
-        public static IMongoCollection<Bank> Bank { get { return Mongo.DB.GetCollection<Bank>("banks"); } }
-        public static IMongoCollection<Due> Dues { get { return Mongo.DB.GetCollection<Due>("dues"); } }
+        private readonly IMongoDatabase _database;
+        
+        public MongoDBContext()
+        {
+            string url = $"mongodb+srv://{Secrets.USERNAME}:{Secrets.PASSWORD}@{Secrets.HOST}/?retryWrites=true&w=majority&appName=Trsnactions";
+            MongoClient client = new MongoClient(url);
+            _database = client.GetDatabase(Secrets.DB);
+        }
+        
+        public IMongoDatabase Database => _database;
+        public IMongoCollection<Transaction> Transaction => _database.GetCollection<Transaction>(Collection.TRANSACTIONS);
+        public IMongoCollection<Category> Category => _database.GetCollection<Category>(Collection.CATEGORIES);
+        public IMongoCollection<Bank> Bank => _database.GetCollection<Bank>(Collection.BANKS);
+        public IMongoCollection<Due> Dues => _database.GetCollection<Due>(Collection.DUES);
     }
 
     public abstract class MongoServices<T> : IMongoService<T> where T : MongoObject

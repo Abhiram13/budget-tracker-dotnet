@@ -272,4 +272,44 @@ public class TransactionIntegrationTests : IntegrationTests
             }
         }
     }
+
+    [Theory]
+    [ClassData(typeof(TransactionsByIdTestData))]
+    public async Task Transaction_By_Id(TransactionByIdTestDef data)
+    {
+        await using (TransactionsInsertDisposals disposableTests = new TransactionsInsertDisposals(_fixture, _client))
+        {
+            await disposableTests.InsertManyAsync();
+            string transactionId = String.Empty;
+            
+            // Fetch id based on date
+            {
+                // string date = DateTime.Now.ToString("yyyy-MM-dd");
+                HttpResponseMessage httpResponse = await _client.GetAsync($"/transactions/date/{data.date}");
+                string jsonResponse = await httpResponse.Content.ReadAsStringAsync();
+                ApiResponse<ByDateTransactions.Data>? apiResponse = JsonSerializer.Deserialize<ApiResponse<ByDateTransactions.Data>>(jsonResponse);
+                transactionId = apiResponse.Result.Transactions.FirstOrDefault().TransactionId;
+            }
+            
+            // Call :searchById API
+            {
+                HttpResponseMessage httpResponse = await _client.GetAsync($"/transactions/{transactionId}");
+                string jsonResponse = await httpResponse.Content.ReadAsStringAsync();
+                ApiResponse<Transaction> apiResponse = JsonSerializer.Deserialize<ApiResponse<Transaction>>(jsonResponse);
+                Transaction transaction = apiResponse.Result;
+                Transaction expectedTransaction = data.Transaction;
+                
+                // Assert
+                Assert.Equal(expectedTransaction.Amount, transaction.Amount);
+                Assert.Equal(expectedTransaction.Description, transaction.Description);
+                Assert.Equal(expectedTransaction.CategoryId, transaction.CategoryId);
+                Assert.Equal(expectedTransaction.Date, transaction.Date);
+                Assert.Equal(expectedTransaction.Due, transaction.Due);
+                Assert.Equal(expectedTransaction.DueId, transaction.DueId);
+                Assert.Equal(expectedTransaction.FromBank, transaction.FromBank);
+                Assert.Equal(expectedTransaction.ToBank, transaction.ToBank);
+                Assert.Equal(expectedTransaction.Type, transaction.Type);
+            }
+        }
+    }
 }
