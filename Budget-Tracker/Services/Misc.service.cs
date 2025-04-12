@@ -1,80 +1,9 @@
-using System.Net;
-using BudgetTracker.Defination;
 using BudgetTracker.Interface;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using MongoDB.Driver;
 
 namespace BudgetTracker.Services
 {
-    [Obsolete]
-    public delegate ApiResponse<T> Callback<T>() where T : class;
-    
-    [Obsolete]
-    public delegate Task<ApiResponse<T>> AsyncCallback<T>() where T : class; 
-
-    [Obsolete]
-    public static class Handler<T> where T : class
-    {
-        public static ApiResponse<T> Exception(Callback<T> callback)
-        {
-            try
-            {
-                return callback();
-            }
-            catch (BadRequestException e)
-            {
-                return new ApiResponse<T>()
-                {
-                    StatusCode = HttpStatusCode.BadRequest,
-                    Message = $"Bad request. Message: {e.Message}",
-                };
-            }
-            catch (Exception e)
-            {
-                return new ApiResponse<T>()
-                {
-                    StatusCode = HttpStatusCode.InternalServerError,
-                    Message = $"Something went wrong. Message: {e.Message}",
-                };
-            }
-        }
-
-        public static async Task<ApiResponse<T>> Exception(AsyncCallback<T> callback, ILogger logger)
-        {
-            try
-            {
-                return await callback();
-            }
-            catch (BadRequestException e)
-            {
-                logger?.Log(LogLevel.Error, e, "Bad request exception at controller callback");
-                return new ApiResponse<T>()
-                {
-                    StatusCode = HttpStatusCode.BadRequest,
-                    Message = $"Bad request. Message: {e.Message}",
-                };
-            }
-            catch (OperationCanceledException e)
-            {
-                logger?.Log(LogLevel.Error, e, "Operation cancellation request exception at controller callback");
-                return new ApiResponse<T>()
-                {
-                    StatusCode = HttpStatusCode.Conflict,
-                    Message = $"Operation cancellation request. Message: {e.Message}",
-                };
-            }
-            catch (Exception e)
-            {
-                logger?.Log(LogLevel.Error, e, "Exception at controller callback");
-                return new ApiResponse<T>()
-                {
-                    StatusCode = HttpStatusCode.InternalServerError,
-                    Message = $"Something went wrong. Message: {e.Message}",
-                };
-            }
-        }
-    }
-
     /// <summary>
     /// Throws when the request payload contains invalid values for any given property
     /// </summary>
