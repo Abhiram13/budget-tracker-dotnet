@@ -26,7 +26,7 @@ public class CategoryServiceUnitTest
         _categoryService = new Mock<ICategoryService>();
         _cache = new MemoryCache(new MemoryCacheOptions());
         _logger = null;
-        _controller = new (_categoryService.Object, _cache, _logger!);
+        _controller = new (_categoryService.Object, _cache);
     }
 
     [Fact]
