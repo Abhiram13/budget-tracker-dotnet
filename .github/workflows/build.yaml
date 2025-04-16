@@ -17,6 +17,11 @@ jobs:
               uses: actions/setup-dotnet@v3
               with:
                   dotnet-version: '8.0.x'
+
+            # WARNING: This step grants very broad permissions and is NOT recommended for production.
+            # Use it ONLY for temporary debugging to see if it resolves the "Access denied" error.
+            - name: Grant full permissions
+              run: sudo chmod -R 777 /home/runneradmin
                 
             - name: Restore dependencies
               run: dotnet restore
