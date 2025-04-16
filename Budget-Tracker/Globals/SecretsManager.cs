@@ -13,7 +13,7 @@ public class SecretsManager
 
     private string GetProjectId()
     {
-        string projectId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_ID");
+        string? projectId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_ID");
         if (string.IsNullOrEmpty(projectId))
         {
             projectId = ""; // Project-ID
@@ -35,11 +35,11 @@ public class SecretsManager
 public static class Secrets
 {
     private static readonly SecretsManager _secretsManager;
-    public static readonly string API_KEY = string.Empty;
-    public static readonly string HOST = string.Empty;
-    public static readonly string DB = string.Empty;
-    public static readonly string PASSWORD = string.Empty;
-    public static readonly string USERNAME = string.Empty;
+    public static readonly string API_KEY;
+    public static readonly string HOST;
+    public static readonly string DB;
+    public static readonly string PASSWORD;
+    public static readonly string USERNAME;
 
     static Secrets()
     {
@@ -51,9 +51,9 @@ public static class Secrets
         USERNAME = FetchSecret("USERNAME");
     }
 
-    static string? FetchSecretFromGCP(string secretKey)
+    static string FetchSecretFromGCP(string secretKey)
     {
-        string secretValue = null;
+        string secretValue;
         try
         {
             secretValue = _secretsManager.GetSecretAsync(secretKey).Result;
@@ -62,19 +62,19 @@ public static class Secrets
         catch (Exception e)
         {
             Console.WriteLine(e);
-            return null;
+            return string.Empty;
         }
     }
 
     static string? FetchFromLocal(string secretKey)
     {
-        string secretValue = Environment.GetEnvironmentVariable(secretKey);
+        string? secretValue = Environment.GetEnvironmentVariable(secretKey);
         return secretValue;
     }
 
     static string FetchSecret(string secretKey)
     {
-        string secretValue = FetchSecretFromGCP(secretKey);
+        string? secretValue = FetchSecretFromGCP(secretKey);
 
         if (string.IsNullOrEmpty(secretValue))
         {

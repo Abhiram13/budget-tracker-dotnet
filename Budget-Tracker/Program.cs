@@ -1,7 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using MongoDB.Driver;
 using BudgetTracker.Services;
 using BudgetTracker.Interface;
 using BudgetTracker.Defination;
@@ -10,8 +9,6 @@ using BudgetTracker.Middlewares;
 using BudgetTracker.Security.Authentication;
 using Google.Cloud.Diagnostics.AspNetCore3;
 using Google.Cloud.Diagnostics.Common;
-using Google.Apis.Auth;
-using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
@@ -22,7 +19,7 @@ string dotenv = Path.Combine(root, ".env");
 DotEnv.Load(dotenv);
 
 ILoggerFactory factory;
-ILogger? logger = null;
+ILogger? logger;
 
 // Add services to the container.
 builder.Configuration.AddEnvironmentVariables().Build();
@@ -32,7 +29,7 @@ builder.Services.AddControllers().ConfigureApiBehaviorOptions(options => {
     options.InvalidModelStateResponseFactory = action => {
         KeyValuePair<string, ModelStateEntry?> modelState = action.ModelState.FirstOrDefault();
         string errorAt = modelState.Key;
-        string errorMessage = modelState.Value?.Errors?[0]?.ErrorMessage ?? $"Something went wrong at {errorAt}";            
+        string errorMessage = modelState.Value?.Errors?[0].ErrorMessage ?? $"Something went wrong at {errorAt}";            
         return new BadRequestObjectResult(new ApiResponse<string> {Message = errorMessage, StatusCode = HttpStatusCode.BadRequest});
     };
 });
@@ -44,34 +41,37 @@ builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IBankService, BankService>();
 builder.Services.AddScoped<IDues, DueService>();
-builder.WebHost.ConfigureKestrel((context, server) => {
+builder.WebHost.ConfigureKestrel((_, server) => {
     string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3000";
     int port = int.Parse(portNumber);
     server.Listen(IPAddress.Any, port);
 });
 
-builder.Services.AddAuthentication().AddScheme<ApiKeySchemaOptions, ApiKeyHandler>(ApiKeySchemaOptions.DefaultSchema, options => {});
+builder.Services.AddAuthentication().AddScheme<ApiKeySchemaOptions, ApiKeyHandler>(ApiKeySchemaOptions.DefaultSchema, _ => {});
 
-builder.Host.ConfigureLogging(logging => {
-    if (Environment.GetEnvironmentVariable("ENV") == "Development" || Environment.GetEnvironmentVariable("ENV") == "Test")
-    {
-        factory = LoggerFactory.Create(log => log.AddConsole());
-        logger = factory.CreateLogger("Program");
-        return;
-    }
+builder.Logging.ClearProviders();
 
+if (Environment.GetEnvironmentVariable("ENV") == "Development" || Environment.GetEnvironmentVariable("ENV") == "Test")
+{
+    builder.Logging.AddConsole();
+    factory = LoggerFactory.Create(log => log.AddConsole());
+    logger = factory.CreateLogger("Program");
+}
+else
+{
+    builder.Logging.AddGoogle();
     factory = LoggerFactory.Create(log => log.AddGoogle());
     logger = factory.CreateLogger("Program");
-    logging.Services.AddGoogleDiagnosticsForAspNetCore();
-    return;
-});
-builder.Services.AddHealthChecks().AddTypeActivatedCheck<DataBaseHealthCheck>("Database health check", args: new object[] {logger!});
+    builder.Services.AddGoogleDiagnosticsForAspNetCore();
+}
+
+builder.Services.AddHealthChecks().AddTypeActivatedCheck<DataBaseHealthCheck>("Database health check", args: new object[] {logger});
 builder.WebHost.UseKestrel(options => options.AddServerHeader = false);
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(builder =>
+    options.AddDefaultPolicy(policy =>
     {
-        builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
     });
 });
 

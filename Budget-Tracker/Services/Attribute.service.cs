@@ -10,9 +10,9 @@ namespace BudgetTracker.Attributes
 {
     public class MaxDateAttribute : ValidationAttribute
     {
-        public override bool IsValid(object value)
+        public override bool IsValid(object? value)
         {
-            string date = (string)value;
+            string date = (string?) value ?? throw new NullReferenceException($"{value} from MaxDateAttribute is required, but was null");
             Regex regex = new Regex(@"^\d{4}-\d{2}-\d{2}$");
             Match match = regex.Match(date);
             

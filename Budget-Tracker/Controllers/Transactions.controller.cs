@@ -42,128 +42,96 @@ public class TransactionsController : ApiBaseController
         [FromQuery] string? sort,
         CancellationToken ct
     ) {
-        AsyncCallback<TransactionListResult> callback = async () => {
-            API.Transactions.List.QueryParams queryParams = new API.Transactions.List.QueryParams() {
-                Month = month,
-                Year = year,
-                Type = type,
-                SortOrder = sort
-            };
-
-            TransactionListResult list = await _service.List(queryParams, ct);
-            return new ApiResponse<TransactionListResult>()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Result = list
-            };
+        API.Transactions.List.QueryParams queryParams = new API.Transactions.List.QueryParams() {
+            Month = month,
+            Year = year,
+            Type = type,
+            SortOrder = sort
         };
 
-        return await Handler<TransactionListResult>.Exception(callback, _logger);
+        TransactionListResult list = await _service.List(queryParams, ct);
+        return new ApiResponse<TransactionListResult>()
+        {
+            StatusCode = HttpStatusCode.OK,
+            Result = list
+        };
     }
 
     [HttpGet("date/{date}")]
     public async Task<ApiResponse<Data>> Get(string date)
     {
-        AsyncCallback<Data> callback = async () => {
-            Data data = await _service.ListByDate(date);
+        Data data = await _service.ListByDate(date);
 
-            return new ApiResponse<Data>()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Result = data
-            };
+        return new ApiResponse<Data>()
+        {
+            StatusCode = HttpStatusCode.OK,
+            Result = data
         };
-
-        return await Handler<Data>.Exception(callback, _logger);
     }
 
     [HttpPatch("{id}")]
     public async Task<ApiResponse<string>> Update(string id, [FromBody] Transaction body)
     {
-        AsyncCallback<string> callback = async () => {
-            bool isUpdated = await _service.UpdateById(id, body);
-            HttpStatusCode statusCode = isUpdated ? HttpStatusCode.Created : HttpStatusCode.NotModified;
-            string message = isUpdated ? "Transaction updated successfully" : "Transaction couldn't be updated";
+        bool isUpdated = await _service.UpdateById(id, body);
+        HttpStatusCode statusCode = isUpdated ? HttpStatusCode.Created : HttpStatusCode.NotModified;
+        string message = isUpdated ? "Transaction updated successfully" : "Transaction couldn't be updated";
 
-            return new ApiResponse<string>()
-            {
-                Message = message,
-                StatusCode = statusCode,
-            };
+        return new ApiResponse<string>()
+        {
+            Message = message,
+            StatusCode = statusCode,
         };
-
-        return await Handler<string>.Exception(callback, _logger);
     }
 
     [HttpDelete("{id}")]
     public async Task<ApiResponse<string>> Delete(string id)
     {
-        async Task<ApiResponse<string>> Callback()
-        {
-            bool isDeleted = await _service.DeleteById(id);
-            HttpStatusCode statusCode = isDeleted ? HttpStatusCode.OK : HttpStatusCode.NotModified;
-            string message = isDeleted ? "Transaction deleted successfully" : "Transaction couldn't be deleted";
+        bool isDeleted = await _service.DeleteById(id);
+        HttpStatusCode statusCode = isDeleted ? HttpStatusCode.OK : HttpStatusCode.NotModified;
+        string message = isDeleted ? "Transaction deleted successfully" : "Transaction couldn't be deleted";
 
-            return new ApiResponse<string>()
-            {
-                Message = message,
-                StatusCode = statusCode,
-            };
-        }
-        
-        return await Handler<string>.Exception(Callback, _logger);
+        return new ApiResponse<string>()
+        {
+            Message = message,
+            StatusCode = statusCode,
+        };
     }
 
     [HttpGet("{id}")]
     public async Task<ApiResponse<Transaction>> GetById(string id)
     {
-        async Task<ApiResponse<Transaction>> Callback()
-        {
-            Transaction transaction = await _service.SearchById(id);
+        Transaction transaction = await _service.SearchById(id);
 
-            return new ApiResponse<Transaction>()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Result = transaction
-            };
-        }
-        
-        return await Handler<Transaction>.Exception(Callback, _logger);
+        return new ApiResponse<Transaction>()
+        {
+            StatusCode = HttpStatusCode.OK,
+            Result = transaction
+        };
     }
 
     [HttpGet("category/{categoryId}")]
     public async Task<ApiResponse<API.Transactions.ByCategory.Result>> GetByCategory(string categoryId, [FromQuery] string? month, [FromQuery] string? year)
     {
-        async Task<ApiResponse<API.Transactions.ByCategory.Result>> Callback()
+        API.Transactions.ByCategory.Result result = await _service.GetByCategory(categoryId, new API.Transactions.List.QueryParams() {
+            Month = month, Year = year
+        });
+        return new ApiResponse<API.Transactions.ByCategory.Result>()
         {
-            API.Transactions.ByCategory.Result result = await _service.GetByCategory(categoryId, new API.Transactions.List.QueryParams() {
-                Month = month, Year = year
-            });
-            return new ApiResponse<API.Transactions.ByCategory.Result>()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Result = result,
-            };
+            StatusCode = HttpStatusCode.OK,
+            Result = result,
         };
-
-        return await Handler<API.Transactions.ByCategory.Result>.Exception(Callback, _logger);
     }
 
     [HttpGet("bank/{bankId}")]
     public async Task<ApiResponse<ByBankResult>> GetByBankId(string bankId, [FromQuery] string? month, [FromQuery] string? year)
     {
-        async Task<ApiResponse<ByBankResult>> Callback()
+        ByBankResult result = await _service.GetByBank(bankId, new API.Transactions.List.QueryParams() {
+            Month = month, Year = year
+        });
+        return new ApiResponse<ByBankResult>()
         {
-            ByBankResult result = await _service.GetByBank(bankId, new API.Transactions.List.QueryParams() {
-                Month = month, Year = year
-            });
-            return new ApiResponse<ByBankResult>()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Result = result,
-            };
+            StatusCode = HttpStatusCode.OK,
+            Result = result,
         };
-
-        return await Handler<ByBankResult>.Exception(Callback, _logger);
     }
 }
