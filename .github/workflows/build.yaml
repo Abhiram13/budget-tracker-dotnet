@@ -20,12 +20,15 @@ jobs:
                 
             - name: Restore dependencies
               run: dotnet restore
+              working-directory: ${{ github.workspace }}
               
             - name: Build
               run: dotnet build
+              working-directory: ${{ github.workspace }}
               
             - name: Test
               run: dotnet test
+              working-directory: ${{ github.workspace }}
               env:
                   PORT: ${{secrets.PORT}}
                   HOST: ${{secrets.HOST}}
