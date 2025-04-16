@@ -7,7 +7,7 @@ on:
                 
 jobs:
     build:
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-24.04
             
         steps:
             - name: Checkout
@@ -17,15 +17,23 @@ jobs:
               uses: actions/setup-dotnet@v3
               with:
                   dotnet-version: '8.0.x'
+
+            # WARNING: This step grants very broad permissions and is NOT recommended for production.
+            # Use it ONLY for temporary debugging to see if it resolves the "Access denied" error.
+            - name: Grant full permissions
+              run: sudo chmod -R 777 /home/runneradmin
                 
             - name: Restore dependencies
               run: dotnet restore
+              working-directory: ${{ github.workspace }}
               
             - name: Build
               run: dotnet build
+              working-directory: ${{ github.workspace }}
               
             - name: Test
               run: dotnet test
+              working-directory: ${{ github.workspace }}
               env:
                   PORT: ${{secrets.PORT}}
                   HOST: ${{secrets.HOST}}
