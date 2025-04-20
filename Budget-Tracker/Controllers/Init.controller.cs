@@ -24,7 +24,7 @@ public class InitController : ControllerBase
         return Ok(new ApiResponse<string>()
         {
             StatusCode = HttpStatusCode.OK,
-            Message = "Welcome to your Budget Tracker! This is from Google Compute Engine :)"
+            Message = "Welcome to your Budget Tracker! This is from Google Compute Engine #2 :)"
         });
     }
 }
