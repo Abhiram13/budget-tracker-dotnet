@@ -53,15 +53,13 @@ public static class Secrets
 
     static string FetchSecretFromGCP(string secretKey)
     {
-        string secretValue;
         try
         {
-            secretValue = _secretsManager.GetSecretAsync(secretKey).Result;
+            string secretValue = _secretsManager.GetSecretAsync(secretKey).Result;
             return secretValue;
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            Console.WriteLine(e);
             return string.Empty;
         }
     }

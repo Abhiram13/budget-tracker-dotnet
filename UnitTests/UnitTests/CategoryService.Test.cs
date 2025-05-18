@@ -1,4 +1,3 @@
-using System.Text.Json;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Memory;
@@ -7,10 +6,6 @@ using BudgetTracker.Controllers;
 using BudgetTracker.Interface;
 using Xunit;
 using Moq;
-using BudgetTracker.Application;
-using MongoDB.Driver;
-using System.Net.Http.Json;
-using System.Text;
 
 namespace UnitTests;
 
@@ -26,7 +21,7 @@ public class CategoryServiceUnitTest
         _categoryService = new Mock<ICategoryService>();
         _cache = new MemoryCache(new MemoryCacheOptions());
         _logger = null;
-        _controller = new (_categoryService.Object, _cache);
+        _controller = new CategoryController(_categoryService.Object, _cache);
     }
 
     [Fact]

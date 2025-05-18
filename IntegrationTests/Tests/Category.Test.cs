@@ -2,7 +2,6 @@ using System.Text;
 using System.Text.Json;
 using BudgetTracker.Defination;
 using MongoDB.Driver;
-using Xunit;
 
 namespace IntegrationTests;
 
@@ -18,7 +17,7 @@ public class CategoryIntegrationTests : IntegrationTests
     }
     
     [Fact]
-    public async Task Positve_Test_After_Add_Category()
+    public async Task Positive_Test_After_Add_Category()
     {
         string categoryName = "Test category Again";
         string payload = JsonSerializer.Serialize(new Category() { Name = categoryName });
@@ -48,7 +47,7 @@ public class CategoryIntegrationTests : IntegrationTests
     [Fact]
     public async Task No_Payload_At_Add_Category()
     {
-        string payload = JsonSerializer.Serialize(new Category() {});
+        string payload = JsonSerializer.Serialize(new Category {});
         StringContent? payload1 = new StringContent(payload, Encoding.UTF8, "application/json");
         HttpResponseMessage data = await _client.PostAsync("category", payload1);
         string response = await data.Content.ReadAsStringAsync();

@@ -69,7 +69,7 @@ namespace BudgetTracker.Services
 
         public async Task<Result> List(QueryParams? queryParams, CancellationToken? cancellationToken)
         {
-            TransactionList repository = new TransactionList(queryParams, collection, cancellationToken);
+            TransactionList repository = new TransactionList(queryParams, _collection, cancellationToken);
             Result result = new Result
             {
                 TotalCount = await repository.GetCount()
@@ -95,20 +95,19 @@ namespace BudgetTracker.Services
 
         public async Task<Data> ListByDate(string date)
         {
-            Data data = await new TransactionsByDate(date, collection).GetTransactions();
-
+            Data data = await new TransactionsByDate(date, _collection).GetTransactions();
             return data;
         }
 
         public async Task<API.Transactions.ByCategory.Result> GetByCategory(string categoryId, QueryParams? queryParams)
         {
-            API.Transactions.ByCategory.Result result = await new TransactionsByCategory(categoryId, collection, queryParams, new CategoryService(_mongoContext)).GetData();
+            API.Transactions.ByCategory.Result result = await new TransactionsByCategory(categoryId, _collection, queryParams, _categoryService).GetData();
             return result;
         }
 
         public async Task<ByBankResult> GetByBank(string bankId, QueryParams queryParams)
         {
-            ByBankResult result = await new TransactionsByBank(bankId, collection, queryParams, new BankService(_mongoContext)).GetData();
+            ByBankResult result = await new TransactionsByBank(bankId, _collection, queryParams, _bankService).GetData();
             return result;
         }
     }
