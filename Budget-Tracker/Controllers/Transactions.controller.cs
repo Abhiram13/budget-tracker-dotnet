@@ -6,6 +6,9 @@ using BudgetTracker.Interface;
 using BudgetTracker.API.Transactions.ByDate;
 using TransactionListResult = BudgetTracker.API.Transactions.List.Result;
 using ByBankResult = BudgetTracker.API.Transactions.ByBank.Result;
+using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BudgetTracker.Controllers;
 
@@ -14,11 +17,13 @@ public class TransactionsController : ApiBaseController
 {
     private readonly ITransactionService _service;
     private readonly ILogger<TransactionsController> _logger;
+    private readonly MongoDatabase _database;
 
-    public TransactionsController(ITransactionService service, ILogger<TransactionsController> logger)
+    public TransactionsController(ITransactionService service, ILogger<TransactionsController> logger, MongoDatabase database)
     {
         _service = service;
         _logger = logger;
+        _database = database;
     }
 
     [HttpPost]
@@ -36,13 +41,15 @@ public class TransactionsController : ApiBaseController
 
     [HttpGet]
     public async Task<ApiResponse<TransactionListResult>> Get(
-        [FromQuery] string? month, 
-        [FromQuery] string? year, 
-        [FromQuery] string? type, 
+        [FromQuery] string? month,
+        [FromQuery] string? year,
+        [FromQuery] string? type,
         [FromQuery] string? sort,
         CancellationToken ct
-    ) {
-        API.Transactions.List.QueryParams queryParams = new API.Transactions.List.QueryParams() {
+    )
+    {
+        API.Transactions.List.QueryParams queryParams = new API.Transactions.List.QueryParams()
+        {
             Month = month,
             Year = year,
             Type = type,
@@ -112,8 +119,10 @@ public class TransactionsController : ApiBaseController
     [HttpGet("category/{categoryId}")]
     public async Task<ApiResponse<API.Transactions.ByCategory.Result>> GetByCategory(string categoryId, [FromQuery] string? month, [FromQuery] string? year)
     {
-        API.Transactions.ByCategory.Result result = await _service.GetByCategory(categoryId, new API.Transactions.List.QueryParams() {
-            Month = month, Year = year
+        API.Transactions.ByCategory.Result result = await _service.GetByCategory(categoryId, new API.Transactions.List.QueryParams()
+        {
+            Month = month,
+            Year = year
         });
         return new ApiResponse<API.Transactions.ByCategory.Result>()
         {
@@ -125,13 +134,35 @@ public class TransactionsController : ApiBaseController
     [HttpGet("bank/{bankId}")]
     public async Task<ApiResponse<ByBankResult>> GetByBankId(string bankId, [FromQuery] string? month, [FromQuery] string? year)
     {
-        ByBankResult result = await _service.GetByBank(bankId, new API.Transactions.List.QueryParams() {
-            Month = month, Year = year
+        ByBankResult result = await _service.GetByBank(bankId, new API.Transactions.List.QueryParams()
+        {
+            Month = month,
+            Year = year
         });
         return new ApiResponse<ByBankResult>()
         {
             StatusCode = HttpStatusCode.OK,
             Result = result,
         };
+    }
+
+    [HttpGet, Route("test"), AllowAnonymous]
+    public async Task<List<TransactionTestData>> TestAsync()
+    {
+        List<TransactionTestData> list = await _database.TransactionCollection.Aggregate()
+            .Match(s => s.Date == "2024-09-18")            
+            .Group(s => 1, g => new TransactionTestData
+            {
+                Debit = g.Where(a => a.Type == TransactionType.Debit).Sum(b => b.Amount),
+                Credit = g.Where(a => a.Type == TransactionType.Credit).Sum(b => b.Amount),
+                TransactionsByDate = g.Select(t => new TransactionTestData.TransactionData
+                {
+                    Amount = t.Amount,
+                    Description = t.Description,                    
+                }).ToList()
+            })
+            .ToListAsync();
+
+        return list;
     }
 }

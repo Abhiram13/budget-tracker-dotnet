@@ -18,17 +18,35 @@ namespace BudgetTracker.Services
         public const string DUES = "dues";
     }
 
-    public class MongoDBContext : IMongoContext
+    public class MongoDatabase
     {
         private readonly IMongoDatabase _database;
-        
-        public MongoDBContext()
+        public readonly MongoContext Context;
+        public readonly IMongoCollection<Transaction2> TransactionCollection;
+        public readonly IMongoCollection<Category2> CategoryCollection;
+
+        public MongoDatabase()
         {
             string url = $"mongodb+srv://{Secrets.USERNAME}:{Secrets.PASSWORD}@{Secrets.HOST}/?retryWrites=true&w=majority&appName=Trsnactions";
             MongoClient client = new MongoClient(url);
             _database = client.GetDatabase(Secrets.DB);
+            Context = MongoContext.Create(_database);
+            TransactionCollection = _database.GetCollection<Transaction2>(Collection.TRANSACTIONS);
+            CategoryCollection = _database.GetCollection<Category2>(Collection.CATEGORIES);
         }
-        
+    }
+
+    public class MongoDBContext : IMongoContext
+    {
+        private readonly IMongoDatabase _database;
+
+        public MongoDBContext()
+        {
+            string url = $"mongodb+srv://{Secrets.USERNAME}:{Secrets.PASSWORD}@{Secrets.HOST}/?retryWrites=true&w=majority&appName=Trsnactions";
+            MongoClient client = new MongoClient(url);
+            _database = client.GetDatabase(Secrets.DB);            
+        }
+
         public IMongoDatabase Database => _database;
         public IMongoCollection<Transaction> Transaction => _database.GetCollection<Transaction>(Collection.TRANSACTIONS);
         public IMongoCollection<Category> Category => _database.GetCollection<Category>(Collection.CATEGORIES);

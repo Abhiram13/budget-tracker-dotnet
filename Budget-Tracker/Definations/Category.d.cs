@@ -13,6 +13,26 @@ namespace BudgetTracker.Defination
         [RegularExpression(@"^[A-Za-z\s]+$", ErrorMessage = "Please provide valid category name.")]
         public string Name { get; set; } = "";
     }
+
+    public class Category2
+    {
+        [JsonPropertyName("id")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public ObjectId Id { get; set; }
+
+        [Required]
+        [BsonElement("name")]
+        [JsonPropertyName("name")]
+        [RegularExpression(@"^[A-Za-z\s]+$", ErrorMessage = "Please provide valid category name.")]
+        public string Name { get; set; } = "";
+    }
+
+    public class Category3
+    {
+        [BsonElement("name")]
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = "";
+    }
 }
 
 namespace BudgetTracker.Interface

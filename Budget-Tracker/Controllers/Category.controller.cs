@@ -4,6 +4,7 @@ using Microsoft.Extensions.Caching.Memory;
 using BudgetTracker.Interface;
 using BudgetTracker.Defination;
 using BudgetTracker.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace BudgetTracker.Controllers;
 
@@ -13,11 +14,13 @@ public class CategoryController : ApiBaseController
     private readonly ICategoryService _service;
     private readonly IMemoryCache _cache;
     private readonly string _cacheKey = "category_cache";
+    private readonly MongoDatabase _context;
 
-    public CategoryController(ICategoryService service, IMemoryCache memoryCache)
+    public CategoryController(ICategoryService service, IMemoryCache memoryCache, MongoDatabase context)
     {
         _service = service;
         _cache = memoryCache;
+        _context = context;
     }
 
     [HttpPost]
@@ -36,7 +39,7 @@ public class CategoryController : ApiBaseController
     public async Task<ApiResponse<Category>> SearchById(string id)
     {
         if (string.IsNullOrEmpty(id)) { throw new BadRequestException("Category id is missing"); }
-                        
+
         Category category = await _service.SearchById(id);
         return new ApiResponse<Category>()
         {
@@ -87,5 +90,13 @@ public class CategoryController : ApiBaseController
             Message = message,
             StatusCode = statusCode,
         };
+    }
+
+    [HttpGet, Route("list")]
+    public async Task<List<Category3>> GetListAsync()
+    {
+        List<Category3> list = await _context.Context.Categories.Select(c => new Category3 { Name = c.Name }).ToListAsync();
+
+        return list;
     }
 }

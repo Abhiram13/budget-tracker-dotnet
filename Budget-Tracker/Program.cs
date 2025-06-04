@@ -49,6 +49,7 @@ else
 }
 
 builder.Services.AddSingleton<IMongoContext, MongoDBContext>();
+builder.Services.AddSingleton<MongoDatabase>();
 builder.Services.AddControllers().ConfigureApiBehaviorOptions(options => {
     options.SuppressModelStateInvalidFilter = false;
     options.InvalidModelStateResponseFactory = action => {

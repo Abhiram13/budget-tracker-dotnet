@@ -28,6 +28,7 @@ namespace BudgetTracker.Middlewares
             }
             catch (Exception exception)
             {
+                _logger.LogError(exception.Message);
                 ProblemDetails problemDetails = new ProblemDetails()
                 {
                     Type = exception.GetType().ToString(),
@@ -35,12 +36,12 @@ namespace BudgetTracker.Middlewares
                     Status = (int) HttpStatusCode.InternalServerError,
                     Detail = exception.Message,
                 };
-                _logger.Log(
-                    LogLevel.Error, 
-                    exception, 
-                    "Exception occured:- \nProblem details: {details}",                    
-                    JsonSerializer.Serialize(problemDetails)
-                );
+                // _logger.Log(
+                //     LogLevel.Error, 
+                //     exception, 
+                //     "Exception occured:- \nProblem details: {details}",                    
+                //     JsonSerializer.Serialize(problemDetails)
+                // );
                 ApiResponse<string> response = new ApiResponse<string>()
                 {
                     StatusCode = HttpStatusCode.InternalServerError,
