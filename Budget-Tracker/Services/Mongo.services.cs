@@ -7,6 +7,9 @@ using BudgetTracker.Application;
 
 namespace BudgetTracker.Services
 {
+    /// <summary>
+    /// Provides constant string values for various collection names in MongoDB
+    /// </summary>
     public class Collection
     {
         public const string TRANSACTIONS = "transactions";
@@ -35,22 +38,22 @@ namespace BudgetTracker.Services
 
     public abstract class MongoServices<T> : IMongoService<T> where T : MongoObject
     {
-        protected IMongoCollection<T> collection;
+        protected IMongoCollection<T> _collection;
 
-        public MongoServices(IMongoCollection<T> _collection)
+        public MongoServices(IMongoCollection<T> collection)
         {
-            collection = _collection;
+            _collection = collection;
         }
 
         public async Task InserOne(T document)
         {
-            await collection.InsertOneAsync(document);
+            await _collection.InsertOneAsync(document);
         }
 
         public async Task<List<T>> GetList(ProjectionDefinition<T>? excludeProjection = null)
         {
             FilterDefinition<T> filter = Builders<T>.Filter.Empty;
-            IAggregateFluent<T> aggregate = collection.Aggregate().Match(filter);
+            IAggregateFluent<T> aggregate = _collection.Aggregate().Match(filter);
 
             if (excludeProjection != null)
             {
@@ -66,7 +69,7 @@ namespace BudgetTracker.Services
 
             FilterDefinition<T> filter = Builders<T>.Filter.Eq("_id", ObjectId.Parse(Id));
 
-            return await collection.Find(filter).FirstOrDefaultAsync();
+            return await _collection.Find(filter).FirstOrDefaultAsync();
         }
 
         public async Task<C> SearchById<C>(string Id, IMongoCollection<C> _collection) where C : MongoObject
@@ -79,7 +82,7 @@ namespace BudgetTracker.Services
         public async Task<bool> DeleteById(string id)
         {
             FilterDefinition<T> filter = Builders<T>.Filter.Eq("_id", ObjectId.Parse(id));
-            DeleteResult result = await collection.DeleteOneAsync(filter);
+            DeleteResult result = await _collection.DeleteOneAsync(filter);
 
             return result.DeletedCount > 0;
         }
@@ -88,7 +91,7 @@ namespace BudgetTracker.Services
         {
             FilterDefinition<T> filter = Builders<T>.Filter.Eq("_id", ObjectId.Parse(id));
             document.Id = id;
-            ReplaceOneResult result = await collection.ReplaceOneAsync(filter, document);
+            ReplaceOneResult result = await _collection.ReplaceOneAsync(filter, document);
             return result.ModifiedCount > 0;
         }
     }

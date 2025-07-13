@@ -38,9 +38,9 @@ namespace BudgetTracker.Security
                     return Task.FromResult(AuthenticateResult.Fail("Invalid key provided"));
                 }
 
-                List<Claim> claims = new ()
+                List<Claim> claims = new List<Claim>()
                 {
-                    new (ClaimTypes.Name, "Api User")
+                    new Claim(ClaimTypes.Name, "Api User")
                 };
 
                 ClaimsIdentity identity = new (claims, Scheme.Name);

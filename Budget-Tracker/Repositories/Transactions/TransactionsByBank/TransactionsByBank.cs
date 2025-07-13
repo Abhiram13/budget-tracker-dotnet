@@ -2,6 +2,7 @@ using BudgetTracker.Defination;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using BudgetTracker.API.Transactions.List;
+using BudgetTracker.Interface;
 using BudgetTracker.Services;
 using BankResult = BudgetTracker.API.Transactions.ByBank.Result;
 
@@ -13,11 +14,11 @@ namespace BudgetTracker.Repository
         private IMongoCollection<Transaction> _collection;
         private QueryParams? _params;
         private string? _dateFilter;
-        private BankService _bankService;
+        private IBankService _bankService;
         private readonly string _currentMonth = DateTime.Now.Month.ToString("D2");
         private readonly string _currentYear = DateTime.Now.Year.ToString();
 
-        public TransactionsByBank(string bankId, IMongoCollection<Transaction> collection, QueryParams? queryParams, BankService bankService)
+        public TransactionsByBank(string bankId, IMongoCollection<Transaction> collection, QueryParams? queryParams, IBankService bankService)
         {
             _bankId = bankId;
             _collection = collection;

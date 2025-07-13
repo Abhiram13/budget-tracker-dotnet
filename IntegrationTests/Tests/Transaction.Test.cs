@@ -3,10 +3,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using BudgetTracker.API.Transactions.List;
-using BudgetTracker.API.Transactions.ByCategory;
 using BudgetTracker.Defination;
-using MongoDB.Driver;
-using Xunit;
 using IntegrationTests.Data.Transactions;
 using IntegrationTests.Utils;
 
@@ -14,10 +11,7 @@ using TransactionByCategoryResult = BudgetTracker.API.Transactions.ByCategory.Re
 using CategoryTypeTransactionsResult = BudgetTracker.API.Transactions.List.Result;
 using TransactionsByCategoryId = BudgetTracker.API.Transactions.ByCategory.CategoryData;
 using ByDateTransactions = BudgetTracker.API.Transactions.ByDate;
-using BudgetTracker.Application;
-using BudgetTracker.Repository;
 using IntegrationTests.Definations.Transactions;
-using Xunit.Abstractions;
 using ByBankResult = BudgetTracker.API.Transactions.ByBank.Result;
 
 namespace IntegrationTests;
@@ -27,11 +21,6 @@ namespace IntegrationTests;
 public class TransactionIntegrationTests : IntegrationTests
 {
     private const string _categoryId = "665aa29b930ad7888c6766fa";
-    private const string _invalidCategoryId = "66fc180b620148e2e36c0000";
-    private const string _bankId = "66483fed6c7ed85fca653d05";
-    private const string _invalidBankId = "66483fed6c7ed85fca650000";
-    private const string _description = "Sample test transaction";
-    private const string _date = "2024-09-18";
     
     public TransactionIntegrationTests(MongoDBFixture fixture) : base(fixture)
     {
@@ -42,10 +31,10 @@ public class TransactionIntegrationTests : IntegrationTests
     [ClassData(typeof(TransactionsInsertTestData))]
     public async Task Insert_Transactions(TransactionsInsertTestDef data)
     {
-        await using (TestDisposal dispose = new TestDisposal(_fixture))
+        await using (TestDisposal _ = new TestDisposal(_fixture))
         {
             string payload = JsonSerializer.Serialize(data.Transaction);
-            StringContent? payload1 = new StringContent(payload, Encoding.UTF8, "application/json");
+            StringContent payload1 = new StringContent(payload, Encoding.UTF8, "application/json");
             HttpResponseMessage httpResponse = await _client.PostAsync("transactions", payload1);
             string response = await httpResponse.Content.ReadAsStringAsync();
             ApiResponse<string>? apiResponse = JsonSerializer.Deserialize<ApiResponse<string>>(response);
@@ -82,7 +71,7 @@ public class TransactionIntegrationTests : IntegrationTests
                 Assert.NotNull(apiResponse.Result.Categories);
                 if (apiResponse.Result.Categories.Count > 0)
                 {
-                    foreach (BudgetTracker.API.Transactions.List.CategoryData category in apiResponse.Result.Categories)
+                    foreach (CategoryData category in apiResponse.Result.Categories)
                     {
                         Assert.NotNull(category.Name);
                         Assert.NotEmpty(category.Name);
@@ -113,7 +102,7 @@ public class TransactionIntegrationTests : IntegrationTests
             Assert.NotNull(apiResponse?.Result);
             Assert.Equal(data.ExpectedStatusCode, (int)apiResponse.StatusCode);
             Assert.NotNull(apiResponse.Result.Transactions);
-            Assert.NotNull(apiResponse?.Result?.TotalCount);
+            Assert.NotNull(apiResponse.Result?.TotalCount);
             Assert.Null(categoryProp);
             Assert.Null(banksProp);
             Assert.Equal(data.ExpectedTotalCount, apiResponse.Result.TotalCount);
@@ -140,13 +129,13 @@ public class TransactionIntegrationTests : IntegrationTests
             await disposableTests.InsertManyAsync();
             HttpResponseMessage httpResponse = await _client.GetAsync($"/transactions?month={data.Month}&year={data.Year}&type=bank");
             string jsonResponse = await httpResponse.Content.ReadAsStringAsync();
-            ApiResponse<BudgetTracker.API.Transactions.List.Result> apiResponse = JsonSerializer.Deserialize<ApiResponse<BudgetTracker.API.Transactions.List.Result>>(jsonResponse);
+            ApiResponse<Result>? apiResponse = JsonSerializer.Deserialize<ApiResponse<Result>>(jsonResponse);
             PropertyInfo? categoryProp = apiResponse?.Result?.GetType().GetProperty("categories");
             PropertyInfo? transactionProp = apiResponse?.Result?.GetType().GetProperty("transactions");
             
             Assert.NotNull(apiResponse?.Result);
             Assert.Equal(data.ExpectedStatusCode, (int)apiResponse.StatusCode);
-            Assert.NotNull(apiResponse.Result.TotalCount);
+            Assert.True(apiResponse.Result.TotalCount > -1);
             Assert.NotNull(apiResponse.Result.Banks);
             Assert.Null(categoryProp);
             Assert.Null(transactionProp);
@@ -179,13 +168,13 @@ public class TransactionIntegrationTests : IntegrationTests
             ApiResponse<TransactionByCategoryResult>? apiResponse = JsonSerializer.Deserialize<ApiResponse<TransactionByCategoryResult>>(jsonResponse);
     
             Assert.Equal(200, (int) apiResponse!.StatusCode);
-            Assert.NotEmpty(apiResponse!.Result!.Category);
-            Assert.Equal(data.ExpectedCategoryName, apiResponse!.Result!.Category);
-            Assert.Equal(data.ExpectedTotalDates, apiResponse!.Result!.CategoryData.Count);
+            Assert.NotEmpty(apiResponse.Result!.Category);
+            Assert.Equal(data.ExpectedCategoryName, apiResponse.Result!.Category);
+            Assert.Equal(data.ExpectedTotalDates, apiResponse.Result!.CategoryData.Count);
     
             if (apiResponse.Result.CategoryData.Count > 0)
             {
-                foreach (TransactionsByCategoryId? categoryData in apiResponse.Result.CategoryData)
+                foreach (TransactionsByCategoryId categoryData in apiResponse.Result.CategoryData)
                 {
                     Assert.Equal(data.ExpectedTotalTransactionsForDate, categoryData.Transactions.Count);
                     Assert.Contains(data.ExpectedTransactions, d => d.Date == categoryData.Date);
@@ -212,35 +201,35 @@ public class TransactionIntegrationTests : IntegrationTests
             PropertyInfo? transactionsProp = apiResponse?.Result?.GetType().GetProperty("Transactions");
             PropertyInfo? messageProp = apiResponse?.GetType().GetProperty("Message");
     
-            if (apiResponse.StatusCode != HttpStatusCode.OK)
+            if (apiResponse?.StatusCode != HttpStatusCode.OK)
             {
                 Assert.NotNull(messageProp);
-                Assert.NotNull(apiResponse.Message);
+                Assert.NotNull(apiResponse?.Message);
                 return;
             }
             
             Assert.Equal(data.ExpectedHttpStatusCode, (int) httpResponse.StatusCode);
             Assert.Equal(data.ExpectedStatusCode, (int) apiResponse.StatusCode);
-            Assert.Equal(data.ExpectedCredit, apiResponse.Result.Credit);
-            Assert.Equal(data.ExpectedDebit, apiResponse.Result.Debit);
-            Assert.Equal(data.ExpectedPartialCredit, apiResponse.Result.PartialCredit);
-            Assert.Equal(data.ExpectedPartialDebit, apiResponse.Result.PartialDebit);
-            Assert.Equal(data.ExpectedTotalTransactions, apiResponse.Result.Transactions.Count);
+            Assert.Equal(data.ExpectedCredit, apiResponse.Result?.Credit);
+            Assert.Equal(data.ExpectedDebit, apiResponse.Result?.Debit);
+            Assert.Equal(data.ExpectedPartialCredit, apiResponse.Result?.PartialCredit);
+            Assert.Equal(data.ExpectedPartialDebit, apiResponse.Result?.PartialDebit);
+            Assert.Equal(data.ExpectedTotalTransactions, apiResponse.Result?.Transactions.Count);
             Assert.NotNull(debitProp);
             Assert.NotNull(creditProp);
             Assert.NotNull(partialDebitProp);
             Assert.NotNull(partialCreditProp);
             Assert.NotNull(transactionsProp);
     
-            if (apiResponse.Result.Transactions.Count > 0)
+            if (apiResponse.Result?.Transactions.Count > 0)
             {
                 foreach (ByDateTransactions.Transactions transaction in apiResponse.Result.Transactions)
                 {
-                    Assert.True(data.ExpectedTransactions.Any(expTransaction => expTransaction.Description == transaction.Description));
-                    Assert.True(data.ExpectedTransactions.Any(expTransaction => expTransaction.Category == transaction.Category));
-                    Assert.True(data.ExpectedTransactions.Any(expTransaction => expTransaction.Amount == transaction.Amount));
-                    Assert.True(data.ExpectedTransactions.Any(expTransaction => expTransaction.FromBank == transaction.FromBank));
-                    Assert.True(data.ExpectedTransactions.Any(expTransaction => expTransaction.Type == transaction.Type));
+                    Assert.Contains(data.ExpectedTransactions, expTransaction => expTransaction.Description == transaction.Description);
+                    Assert.Contains(data.ExpectedTransactions, expTransaction => expTransaction.Category == transaction.Category);
+                    Assert.Contains(data.ExpectedTransactions, expTransaction => expTransaction.Amount == transaction.Amount);
+                    Assert.Contains(data.ExpectedTransactions, expTransaction => expTransaction.FromBank == transaction.FromBank);
+                    Assert.Contains(data.ExpectedTransactions, expTransaction => expTransaction.Type == transaction.Type);
                     Assert.NotNull(transaction.TransactionId);
                     
                 }
@@ -257,18 +246,18 @@ public class TransactionIntegrationTests : IntegrationTests
             await disposableTests.InsertManyAsync();
             HttpResponseMessage httpResponse = await _client.GetAsync($"/transactions/bank/{data.BankId}?month={data.Month}&year={data.Year}");
             string jsonResponse = await httpResponse.Content.ReadAsStringAsync();
-            ApiResponse<ByBankResult> apiResponse = JsonSerializer.Deserialize<ApiResponse<ByBankResult>>(jsonResponse);
-            PropertyInfo bankNameProp = apiResponse?.Result?.GetType().GetProperty("Bank");
-            PropertyInfo bankDataProp = apiResponse?.Result?.GetType().GetProperty("BankData");
+            ApiResponse<ByBankResult>? apiResponse = JsonSerializer.Deserialize<ApiResponse<ByBankResult>>(jsonResponse);
+            PropertyInfo? _ = apiResponse?.Result?.GetType().GetProperty("Bank");
+            PropertyInfo? __ = apiResponse?.Result?.GetType().GetProperty("BankData");
             
-            Assert.Equal(data.ExpectedStatusCode, (int) apiResponse.StatusCode);
+            Assert.Equal(data.ExpectedStatusCode, (int) apiResponse!.StatusCode);
             Assert.Equal(data.ExcpectedHttpStatusCode, (int) httpResponse.StatusCode);
-            Assert.Equal(data.ExpectedResult.BankData.Count, apiResponse.Result.BankData!.Count);
+            Assert.Equal(data.ExpectedResult.BankData.Count, apiResponse.Result?.BankData.Count);
             // Assert.True(Enumerable.SequenceEqual(apiResponse.Result.BankData, data.ExpectedResult.BankData));
     
-            foreach (TransactionsByCategoryId bankData in apiResponse.Result.BankData)
+            foreach (TransactionsByCategoryId bankData in apiResponse.Result!.BankData)
             {
-                Assert.True(data.ExpectedResult.BankData.Any(expectedBank => expectedBank.Date == bankData.Date));
+                Assert.Contains(data.ExpectedResult.BankData, expectedBank => expectedBank.Date == bankData.Date);
             }
         }
     }
@@ -280,7 +269,7 @@ public class TransactionIntegrationTests : IntegrationTests
         await using (TransactionsInsertDisposals disposableTests = new TransactionsInsertDisposals(_fixture, _client))
         {
             await disposableTests.InsertManyAsync();
-            string transactionId = String.Empty;
+            string transactionId;
             
             // Fetch id based on date
             {
@@ -288,14 +277,14 @@ public class TransactionIntegrationTests : IntegrationTests
                 HttpResponseMessage httpResponse = await _client.GetAsync($"/transactions/date/{data.date}");
                 string jsonResponse = await httpResponse.Content.ReadAsStringAsync();
                 ApiResponse<ByDateTransactions.Data>? apiResponse = JsonSerializer.Deserialize<ApiResponse<ByDateTransactions.Data>>(jsonResponse);
-                transactionId = apiResponse.Result.Transactions.FirstOrDefault().TransactionId;
+                transactionId = apiResponse?.Result?.Transactions?.FirstOrDefault()?.TransactionId ?? "";
             }
             
             // Call :searchById API
             {
                 HttpResponseMessage httpResponse = await _client.GetAsync($"/transactions/{transactionId}");
                 string jsonResponse = await httpResponse.Content.ReadAsStringAsync();
-                ApiResponse<Transaction> apiResponse = JsonSerializer.Deserialize<ApiResponse<Transaction>>(jsonResponse);
+                ApiResponse<Transaction>? apiResponse = JsonSerializer.Deserialize<ApiResponse<Transaction>>(jsonResponse);
                 Transaction transaction = apiResponse.Result;
                 Transaction expectedTransaction = data.Transaction;
                 

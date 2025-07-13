@@ -8,6 +8,7 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
     <NoWarn>IDE0300</NoWarn>
+    <NoWarn>IDE0028</NoWarn>
     <WarningsAsErrors>Nullable</WarningsAsErrors>
   </PropertyGroup>
 
