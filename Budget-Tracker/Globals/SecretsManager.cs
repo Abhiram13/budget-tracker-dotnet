@@ -58,8 +58,9 @@ public static class Secrets
             string secretValue = _secretsManager.GetSecretAsync(secretKey).Result;
             return secretValue;
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            Logger.LogError(e, $"Exception at Fetch secret from GCP: {e.Message}");
             return string.Empty;
         }
     }

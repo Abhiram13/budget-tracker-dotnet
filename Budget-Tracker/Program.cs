@@ -38,14 +38,16 @@ if (Environment.GetEnvironmentVariable("ENV") == "Development" || Environment.Ge
             options.IncludeScopes = true;
         });
     });
-    logger = factory.CreateLogger("Program");
+    logger = factory.CreateLogger("Budget-tracker-console");
+    Logger.Initialize(logger);
 }
 else
 {
     builder.Logging.AddGoogle();
     factory = LoggerFactory.Create(log => log.AddGoogle());
-    logger = factory.CreateLogger("Program");
+    logger = factory.CreateLogger("Google-cloud-console");
     builder.Services.AddGoogleDiagnosticsForAspNetCore();
+    Logger.Initialize(logger);
 }
 
 builder.Services.AddSingleton<IMongoContext, MongoDBContext>();
