@@ -17,18 +17,9 @@ public class DueService : MongoServices<Due>, IDues
 
     public async Task InsertOneAsync(Due body)
     {
-        if (!string.IsNullOrEmpty(body.ToBank))
-        {
-            Bank toBank = await _bankService.SearchById(body.ToBank);
-            if (string.IsNullOrEmpty(toBank.Name))
-            {
-                throw new BadRequestException("Invalid To bank id provided");
-            }
-        }
-
         await InserOne(body);
     }
-
+    
     public async Task<DueTransactions> GetDueTransactionsAsync(string dueId)
     {
         BsonDocument[] pipelines = new BsonDocument[] {
@@ -53,18 +44,30 @@ public class DueService : MongoServices<Due>, IDues
                 }}
             },
             new BsonDocument {
+                {"$addFields", new BsonDocument {
+                    { "total", new BsonDocument {
+                        {"$sum", "$transactions.amount"}
+                    }}
+                }}
+            },
+            new BsonDocument {
+                {"$addFields", new BsonDocument {
+                    { "current_principle", new BsonDocument {
+                        {"$subtract", new BsonArray {"$principle_amount", "$total"}}
+                    }}
+                }}
+            },
+            new BsonDocument {
                 {"$project", new BsonDocument {
                     {"_id", 0},
-                    {"description", 1},
-                    {"amount", 1},
-                    {"status", 1},
+                    // {"description", 1},
+                    // {"principle_amount", 1},
+                    {"current_principle", 1},
+                    // {"status", 1},
                     {"transactions", new BsonDocument {
                         {"amount", 1},
                         {"type", 1},
-                        {"description", 1},
-                        {"date", 1},
-                        {"from_bank", 1},
-                        {"to_bank", 1},
+                        {"description", 1},                        
                     }},
                 }}
             }

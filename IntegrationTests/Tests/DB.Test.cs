@@ -30,8 +30,8 @@ public class MongoDBFixture : IDisposable
 
     private void _setEnvironmentVariables()
     {
-        var currentParent = Directory.GetParent(Directory.GetCurrentDirectory());
-        var mainParent = Directory.GetParent(currentParent.Parent.FullName);
+        DirectoryInfo currentParent = Directory.GetParent(Directory.GetCurrentDirectory()) ?? default;
+        DirectoryInfo mainParent = Directory.GetParent(currentParent.Parent.FullName);
         string root = Directory.GetCurrentDirectory();
         string dotenv = Path.Combine(mainParent.FullName, ".env");
         DotEnv.Load(dotenv);

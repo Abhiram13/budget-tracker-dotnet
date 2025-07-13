@@ -27,7 +27,7 @@ public class DueController : ApiBaseController
         await _service.InsertOneAsync(body);
         return new ApiResponse<string>()
         {
-            StatusCode = System.Net.HttpStatusCode.OK,
+            StatusCode = HttpStatusCode.OK,
             Message = "Due created successfully",
         };
     }
@@ -40,18 +40,18 @@ public class DueController : ApiBaseController
         return new ApiResponse<List<Due>>()
         {
             Result = dues,
-            StatusCode = System.Net.HttpStatusCode.OK,
+            StatusCode = HttpStatusCode.OK,
         };
     }
 
     [HttpGet("{id}/transactions")]
-    public async Task<ApiResponse<DueTransactions>> TransactionsByDueIdAsync(string id)
+    public async Task<ApiResponse<DueTransactions>> DueTransactionsAsync(string id)
     {
         DueTransactions result = await _service.GetDueTransactionsAsync(id);
         return new ApiResponse<DueTransactions>()
         {
             Result = result,
-            StatusCode = System.Net.HttpStatusCode.OK,
+            StatusCode = HttpStatusCode.OK,
         };
     }
 
@@ -62,7 +62,7 @@ public class DueController : ApiBaseController
         return new ApiResponse<Due>()
         {
             Result = result,
-            StatusCode = System.Net.HttpStatusCode.OK,
+            StatusCode = HttpStatusCode.OK,
         };
     }
 
