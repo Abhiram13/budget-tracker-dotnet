@@ -13,12 +13,13 @@ public class SecretsManager
 
     private string GetProjectId()
     {
-        string? projectId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_ID");
+        string? projectId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_ID");        
         if (string.IsNullOrEmpty(projectId))
         {
             projectId = ""; // Project-ID
         }
-        
+
+        Logger.LogInformation($"The Project ID is --> {projectId}");
         return projectId;
     }
 
@@ -56,6 +57,7 @@ public static class Secrets
         try
         {
             string secretValue = _secretsManager.GetSecretAsync(secretKey).Result;
+            Logger.LogInformation($"The Secret value from GCP is --> {secretValue}");
             return secretValue;
         }
         catch (Exception e)
@@ -84,6 +86,8 @@ public static class Secrets
         {
             throw new KeyNotFoundException($"Secret key \"{secretKey}\" was not found in GCP or local.");
         }
+
+        Logger.LogInformation($"The Secret Value is --> {secretValue}");
 
         return secretValue;
     }
