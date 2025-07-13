@@ -55,14 +55,16 @@ if (Environment.GetEnvironmentVariable("ENV") == "Development" || Environment.Ge
 {
     builder.Logging.AddConsole();
     factory = LoggerFactory.Create(log => log.AddConsole());
-    logger = factory.CreateLogger("Program");
+    logger = factory.CreateLogger("Budget-tracker-console");
+    Logger.Initialize(logger);
 }
 else
 {
     builder.Logging.AddGoogle();
     factory = LoggerFactory.Create(log => log.AddGoogle());
-    logger = factory.CreateLogger("Program");
+    logger = factory.CreateLogger("Budget-tracker-google-console");
     builder.Services.AddGoogleDiagnosticsForAspNetCore();
+    Logger.Initialize(logger);
 }
 
 builder.Services.AddHealthChecks().AddTypeActivatedCheck<DataBaseHealthCheck>("Database health check", args: new object[] {logger});

@@ -62,6 +62,7 @@ public static class Secrets
         catch (Exception e)
         {
             Console.WriteLine(e);
+            Logger.LogError(e, $"Exception at Fetch secret from GCP: {e.Message}");
             return string.Empty;
         }
     }
