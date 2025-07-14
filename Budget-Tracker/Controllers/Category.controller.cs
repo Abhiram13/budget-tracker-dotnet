@@ -4,6 +4,7 @@ using Microsoft.Extensions.Caching.Memory;
 using BudgetTracker.Interface;
 using BudgetTracker.Defination;
 using BudgetTracker.Services;
+using BudgetTracker.Application;
 
 namespace BudgetTracker.Controllers;
 
@@ -48,6 +49,8 @@ public class CategoryController : ApiBaseController
     [HttpGet]
     public async Task<ApiResponse<List<Category>>> GetList()
     {
+        Logger.LogInformation("This is just a log info from /Category route");
+        WriteLine("This is just a console info from /Category route");
         if (!_cache.TryGetValue(_cacheKey, out List<Category>? categories))
         {
             categories = await _service.GetList();
