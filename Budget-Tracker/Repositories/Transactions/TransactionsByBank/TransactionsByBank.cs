@@ -2,6 +2,7 @@ using BudgetTracker.Defination;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using BudgetTracker.API.Transactions.List;
+using BudgetTracker.Application;
 using BudgetTracker.Interface;
 using BudgetTracker.Services;
 using BankResult = BudgetTracker.API.Transactions.ByBank.Result;
@@ -45,10 +46,11 @@ namespace BudgetTracker.Repository
                 {"$match", new BsonDocument {
                     {"$and", new BsonArray {
                         new BsonDocument {
-                            {"$or", new BsonArray {
-                                new BsonDocument {{"from_bank", _bankId}},
-                                new BsonDocument {{"to_bank", _bankId}}
-                            }},
+                            // {"$or", new BsonArray {
+                            //     new BsonDocument {{"from_bank", _bankId}},
+                            //     new BsonDocument {{"to_bank", _bankId}}
+                            // }},
+                            {"from_bank", _bankId},
                             {"date", new BsonDocument {
                                 {"$regex", _dateFilter}
                             }}
@@ -72,14 +74,14 @@ namespace BudgetTracker.Repository
                             {"onNull", "null"}                            
                         }}
                     }},
-                    {"to_bank", new BsonDocument {
-                        {"$convert", new BsonDocument {
-                            {"input", "$to_bank"},
-                            {"to", "objectId"},
-                            {"onError", "null"},
-                            {"onNull", "null"}
-                        }}
-                    }}
+                    // {"to_bank", new BsonDocument {
+                    //     {"$convert", new BsonDocument {
+                    //         {"input", "$to_bank"},
+                    //         {"to", "objectId"},
+                    //         {"onError", "null"},
+                    //         {"onNull", "null"}
+                    //     }}
+                    // }}
                 }}
             };
 
@@ -93,7 +95,7 @@ namespace BudgetTracker.Repository
                     {"from", "banks"},
                     {"let", new BsonDocument {
                         {"fromBankId", "$from_bank"},
-                        {"toBankId", "$to_bank"}
+                        // {"toBankId", "$to_bank"}
                     }},
                     {"pipeline", new BsonArray {
                         new BsonDocument {
@@ -101,7 +103,7 @@ namespace BudgetTracker.Repository
                                 {"$expr", new BsonDocument {
                                     {"$or", new BsonArray {
                                         new BsonDocument { {"$eq", new BsonArray { "$_id", "$$fromBankId" }} },
-                                        new BsonDocument { {"$eq", new BsonArray { "$_id", "$$toBankId" }} }
+                                        // new BsonDocument { {"$eq", new BsonArray { "$_id", "$$toBankId" }} }
                                     }}
                                 }}
                             }}
