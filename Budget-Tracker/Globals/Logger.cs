@@ -76,4 +76,15 @@ public static class Logger
         string payload = JsonSerializer.Serialize(message);
         _loggerInstance?.LogCritical(exception, payload, args);
     }
+    
+    /// <summary>
+    /// Logs a Debug message.
+    /// </summary>
+    /// <param name="message">The message to log.</param>
+    /// <param name="args">Optional arguments for the message.</param>
+    public static void LogDebug<T>(T message, params object[] args)
+    {
+        string payload = JsonSerializer.Serialize(message);
+        _loggerInstance?.LogDebug(payload, args);
+    }
 }

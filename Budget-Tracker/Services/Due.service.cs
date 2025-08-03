@@ -73,7 +73,7 @@ public class DueService : MongoServices<Due>, IDues
             }
         };
 
-        List<DueTransactions> list = await collection.Aggregate<DueTransactions>(pipelines).ToListAsync();
+        List<DueTransactions> list = await _collection.Aggregate<DueTransactions>(pipelines).ToListAsync();
         return list.FirstOrDefault() ?? new DueTransactions();
     }
 }

@@ -5,6 +5,7 @@ using BudgetTracker.API.Transactions.List;
 using BudgetTracker.Services;
 
 using CategoryResult = BudgetTracker.API.Transactions.ByCategory.Result;
+using BudgetTracker.Interface;
 
 namespace BudgetTracker.Repository
 {
@@ -14,11 +15,11 @@ namespace BudgetTracker.Repository
         private IMongoCollection<Transaction> _collection;
         private QueryParams? _params;
         private string? _dateFilter;
-        private readonly CategoryService _categoryService;
+        private readonly ICategoryService _categoryService;
         private readonly string _currentMonth = DateTime.Now.Month.ToString("D2");
         private readonly string _currentYear = DateTime.Now.Year.ToString();
 
-        public TransactionsByCategory(string categoryId, IMongoCollection<Transaction> collection, QueryParams? queryParams, CategoryService categoryService)
+        public TransactionsByCategory(string categoryId, IMongoCollection<Transaction> collection, QueryParams? queryParams, ICategoryService categoryService)
         {
             _categoryId = categoryId;
             _collection = collection;
