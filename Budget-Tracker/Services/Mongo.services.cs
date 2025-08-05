@@ -109,5 +109,13 @@ namespace BudgetTracker.Services
             ReplaceOneResult result = await _collection.ReplaceOneAsync(filter, document);
             return result.ModifiedCount > 0;
         }
+
+        public async Task<bool> CountByIdAsync(string id)
+        {
+            FilterDefinition<T> filter = Builders<T>.Filter.Eq("_id", ObjectId.Parse(id));
+            long count = await _collection.Find(filter).CountDocumentsAsync();
+
+            return count > 0;
+        }
     }
 }

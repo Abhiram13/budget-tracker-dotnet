@@ -58,6 +58,7 @@ namespace BudgetTracker.Interface
         Task<T> SearchById(string id);
         Task<bool> DeleteById(string id);
         Task<bool> UpdateById(string id, T document);
+        Task<bool> CountByIdAsync(string id);
     }
 
     public interface ICustomMiddleware
