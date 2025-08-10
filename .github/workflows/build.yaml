@@ -22,6 +22,9 @@ jobs:
             # Use it ONLY for temporary debugging to see if it resolves the "Access denied" error.
             # - name: Grant full permissions
               # run: sudo chmod -R 777 /home/runneradmin
+
+            - name: Add GitHub Packages source
+              run: dotnet nuget add source --name "github" "https://nuget.pkg.github.com/Abhiram13/index.json" --username Abhiram13 --password ${{ secrets.NUGET_PAT }}
                 
             - name: Restore dependencies
               run: dotnet restore
