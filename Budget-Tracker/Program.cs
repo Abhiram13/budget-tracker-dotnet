@@ -13,45 +13,47 @@ using BudgetTracker.Security.Authentication;
 using Google.Cloud.Diagnostics.AspNetCore3;
 using Google.Cloud.Diagnostics.Common;
 using Dotenv;
+using CustomUtilities;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 // string root = Directory.GetCurrentDirectory();
 // string dotenv = Path.Combine(root, ".env");
 // DotEnv.Load(dotenv);
 EnvironmentVariables.Init();
-ILoggerFactory factory;
-ILogger? logger;
+// ILoggerFactory factory;
+// ILogger? logger;
 
 // Add services to the container.
 builder.Configuration.AddEnvironmentVariables().Build();
 builder.Logging.ClearProviders();
 
-if (Environment.GetEnvironmentVariable("ENV") == "Development" || Environment.GetEnvironmentVariable("ENV") == "Test")
-{
-    builder.Logging.AddConsole();
-    factory = LoggerFactory.Create(log =>
-    {
-        // log.AddConsole();
-        log.AddSimpleConsole(options =>
-        {
-            options.IncludeScopes = true;
-            options.SingleLine = true;
-            options.TimestampFormat = "HH:mm:ss ";
-            options.IncludeScopes = true;
-        });
-    });
-    logger = factory.CreateLogger("Budget-tracker-console");
-    Logger.Initialize(logger);
-}
-else
-{
-    builder.Logging.AddGoogle(new LoggingServiceOptions { ProjectId = "budget-tracker-453204" });
-    factory = LoggerFactory.Create(log => log.AddGoogle(new LoggingServiceOptions { ProjectId = "budget-tracker-453204" }));
-    logger = factory.CreateLogger("Google-cloud-console");
-    builder.Services.AddGoogleDiagnosticsForAspNetCore("budget-tracker-453204");
-    Logger.Initialize(logger);
-}
+// if (Environment.GetEnvironmentVariable("ENV") == "Development" || Environment.GetEnvironmentVariable("ENV") == "Test")
+// {
+//     builder.Logging.AddConsole();
+//     factory = LoggerFactory.Create(log =>
+//     {
+//         // log.AddConsole();
+//         log.AddSimpleConsole(options =>
+//         {
+//             options.IncludeScopes = true;
+//             options.SingleLine = true;
+//             options.TimestampFormat = "HH:mm:ss ";
+//             options.IncludeScopes = true;
+//         });
+//     });
+//     logger = factory.CreateLogger("Budget-tracker-console");
+//     Logger.Initialize(logger);
+// }
+// else
+// {
+//     builder.Logging.AddGoogle(new LoggingServiceOptions { ProjectId = "budget-tracker-453204" });
+//     factory = LoggerFactory.Create(log => log.AddGoogle(new LoggingServiceOptions { ProjectId = "budget-tracker-453204" }));
+//     logger = factory.CreateLogger("Google-cloud-console");
+//     builder.Services.AddGoogleDiagnosticsForAspNetCore("budget-tracker-453204");
+//     Logger.Initialize(logger);
+// }
 
+builder.AddCustomLogger();
 builder.Services.AddSingleton<IMongoContext, MongoDBContext>();
 builder.Services.AddControllers().ConfigureApiBehaviorOptions(options => {
     options.SuppressModelStateInvalidFilter = false;
@@ -70,7 +72,7 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IBankService, BankService>();
 builder.Services.AddScoped<IDues, DueService>();
 builder.Services.AddAuthentication().AddScheme<ApiKeySchemaOptions, ApiKeyHandler>(ApiKeySchemaOptions.DefaultSchema, _ => { });
-builder.Services.AddHealthChecks().AddTypeActivatedCheck<DataBaseHealthCheck>("Database health check", args: new object[] { logger });
+builder.Services.AddHealthChecks().AddTypeActivatedCheck<DataBaseHealthCheck>("Database health check", args: new object[] {  });
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader() ));
 
 builder.WebHost.ConfigureKestrel((_, server) => {
