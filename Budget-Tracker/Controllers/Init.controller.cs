@@ -23,7 +23,7 @@ public class InitController : ControllerBase
     [Route("")]
     public IActionResult Get()
     {
-        Logger.LogInformation("Hello World! This is from Budget tracker");
+        Logger.LogWarning("Hello World! This is from Budget tracker");
         return Ok(new ApiResponse<string>()
         {
             StatusCode = HttpStatusCode.OK,
