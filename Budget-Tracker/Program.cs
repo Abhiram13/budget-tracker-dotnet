@@ -45,10 +45,10 @@ if (Environment.GetEnvironmentVariable("ENV") == "Development" || Environment.Ge
 }
 else
 {
-    builder.Logging.AddGoogle();
-    factory = LoggerFactory.Create(log => log.AddGoogle());
+    builder.Logging.AddGoogle(new LoggingServiceOptions { ProjectId = "budget-tracker-453204" });
+    factory = LoggerFactory.Create(log => log.AddGoogle(new LoggingServiceOptions { ProjectId = "budget-tracker-453204" }));
     logger = factory.CreateLogger("Google-cloud-console");
-    builder.Services.AddGoogleDiagnosticsForAspNetCore();
+    builder.Services.AddGoogleDiagnosticsForAspNetCore("budget-tracker-453204");
     Logger.Initialize(logger);
 }
 
