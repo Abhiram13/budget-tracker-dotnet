@@ -59,14 +59,10 @@ public static class Logger
     /// <param name="message">The message to log.</param>
     /// <param name="exception">An optional exception to log.</param>
     /// <param name="args">Optional arguments for the message.</param>
-    public static void LogError<T>(Exception? exception, T message, Dictionary<string, string> logDetails, params object[] args)
+    public static void LogError<T>(Exception? exception, T message, params object[] args)
     {
         string payload = JsonSerializer.Serialize(message);
-
-        using (_loggerInstance?.BeginScope(logDetails))
-        {
-            _loggerInstance?.LogError(exception, payload, args);
-        }
+        _loggerInstance?.LogError(exception, payload, args);
     }
 
     /// <summary>
@@ -76,14 +72,10 @@ public static class Logger
     /// <param name="exception">An optional exception to log.</param>
     /// <param name="logDetails">A dictionary containing key-value pairs of request and contextual information to be included in the log scope.</param>
     /// <param name="args">Optional arguments for the message.</param>
-    public static void LogCritical<T>(Exception? exception, T message, Dictionary<string, string> logDetails, params object[] args)
+    public static void LogCritical<T>(Exception? exception, T message, params object[] args)
     {
         string payload = JsonSerializer.Serialize(message);
-
-        using (_loggerInstance?.BeginScope(logDetails))
-        {
-            _loggerInstance?.LogCritical(exception, payload, args);
-        } 
+        _loggerInstance?.LogCritical(exception, payload, args);
     }
     
     /// <summary>

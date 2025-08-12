@@ -26,25 +26,21 @@ namespace BudgetTracker.Middlewares
                 await _next(httpContext);
             }
             catch (Exception exception)
-            {
-                Dictionary<string, string> logDetails = new Dictionary<string, string>
-                {
-                    ["Url"] = httpContext.Request.Path,
-                    ["HttpMethod"] = httpContext.Request.Method,
-                    ["ClientIpAddress"] = httpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A",
-                };
-
+            {                
+                /// <summary>
+                /// <see href="https://www.milanjovanovic.tech/blog/problem-details-for-aspnetcore-apis">Problem Details for ASP.NET Core APIs</see>
+                /// </summary>
                 ProblemDetails problemDetails = new ProblemDetails()
                 {
                     Type = exception.GetType().ToString(),
                     Title = "Middleware Exception",
                     Status = (int)HttpStatusCode.InternalServerError,
                     Detail = exception.Message,
+                    Instance = $"{httpContext.Request.Method} {httpContext.Request.Path.Value}"
                 };
                 Logger.LogError(
-                    exception, 
-                    $"Exception occured:- \nProblem details: {JsonSerializer.Serialize(problemDetails)}",
-                    logDetails                    
+                    exception,
+                    problemDetails                                    
                 );
                 ApiResponse<string> response = new ApiResponse<string>()
                 {
