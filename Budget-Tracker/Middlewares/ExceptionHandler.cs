@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text.Json;
+using BudgetTracker.Application;
 using BudgetTracker.Defination;
 using BudgetTracker.Interface;
 using Microsoft.AspNetCore.Mvc;
@@ -12,11 +13,9 @@ namespace BudgetTracker.Middlewares
     public class ExceptionHandlerMiddleware : ICustomMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ILogger<ExceptionHandlerMiddleware> _logger;
 
-        public ExceptionHandlerMiddleware(RequestDelegate requestDelegate, ILogger<ExceptionHandlerMiddleware> logger)
+        public ExceptionHandlerMiddleware(RequestDelegate requestDelegate)
         {
-            _logger = logger;
             _next = requestDelegate;
         }
 
@@ -28,17 +27,24 @@ namespace BudgetTracker.Middlewares
             }
             catch (Exception exception)
             {
+                Dictionary<string, string> logDetails = new Dictionary<string, string>
+                {
+                    ["Url"] = httpContext.Request.Path,
+                    ["HttpMethod"] = httpContext.Request.Method,
+                    ["ClientIpAddress"] = httpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A",
+                };
+
                 ProblemDetails problemDetails = new ProblemDetails()
                 {
                     Type = exception.GetType().ToString(),
                     Title = "Middleware Exception",
-                    Status = (int) HttpStatusCode.InternalServerError,
+                    Status = (int)HttpStatusCode.InternalServerError,
                     Detail = exception.Message,
                 };
-                _logger.Log(
-                    LogLevel.Error, 
+                Logger.LogError(
                     exception, 
-                    "Exception occured:- \nProblem details: {details}",                    
+                    "Exception occured:- \nProblem details: {details}",
+                    logDetails,
                     JsonSerializer.Serialize(problemDetails)
                 );
                 ApiResponse<string> response = new ApiResponse<string>()
