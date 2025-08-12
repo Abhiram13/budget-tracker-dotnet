@@ -43,9 +43,8 @@ namespace BudgetTracker.Middlewares
                 };
                 Logger.LogError(
                     exception, 
-                    "Exception occured:- \nProblem details: {details}",
-                    logDetails,
-                    JsonSerializer.Serialize(problemDetails)
+                    $"Exception occured:- \nProblem details: {JsonSerializer.Serialize(problemDetails)}",
+                    logDetails                    
                 );
                 ApiResponse<string> response = new ApiResponse<string>()
                 {

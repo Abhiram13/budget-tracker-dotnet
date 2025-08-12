@@ -62,7 +62,11 @@ public static class Logger
     public static void LogError<T>(Exception? exception, T message, Dictionary<string, string> logDetails, params object[] args)
     {
         string payload = JsonSerializer.Serialize(message);
-        _loggerInstance?.LogError(exception, payload, logDetails);
+
+        using (_loggerInstance?.BeginScope(logDetails))
+        {
+            _loggerInstance?.LogError(exception, payload, args);
+        }
     }
 
     /// <summary>
