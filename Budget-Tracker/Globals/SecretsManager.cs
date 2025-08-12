@@ -60,7 +60,11 @@ public static class Secrets
         }
         catch (Exception e)
         {
-            Logger.LogError(e, $"Exception at Fetching secret from GCP: {e.Message}");
+            Dictionary<string, string> logDetails = new Dictionary<string, string>
+            {
+                ["Secret-Key"] = secretKey
+            };
+            Logger.LogError(e, $"Exception at Fetching secret from GCP: {e.Message}", logDetails);
             return string.Empty;
         }
     }
