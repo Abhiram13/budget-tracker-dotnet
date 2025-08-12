@@ -13,12 +13,8 @@ using BudgetTracker.Security.Authentication;
 using Google.Cloud.Diagnostics.AspNetCore3;
 using Google.Cloud.Diagnostics.Common;
 using Dotenv;
-// using CustomUtilities;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-// string root = Directory.GetCurrentDirectory();
-// string dotenv = Path.Combine(root, ".env");
-// DotEnv.Load(dotenv);
 EnvironmentVariables.Init();
 ILoggerFactory factory;
 ILogger? logger;
