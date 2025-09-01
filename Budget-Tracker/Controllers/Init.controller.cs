@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using BudgetTracker.Services;
+// using BudgetTracker.Services;
 using BudgetTracker.Defination;
-using BudgetTracker.Interface;
-using Microsoft.AspNetCore.Authorization;
-using BudgetTracker.Application;
+// using BudgetTracker.Interface;
+// using Microsoft.AspNetCore.Authorization;
+// using BudgetTracker.Application;
+using CustomUtilities;
 
 namespace BudgetTracker.Controllers;
 
@@ -18,9 +19,9 @@ public class InitController : ControllerBase
     public IActionResult Get()
     {
         Logger.LogInformation(
-            message: "Welcome to your new budgeting journey! Get started by adding your first transaction and taking control of your finances"            
+            message: "Welcome to your new budgeting journey! Get started by adding your first transaction and taking control of your finances"
         );
-        
+
         return Ok(new ApiResponse<string>()
         {
             StatusCode = HttpStatusCode.OK,
