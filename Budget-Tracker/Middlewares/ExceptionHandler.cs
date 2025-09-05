@@ -43,6 +43,7 @@ namespace BudgetTracker.Middlewares
                     exception,
                     problemDetails                                    
                 );
+                Console.WriteLine(exception.Message, exception);
                 ApiResponse<string> response = new ApiResponse<string>()
                 {
                     StatusCode = HttpStatusCode.InternalServerError,
