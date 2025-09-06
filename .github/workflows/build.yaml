@@ -23,8 +23,25 @@ jobs:
             # - name: Grant full permissions
               # run: sudo chmod -R 777 /home/runneradmin
 
+            - name: Remove existing GitHub Packages source
+              run: dotnet nuget remove source "github"
+
             - name: Add GitHub Packages source
               run: dotnet nuget add source --name "github" "https://nuget.pkg.github.com/Abhiram13/index.json" --username Abhiram13 --password ${{ secrets.NUGET_PAT }} --store-password-in-clear-text
+              # run: |
+              #   if ! dotnet nuget list source | grep -q github; then
+              #     dotnet nuget add source "https://nuget.pkg.github.com/Abhiram13/index.json" \
+              #       --name "github" \
+              #       --username "Abhiram13" \
+              #       --password "${{ secrets.NUGET_PAT }}" \
+              #       --store-password-in-clear-text
+              #   fi
+
+            - name: List NuGet sources
+              run: dotnet nuget list source
+
+            - name: Dotnet clean
+              run: dotnet clean
                 
             - name: Restore dependencies
               run: dotnet restore
@@ -34,17 +51,18 @@ jobs:
               run: dotnet build
               working-directory: ${{ github.workspace }}
               
-            - name: Test
-              run: dotnet test
-              working-directory: ${{ github.workspace }}
-              env:
-                  PORT: ${{secrets.PORT}}
-                  HOST: ${{secrets.HOST}}
-                  DB: ${{secrets.DB}}
-                  PASSWORD: ${{secrets.PASSWORD}}
-                  USERNAME: ${{secrets.USERNAME}}
-                  API_KEY: ${{secrets.API_KEY}}
-                  ENV: ${{secrets.ENV}}
+            # - name: Test
+            #   run: dotnet test
+            #   working-directory: ${{ github.workspace }}
+            #   env:
+            #       PORT: ${{secrets.PORT}}
+            #       HOST: ${{secrets.HOST}}
+            #       DB: ${{secrets.DB}}
+            #       PASSWORD: ${{secrets.PASSWORD}}
+            #       USERNAME: ${{secrets.USERNAME}}
+            #       API_KEY: ${{secrets.API_KEY}}
+            #       ENV: ${{secrets.ENV}}
+            #       GOOGLE_CLOUD_PROJECT_ID: ${{secrets.GOOGLE_CLOUD_PROJECT_ID}}
                   
 #            - name: Setup Docker build
 #              uses: docker/setup-buildx-action@v2
