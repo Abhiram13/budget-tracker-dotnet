@@ -51,18 +51,17 @@ jobs:
               run: dotnet build
               working-directory: ${{ github.workspace }}
               
-            # - name: Test
-            #   run: dotnet test
-            #   working-directory: ${{ github.workspace }}
-            #   env:
-            #       PORT: ${{secrets.PORT}}
-            #       HOST: ${{secrets.HOST}}
-            #       DB: ${{secrets.DB}}
-            #       PASSWORD: ${{secrets.PASSWORD}}
-            #       USERNAME: ${{secrets.USERNAME}}
-            #       API_KEY: ${{secrets.API_KEY}}
-            #       ENV: ${{secrets.ENV}}
-            #       GOOGLE_CLOUD_PROJECT_ID: ${{secrets.GOOGLE_CLOUD_PROJECT_ID}}
+            - name: Test
+              run: dotnet test
+              working-directory: ${{ github.workspace }}
+              env:
+                  PORT: ${{secrets.PORT}}
+                  HOST: ${{secrets.HOST}}
+                  DB: ${{secrets.DB}}
+                  PASSWORD: ${{secrets.PASSWORD}}
+                  USERNAME: ${{secrets.USERNAME}}
+                  API_KEY: ${{secrets.API_KEY}}
+                  ENV: ${{secrets.ENV}}
                   
 #            - name: Setup Docker build
 #              uses: docker/setup-buildx-action@v2
