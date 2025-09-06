@@ -33,6 +33,9 @@ jobs:
                     --password "${{ secrets.NUGET_PAT }}" \
                     --store-password-in-clear-text
                 fi
+
+            - name: List NuGet sources
+              run: dotnet nuget list source
                 
             - name: Restore dependencies
               run: dotnet restore
