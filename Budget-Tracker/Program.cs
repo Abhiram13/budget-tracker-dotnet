@@ -14,9 +14,24 @@ using Google.Cloud.Diagnostics.AspNetCore3;
 using Google.Cloud.Diagnostics.Common;
 using Dotenv;
 using CustomUtilities;
+using Serilog;
+using Serilog.Sinks.GoogleCloudLogging;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 EnvironmentVariables.Init();
+
+string GOOGLE_PROJECT_ID = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_ID") ?? "";
+
+Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .MinimumLevel.Debug()
+    .WriteTo.Console() // Rich structured output to terminal
+    .WriteTo.GoogleCloudLogging(GOOGLE_PROJECT_ID) // Rich structured logs to GCP
+    .MinimumLevel.Information()
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
 // ILoggerFactory factory;
 // ILogger? logger;
 
@@ -65,7 +80,7 @@ builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
         return new BadRequestObjectResult(new ApiResponse<string> { Message = errorMessage, StatusCode = HttpStatusCode.BadRequest });
     };
 });
-builder.AddCustomLogger();
+// builder.AddCustomLogger();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddMemoryCache();
 builder.Services.AddRouting();
