@@ -14,7 +14,7 @@ namespace IntegrationTests.Utils
             _fixture = fixture;
         }
         
-        public async virtual ValueTask DisposeAsync()
+        public virtual async ValueTask DisposeAsync()
         {
             await _fixture.Database.GetCollection<Transaction>("transactions").DeleteManyAsync(FilterDefinition<Transaction>.Empty);
         }

@@ -18,9 +18,7 @@ using Abhiram.Extensions.DotEnv;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
 
-string GOOGLE_PROJECT_ID = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_ID") ?? "";
-
-builder.AddConsoleGoogleSeriLog(GOOGLE_PROJECT_ID);
+builder.AddConsoleGoogleSeriLog();
 
 // builder.AddCustomLogger();
 builder.Services.AddSingleton<IMongoContext, MongoDBContext>();
