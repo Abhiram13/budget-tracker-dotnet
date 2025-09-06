@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
-using Dotenv;
+using Abhiram.Extensions.DotEnv;
 
 namespace IntegrationTests;
 
@@ -35,7 +35,7 @@ public class MongoDBFixture : IDisposable
         var mainParent = Directory.GetParent(currentParent.Parent.FullName);
         string root = Directory.GetCurrentDirectory();
         string dotenv = Path.Combine(mainParent.FullName, ".env");
-        EnvironmentVariables.Load(dotenv);
+        DotEnvironmentVariables.Load();
     }
 
     public void Dispose()
