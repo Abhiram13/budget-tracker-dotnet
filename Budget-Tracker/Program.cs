@@ -12,60 +12,15 @@ using BudgetTracker.Middlewares;
 using BudgetTracker.Security.Authentication;
 using Google.Cloud.Diagnostics.AspNetCore3;
 using Google.Cloud.Diagnostics.Common;
-using Dotenv;
-using CustomUtilities;
-using Serilog;
-using Serilog.Sinks.GoogleCloudLogging;
+using Abhiram.Abstractions.Logging;
+using Abhiram.Extensions.DotEnv;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-EnvironmentVariables.Init();
+DotEnvironmentVariables.Load();
 
 string GOOGLE_PROJECT_ID = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_ID") ?? "";
 
-Log.Logger = new LoggerConfiguration()
-    .Enrich.FromLogContext()
-    .MinimumLevel.Debug()
-    .WriteTo.Console() // Rich structured output to terminal
-    .WriteTo.GoogleCloudLogging(GOOGLE_PROJECT_ID) // Rich structured logs to GCP
-    .MinimumLevel.Information()
-    .CreateLogger();
-
-builder.Host.UseSerilog();
-
-// ILoggerFactory factory;
-// ILogger? logger;
-
-// // Add services to the container.
-// builder.Configuration.AddEnvironmentVariables().Build();
-// builder.Logging.ClearProviders();
-
-// if (Environment.GetEnvironmentVariable("ENV") == "Development" || Environment.GetEnvironmentVariable("ENV") == "Test")
-// {
-//     builder.Logging.AddConsole();
-//     factory = LoggerFactory.Create(log =>
-//     {
-//         // log.AddConsole();
-//         log.AddSimpleConsole(options =>
-//         {
-//             options.IncludeScopes = true;
-//             options.SingleLine = true;
-//             options.TimestampFormat = "HH:mm:ss ";
-//             options.IncludeScopes = true;
-//         });
-//     });
-//     logger = factory.CreateLogger("Budget-tracker-console");
-//     Logger.Initialize(logger);
-// }
-// else
-// {
-//     builder.Logging.AddGoogle();
-//     factory = LoggerFactory.Create(log => log.AddGoogle());
-//     logger = factory.CreateLogger("Google-cloud-console");
-//     builder.Services.AddGoogleDiagnosticsForAspNetCore();
-//     Logger.Initialize(logger);
-// }
-
-
+builder.AddConsoleGoogleSeriLog(GOOGLE_PROJECT_ID);
 
 // builder.AddCustomLogger();
 builder.Services.AddSingleton<IMongoContext, MongoDBContext>();
@@ -101,8 +56,6 @@ builder.WebHost.UseKestrel(options => options.AddServerHeader = false);
 
 WebApplication app = builder.Build();
 
-var loggerFactory = app.Services.GetRequiredService<ILoggerFactory>();
-Logger.Initialize(loggerFactory);
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -4,7 +4,7 @@ using System.Text.Json;
 using BudgetTracker.Defination;
 using BudgetTracker.Interface;
 using Microsoft.AspNetCore.Mvc;
-using CustomUtilities;
+// using CustomUtilities;
 
 namespace BudgetTracker.Middlewares
 {
@@ -39,10 +39,10 @@ namespace BudgetTracker.Middlewares
                     Detail = exception.Message,
                     Instance = $"{httpContext.Request.Method} {httpContext.Request.Path.Value}"
                 };
-                Logger.LogError(
-                    exception,
-                    problemDetails                                    
-                );
+                // Logger.LogError(
+                //     exception,
+                //     problemDetails                                    
+                // );
                 ApiResponse<string> response = new ApiResponse<string>()
                 {
                     StatusCode = HttpStatusCode.InternalServerError,

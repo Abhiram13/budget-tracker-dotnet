@@ -2,7 +2,7 @@ using System.Net;
 using BudgetTracker.Interface;
 using BudgetTracker.Defination;
 // using BudgetTracker.Application;
-using CustomUtilities;
+// using CustomUtilities;
 
 namespace BudgetTracker.Middlewares;
 
@@ -27,7 +27,7 @@ public class RouteNotFoundMiddleware : ICustomMiddleware
                 Message = "The requested resource was not found."
             };
 
-            Logger.LogWarning($"Requested endpoint [{httpContext.Request.Path.Value}] was not found.");
+            // Logger.LogWarning($"Requested endpoint [{httpContext.Request.Path.Value}] was not found.");
             httpContext.Response.ContentType = "application/json";
             await httpContext.Response.WriteAsJsonAsync(response);
         }
