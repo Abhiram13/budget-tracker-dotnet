@@ -24,7 +24,15 @@ jobs:
               # run: sudo chmod -R 777 /home/runneradmin
 
             - name: Add GitHub Packages source
-              run: dotnet nuget add source --name "github" "https://nuget.pkg.github.com/Abhiram13/index.json" --username Abhiram13 --password ${{ secrets.NUGET_PAT }} --store-password-in-clear-text --force
+              # run: dotnet nuget add source --name "github" "https://nuget.pkg.github.com/Abhiram13/index.json" --username Abhiram13 --password ${{ secrets.NUGET_PAT }} --store-password-in-clear-text --force
+              run: |
+                if ! dotnet nuget list source | grep -q github; then
+                  dotnet nuget add source "https://nuget.pkg.github.com/Abhiram13/index.json" \
+                    --name "github" \
+                    --username "Abhiram13" \
+                    --password "${{ secrets.NUGET_PAT }}" \
+                    --store-password-in-clear-text
+                fi
                 
             - name: Restore dependencies
               run: dotnet restore
