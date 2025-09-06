@@ -2,7 +2,7 @@
 using BudgetTracker.Interface;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using MongoDB.Driver;
-using CustomUtilities;
+// using CustomUtilities;
 
 namespace BudgetTracker.Services
 {
@@ -44,12 +44,12 @@ namespace BudgetTracker.Services
             // TODO: Update this duplicate exceptional messages
             catch (TypeInitializationException e)
             {
-                Logger.LogCritical(e, "HEALTH CHECK: Exception at PING API");
+                // Logger.LogCritical(e, "HEALTH CHECK: Exception at PING API");
                 return HealthCheckResult.Degraded();
             }
             catch (Exception e)
             {
-                Logger.LogCritical(e, "HEALTH CHECK: Exception at PING API");
+                // Logger.LogCritical(e, "HEALTH CHECK: Exception at PING API");
                 return HealthCheckResult.Degraded();
             }            
         }
