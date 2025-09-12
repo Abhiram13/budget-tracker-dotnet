@@ -1,4 +1,5 @@
 using Google.Cloud.SecretManager.V1;
+// using CustomUtilities;
 
 namespace BudgetTracker.Application;
 
@@ -60,7 +61,7 @@ public static class Secrets
         }
         catch (Exception e)
         {
-            Logger.LogError(e, $"Exception at Fetching secret from GCP: {e.Message}");
+            // Logger.LogError(e, $"Exception at Fetching secret from GCP: {e.Message}");
             return string.Empty;
         }
     }

@@ -1,8 +1,10 @@
 using System.Net;
 using System.Text.Json;
+// using BudgetTracker.Application;
 using BudgetTracker.Defination;
 using BudgetTracker.Interface;
 using Microsoft.AspNetCore.Mvc;
+// using CustomUtilities;
 
 namespace BudgetTracker.Middlewares
 {
@@ -12,11 +14,9 @@ namespace BudgetTracker.Middlewares
     public class ExceptionHandlerMiddleware : ICustomMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ILogger<ExceptionHandlerMiddleware> _logger;
 
-        public ExceptionHandlerMiddleware(RequestDelegate requestDelegate, ILogger<ExceptionHandlerMiddleware> logger)
+        public ExceptionHandlerMiddleware(RequestDelegate requestDelegate)
         {
-            _logger = logger;
             _next = requestDelegate;
         }
 
@@ -27,20 +27,22 @@ namespace BudgetTracker.Middlewares
                 await _next(httpContext);
             }
             catch (Exception exception)
-            {
+            {                
+                /// <summary>
+                /// <see href="https://www.milanjovanovic.tech/blog/problem-details-for-aspnetcore-apis">Problem Details for ASP.NET Core APIs</see>
+                /// </summary>
                 ProblemDetails problemDetails = new ProblemDetails()
                 {
                     Type = exception.GetType().ToString(),
                     Title = "Middleware Exception",
-                    Status = (int) HttpStatusCode.InternalServerError,
+                    Status = (int)HttpStatusCode.InternalServerError,
                     Detail = exception.Message,
+                    Instance = $"{httpContext.Request.Method} {httpContext.Request.Path.Value}"
                 };
-                _logger.Log(
-                    LogLevel.Error, 
-                    exception, 
-                    "Exception occured:- \nProblem details: {details}",                    
-                    JsonSerializer.Serialize(problemDetails)
-                );
+                // Logger.LogError(
+                //     exception,
+                //     problemDetails                                    
+                // );
                 ApiResponse<string> response = new ApiResponse<string>()
                 {
                     StatusCode = HttpStatusCode.InternalServerError,

@@ -12,54 +12,28 @@ using BudgetTracker.Middlewares;
 using BudgetTracker.Security.Authentication;
 using Google.Cloud.Diagnostics.AspNetCore3;
 using Google.Cloud.Diagnostics.Common;
+using Abhiram.Abstractions.Logging;
+using Abhiram.Extensions.DotEnv;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-string root = Directory.GetCurrentDirectory();
-string dotenv = Path.Combine(root, ".env");
-DotEnv.Load(dotenv);
-ILoggerFactory factory;
-ILogger? logger;
+DotEnvironmentVariables.Load();
 
-// Add services to the container.
-builder.Configuration.AddEnvironmentVariables().Build();
-builder.Logging.ClearProviders();
+builder.AddConsoleGoogleSeriLog();
 
-if (Environment.GetEnvironmentVariable("ENV") == "Development" || Environment.GetEnvironmentVariable("ENV") == "Test")
-{
-    builder.Logging.AddConsole();
-    factory = LoggerFactory.Create(log =>
-    {
-        // log.AddConsole();
-        log.AddSimpleConsole(options =>
-        {
-            options.IncludeScopes = true;
-            options.SingleLine = true;
-            options.TimestampFormat = "HH:mm:ss ";
-            options.IncludeScopes = true;
-        });
-    });
-    logger = factory.CreateLogger("Budget-tracker-console");
-    Logger.Initialize(logger);
-}
-else
-{
-    builder.Logging.AddGoogle();
-    factory = LoggerFactory.Create(log => log.AddGoogle());
-    logger = factory.CreateLogger("Google-cloud-console");
-    builder.Services.AddGoogleDiagnosticsForAspNetCore();
-    Logger.Initialize(logger);
-}
-
+// builder.AddCustomLogger();
 builder.Services.AddSingleton<IMongoContext, MongoDBContext>();
-builder.Services.AddControllers().ConfigureApiBehaviorOptions(options => {
+builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
+{
     options.SuppressModelStateInvalidFilter = false;
-    options.InvalidModelStateResponseFactory = action => {
+    options.InvalidModelStateResponseFactory = action =>
+    {
         KeyValuePair<string, ModelStateEntry?> modelState = action.ModelState.FirstOrDefault();
         string errorAt = modelState.Key;
-        string errorMessage = modelState.Value?.Errors?[0].ErrorMessage ?? $"Something went wrong at {errorAt}";            
-        return new BadRequestObjectResult(new ApiResponse<string> {Message = errorMessage, StatusCode = HttpStatusCode.BadRequest});
+        string errorMessage = modelState.Value?.Errors?[0].ErrorMessage ?? $"Something went wrong at {errorAt}";
+        return new BadRequestObjectResult(new ApiResponse<string> { Message = errorMessage, StatusCode = HttpStatusCode.BadRequest });
     };
 });
+// builder.AddCustomLogger();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddMemoryCache();
 builder.Services.AddRouting();
@@ -68,7 +42,7 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IBankService, BankService>();
 builder.Services.AddScoped<IDues, DueService>();
 builder.Services.AddAuthentication().AddScheme<ApiKeySchemaOptions, ApiKeyHandler>(ApiKeySchemaOptions.DefaultSchema, _ => { });
-builder.Services.AddHealthChecks().AddTypeActivatedCheck<DataBaseHealthCheck>("Database health check", args: new object[] { logger });
+builder.Services.AddHealthChecks().AddTypeActivatedCheck<DataBaseHealthCheck>("Database health check", args: new object[] {  });
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader() ));
 
 builder.WebHost.ConfigureKestrel((_, server) => {
@@ -79,6 +53,7 @@ builder.WebHost.ConfigureKestrel((_, server) => {
 builder.WebHost.UseKestrel(options => options.AddServerHeader = false);
 
 WebApplication app = builder.Build();
+
 
 app.UseAuthentication();
 app.UseAuthorization();

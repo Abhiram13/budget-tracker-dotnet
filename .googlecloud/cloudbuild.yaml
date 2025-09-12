@@ -1,0 +1,43 @@
+steps:
+  # Step 1: Build the Docker image and pass NUGET_PAT as build arg
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'Docker Build'
+    args:
+      - 'build'
+      - '-t'
+      - '$_LOCATION-docker.pkg.dev/$_PROJECT_ID/$_REPOSITORY/$_IMAGE:$COMMIT_SHA'
+      - '-f'
+      - 'Budget-Tracker/Dockerfile'
+      - '--build-arg'
+      - 'NUGET_PAT=$_NUGET_PAT'
+      - 'Budget-Tracker/'
+  
+  # Step 2: Push the image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'Docker Push'
+    args: ['push', '$_LOCATION-docker.pkg.dev/$_PROJECT_ID/$_REPOSITORY/$_IMAGE:$COMMIT_SHA']
+
+  # Step 3: Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+    id: 'Deploy to Cloud Run'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'budget-tracker-server' # cloud run service name
+      - '--image'
+      - '$_LOCATION-docker.pkg.dev/$_PROJECT_ID/$_REPOSITORY/$_IMAGE:$COMMIT_SHA'
+      - '--region'
+      - '$_LOCATION'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--set-env-vars'
+      - 'GOOGLE_CLOUD_PROJECT_ID=$_PROJECT_ID'
+
+# Optional: declare the image for metadata
+images:
+  - '$_LOCATION-docker.pkg.dev/$_PROJECT_ID/$_REPOSITORY/$_IMAGE:$COMMIT_SHA'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
