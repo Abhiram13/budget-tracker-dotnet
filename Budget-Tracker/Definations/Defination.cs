@@ -6,6 +6,7 @@ using MongoDB.Driver;
 
 namespace BudgetTracker.Defination
 {
+    [Obsolete("Use Abhiram.Secrets.Providers package to access secret manager", false)]
     public static class Env
     {
         public static readonly string? HOST = Environment.GetEnvironmentVariable("HOST");

@@ -84,6 +84,7 @@ public class DueService : MongoServices<Due>, IDues
     {
         if (!string.IsNullOrEmpty(due.ToBank))
         {
+            await Task.CompletedTask;
             // bool hasBankData = await _bankService.CountByIdAsync()
         }
     }

@@ -1,6 +1,6 @@
 using System.Security.Claims;
 using System.Text.Encodings.Web;
-using BudgetTracker.Application;
+using BudgetTracker.Defination;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 
@@ -16,11 +16,12 @@ namespace BudgetTracker.Security
 
         public class ApiKeyHandler : AuthenticationHandler<ApiKeySchemaOptions>
         {
-            public ApiKeyHandler(
-                IOptionsMonitor<ApiKeySchemaOptions> options, 
-                ILoggerFactory logger, 
-                UrlEncoder encoder
-            ) : base(options, logger, encoder) { }
+            private readonly AppSecrets _secret;
+
+            public ApiKeyHandler(IOptionsMonitor<ApiKeySchemaOptions> options, ILoggerFactory logger, UrlEncoder encoder, AppSecrets secrets) : base(options, logger, encoder)
+            {
+                _secret = secrets;
+            }
 
             protected override Task<AuthenticateResult> HandleAuthenticateAsync()
             {
@@ -32,7 +33,7 @@ namespace BudgetTracker.Security
                 }
 
                 string? HEADER_API_KEY = Request.Headers[ApiKeySchemaOptions.HeaderName];
-                string? API_KEY = Secrets.API_KEY;
+                string? API_KEY = _secret.ApiKey;
 
                 if (HEADER_API_KEY != API_KEY)
                 {

@@ -1,9 +1,7 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
-using System.Text.Json;
 using BudgetTracker.Interface;
 using BudgetTracker.Defination;
-using BudgetTracker.Application;
 
 namespace BudgetTracker.Services
 {
@@ -21,14 +19,16 @@ namespace BudgetTracker.Services
     public class MongoDBContext : IMongoContext
     {
         private readonly IMongoDatabase _database;
+        private readonly AppSecrets _secret;
         
-        public MongoDBContext()
+        public MongoDBContext(AppSecrets secret)
         {
-            string url = $"mongodb+srv://{Secrets.USERNAME}:{Secrets.PASSWORD}@{Secrets.HOST}/?retryWrites=true&w=majority&appName=Trsnactions";
+            _secret = secret;
+            string url = $"mongodb+srv://{_secret.UserName}:{_secret.PassWord}@{_secret.Host}/?retryWrites=true&w=majority&appName=Trsnactions";
             MongoClient client = new MongoClient(url);
-            _database = client.GetDatabase(Secrets.DB);
+            _database = client.GetDatabase(_secret.DataBase);
         }
-        
+  
         public IMongoDatabase Database => _database;
         public IMongoCollection<Transaction> Transaction => _database.GetCollection<Transaction>(Collection.TRANSACTIONS);
         public IMongoCollection<Category> Category => _database.GetCollection<Category>(Collection.CATEGORIES);

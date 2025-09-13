@@ -1,27 +1,26 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using BudgetTracker.Services;
 using BudgetTracker.Interface;
 using BudgetTracker.Defination;
-using BudgetTracker.Application;
 using BudgetTracker.Middlewares;
 using BudgetTracker.Security.Authentication;
-using Google.Cloud.Diagnostics.AspNetCore3;
-using Google.Cloud.Diagnostics.Common;
 using Abhiram.Abstractions.Logging;
 using Abhiram.Extensions.DotEnv;
+using Abhiram.Secrets.Providers;
+using Abhiram.Secrets.Providers.Interface;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
 
 builder.AddConsoleGoogleSeriLog();
-
-// builder.AddCustomLogger();
 builder.Services.AddSingleton<IMongoContext, MongoDBContext>();
+builder.Services.AddScoped<ISecretManager, SecretManagerService>();
+builder.Services.AddSingleton<AppSecrets>();
+builder.Services.AddHostedService<SecretHostService>();
 builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
 {
     options.SuppressModelStateInvalidFilter = false;
@@ -33,7 +32,6 @@ builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
         return new BadRequestObjectResult(new ApiResponse<string> { Message = errorMessage, StatusCode = HttpStatusCode.BadRequest });
     };
 });
-// builder.AddCustomLogger();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddMemoryCache();
 builder.Services.AddRouting();
@@ -53,7 +51,6 @@ builder.WebHost.ConfigureKestrel((_, server) => {
 builder.WebHost.UseKestrel(options => options.AddServerHeader = false);
 
 WebApplication app = builder.Build();
-
 
 app.UseAuthentication();
 app.UseAuthorization();
