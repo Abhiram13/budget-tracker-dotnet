@@ -1,4 +1,8 @@
-using BudgetTracker.Defination;
+using BudgetTracker.Core.Domain.Entities;
+
+using TransactionsList = BudgetTracker.Core.Domain.ValueObject.Transaction.TransactionsList;
+using ByBankResults = BudgetTracker.Core.Domain.ValueObject.Transaction.ByBank.ResultByBank;
+using ByCategoryData = BudgetTracker.Core.Domain.ValueObject.Transaction.ByCategory.CategoryData;
 
 namespace IntegrationTests.Definations.Transactions
 {
@@ -15,7 +19,7 @@ namespace IntegrationTests.Definations.Transactions
         int ExpectedPartialDebit,
         int ExpectedPartialCredit,
         int ExpectedTotalTransactions,
-        BudgetTracker.API.Transactions.ByDate.Transactions[] ExpectedTransactions
+        TransactionsList[] ExpectedTransactions
     );
 
     /// <summary>
@@ -42,7 +46,7 @@ namespace IntegrationTests.Definations.Transactions
         int ExpectedStatusCode,
         int ExcpectedHttpStatusCode,
         int ExpectedTotalTransactions,
-        BudgetTracker.API.Transactions.ByBank.Result ExpectedResult
+        ByBankResults ExpectedResult
     );
 
     /// <summary>
@@ -100,7 +104,7 @@ namespace IntegrationTests.Definations.Transactions
         string ExpectedCategoryName,
         int ExpectedTotalDates,
         int ExpectedTotalTransactionsForDate,
-        List<BudgetTracker.API.Transactions.ByCategory.CategoryData> ExpectedTransactions
+        List<ByCategoryData> ExpectedTransactions
     );
 
     /// <summary>

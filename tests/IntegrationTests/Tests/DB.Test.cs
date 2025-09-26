@@ -1,13 +1,12 @@
-// using BudgetTracker.Application;
 using MongoDB.Driver;
 using Mongo2Go;
-using Xunit;
-using BudgetTracker.Defination;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Abhiram.Extensions.DotEnv;
+using BudgetTracker.Core.Domain.Entities;
+using BudgetTracker.Core.Domain.ValueObject;
 
 namespace IntegrationTests;
 
@@ -23,13 +22,14 @@ public class MongoDBFixture : IDisposable
 
     public MongoDBFixture()
     {
-        _setEnvironmentVariables();
+        SetEnvironmentVariables();
+        AppSecrets secrets = GetEnvironmentVariables();
         _runner = MongoDbRunner.Start();
-        _client = new MongoClient($"mongodb+srv://{Env.USERNAME}:{Env.PASSWORD}@{Env.HOST}/?retryWrites=true&w=majority&appName=Trsnactions");
-        Database = _client.GetDatabase($"{Env.DB}");
+        _client = new MongoClient($"mongodb+srv://{secrets.UserName}:{secrets.PassWord}@{secrets.Host}/?retryWrites=true&w=majority&appName=Trsnactions");
+        Database = _client.GetDatabase($"{secrets.DataBase}");
     }
 
-    private void _setEnvironmentVariables()
+    private void SetEnvironmentVariables()
     {
         DirectoryInfo currentParent = Directory.GetParent(Directory.GetCurrentDirectory()) ?? default;
         DirectoryInfo mainParent = Directory.GetParent(currentParent.Parent.FullName);
@@ -38,9 +38,22 @@ public class MongoDBFixture : IDisposable
         DotEnvironmentVariables.Load();
     }
 
+    private AppSecrets GetEnvironmentVariables()
+    {
+        return new AppSecrets
+        {
+            ApiKey = Environment.GetEnvironmentVariable("API_KEY"),
+            DataBase = Environment.GetEnvironmentVariable("DB"),
+            Host = Environment.GetEnvironmentVariable("HOST"),
+            PassWord = Environment.GetEnvironmentVariable("PASSWORD"),
+            UserName = Environment.GetEnvironmentVariable("USERNAME"),
+        };
+    }
+
     public void Dispose()
     {
-        Task.Run(async () => {
+        Task.Run(async () =>
+        {
             await Database?.GetCollection<Transaction>("transactions").DeleteManyAsync(FilterDefinition<Transaction>.Empty);
         }).Wait();
         _runner.Dispose();

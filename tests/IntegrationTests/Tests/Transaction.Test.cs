@@ -2,17 +2,20 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
-using BudgetTracker.API.Transactions.List;
-using BudgetTracker.Defination;
 using IntegrationTests.Data.Transactions;
-using IntegrationTests.Utils;
-
-using TransactionByCategoryResult = BudgetTracker.API.Transactions.ByCategory.Result;
-using CategoryTypeTransactionsResult = BudgetTracker.API.Transactions.List.Result;
-using TransactionsByCategoryId = BudgetTracker.API.Transactions.ByCategory.CategoryData;
-using ByDateTransactions = BudgetTracker.API.Transactions.ByDate;
 using IntegrationTests.Definations.Transactions;
-using ByBankResult = BudgetTracker.API.Transactions.ByBank.Result;
+using IntegrationTests.Utils;
+using BudgetTracker.Core.Domain.ValueObject;
+using BudgetTracker.Core.Domain.ValueObject.Transaction.List;
+using BudgetTracker.Core.Domain.ValueObject.Transaction;
+using BudgetTracker.Core.Domain.Entities;
+
+using TransactionByCategoryResult = BudgetTracker.Core.Domain.ValueObject.Transaction.ByCategory.Result;
+using CategoryTypeTransactionsResult = BudgetTracker.Core.Domain.ValueObject.Transaction.List.Result;
+using TransactionsByCategoryId = BudgetTracker.Core.Domain.ValueObject.Transaction.ByCategory.CategoryData;
+using ByDateTransactions = BudgetTracker.Core.Domain.ValueObject.Transaction.ByDateTransactions;
+using ByBankResult = BudgetTracker.Core.Domain.ValueObject.Transaction.ByBank.ResultByBank;
+using CategoryData = BudgetTracker.Core.Domain.ValueObject.Transaction.List.CategoryData;
 
 namespace IntegrationTests;
 
@@ -193,7 +196,7 @@ public class TransactionIntegrationTests : IntegrationTests
             string dateInput = string.IsNullOrEmpty(data.Date) ? data.Date : "";
             HttpResponseMessage httpResponse = await _client.GetAsync($"/transactions/date/{dateInput}");
             string jsonResponse = await httpResponse.Content.ReadAsStringAsync();
-            ApiResponse<ByDateTransactions.Data>? apiResponse = JsonSerializer.Deserialize<ApiResponse<ByDateTransactions.Data>>(jsonResponse);
+            ApiResponse<ByDateTransactions>? apiResponse = JsonSerializer.Deserialize<ApiResponse<ByDateTransactions>>(jsonResponse);
             PropertyInfo? debitProp = apiResponse?.Result?.GetType().GetProperty("Debit");
             PropertyInfo? creditProp = apiResponse?.Result?.GetType().GetProperty("Credit");
             PropertyInfo? partialDebitProp = apiResponse?.Result?.GetType().GetProperty("PartialDebit");
@@ -223,7 +226,7 @@ public class TransactionIntegrationTests : IntegrationTests
     
             if (apiResponse.Result?.Transactions.Count > 0)
             {
-                foreach (ByDateTransactions.Transactions transaction in apiResponse.Result.Transactions)
+                foreach (TransactionsList transaction in apiResponse.Result.Transactions)
                 {
                     Assert.Contains(data.ExpectedTransactions, expTransaction => expTransaction.Description == transaction.Description);
                     Assert.Contains(data.ExpectedTransactions, expTransaction => expTransaction.Category == transaction.Category);
@@ -276,7 +279,7 @@ public class TransactionIntegrationTests : IntegrationTests
                 // string date = DateTime.Now.ToString("yyyy-MM-dd");
                 HttpResponseMessage httpResponse = await _client.GetAsync($"/transactions/date/{data.date}");
                 string jsonResponse = await httpResponse.Content.ReadAsStringAsync();
-                ApiResponse<ByDateTransactions.Data>? apiResponse = JsonSerializer.Deserialize<ApiResponse<ByDateTransactions.Data>>(jsonResponse);
+                ApiResponse<ByDateTransactions>? apiResponse = JsonSerializer.Deserialize<ApiResponse<ByDateTransactions>>(jsonResponse);
                 transactionId = apiResponse?.Result?.Transactions?.FirstOrDefault()?.TransactionId ?? "";
             }
             

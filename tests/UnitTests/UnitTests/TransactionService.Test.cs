@@ -8,7 +8,6 @@ using BudgetTracker.Interface;
 using System.Text.Json;
 using System.Reflection;
 using BudgetTracker.API.Transactions.List;
-using BudgetTracker.Application;
 using BudgetTracker.API.Transactions.ByDate;
 using MongoDB.Driver;
 using System.Text;

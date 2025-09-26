@@ -1,5 +1,7 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
+using BudgetTracker.Core.Application.Exceptions;
 using BudgetTracker.Core.Application.Interfaces;
 using BudgetTracker.Core.Domain.Entities;
 using BudgetTracker.Core.Domain.ValueObject.Transaction;
@@ -14,10 +16,14 @@ namespace BudgetTracker.Core.Application.Services;
 public class TransactionService
 {
     private readonly ITransactionRepository _transactionRepository;
+    private readonly ICategoryRepository _categoryRepository;
+    private readonly IBankRepository _bankRepository;
 
-    public TransactionService(ITransactionRepository repository)
+    public TransactionService(ITransactionRepository repository, ICategoryRepository categoryRepository, IBankRepository bankRepository)
     {
         _transactionRepository = repository;
+        _categoryRepository = categoryRepository;
+        _bankRepository = bankRepository;
     }
 
     public async Task<ListResult> ListAsync(QueryParams? queryParams, CancellationToken? cancellationToken)
@@ -56,6 +62,32 @@ public class TransactionService
 
     public async Task InsertOneAsync(Transaction doc)
     {
+        Category category = await _categoryRepository.SearchByIdAsync(doc.CategoryId);
+
+        if (category is null || string.IsNullOrEmpty(category.Name))
+        {
+            throw new BadRequestException($"Invalid Category Id ({0}) provided", doc.CategoryId);
+        }
+
+        if (string.IsNullOrEmpty(doc.FromBank) && string.IsNullOrEmpty(doc.ToBank))
+        {
+            throw new BadRequestException($"Invalid From Bank ({0}) and To Bank ({1}) provided", doc.FromBank, doc.ToBank);
+        }
+
+        Func<string?, Task> ValidateBanks = async (string? bankId) =>
+        {
+            if (string.IsNullOrEmpty(bankId)) return;
+
+            Bank bank = await _bankRepository.SearchByIdAsync(bankId);
+
+            if (bank is null || string.IsNullOrEmpty(bank.Name))
+            {
+                throw new BadRequestException($"Invalid bank id ({0}) provided", bankId);
+            }
+        };
+
+        await ValidateBanks(doc.FromBank);
+        await ValidateBanks(doc.ToBank);
         await _transactionRepository.InserOneAsync(doc);
     }
 

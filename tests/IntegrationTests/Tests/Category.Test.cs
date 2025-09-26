@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
-using BudgetTracker.Defination;
+using BudgetTracker.Core.Domain.Entities;
+using BudgetTracker.Core.Domain.ValueObject;
 using MongoDB.Driver;
 
 namespace IntegrationTests;
