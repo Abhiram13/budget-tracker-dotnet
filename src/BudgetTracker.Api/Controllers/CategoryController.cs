@@ -1,30 +1,29 @@
-using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using BudgetTracker.Core.Application.Exceptions;
+using BudgetTracker.Core.Application.Services;
+using BudgetTracker.Core.Domain.Entities;
+using BudgetTracker.Core.Domain.ValueObject;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using BudgetTracker.Interface;
-using BudgetTracker.Defination;
-using BudgetTracker.Services;
 
-namespace BudgetTracker.Controllers;
+namespace BudgetTracker.Api.Controllers;
 
 [ApiController]
 public class CategoryController : ApiBaseController
 {
-    private readonly ICategoryService _service;
+    private readonly CategoryService _service;
     private readonly IMemoryCache _cache;
     private readonly string _cacheKey = "category_cache";
 
-    public CategoryController(ICategoryService service, IMemoryCache memoryCache)
+    public CategoryController(CategoryService service, IMemoryCache cache)
     {
         _service = service;
-        _cache = memoryCache;
+        _cache = cache;
     }
 
-    [HttpPost]
-    public async Task<ApiResponse<string>> Add([FromBody] Category body)
+    public async Task<ApiResponse<string>> AddOneAsync([FromBody] Category body)
     {
-        Category category = body;
-        await _service.InserOne(category);
+        await _service.AddOneAsync(body);
         return new ApiResponse<string>()
         {
             Message = "Category inserted successfully",
@@ -32,25 +31,12 @@ public class CategoryController : ApiBaseController
         };
     }
 
-    [HttpGet("{id}")]
-    public async Task<ApiResponse<Category>> SearchById(string id)
-    {
-        if (string.IsNullOrEmpty(id)) { throw new BadRequestException("Category id is missing"); }
-                        
-        Category category = await _service.SearchById(id);
-        return new ApiResponse<Category>()
-        {
-            StatusCode = HttpStatusCode.OK,
-            Result = category
-        };
-    }
-
     [HttpGet]
-    public async Task<ApiResponse<List<Category>>> GetList()
+    public async Task<ApiResponse<List<Category>>> GetListAsync()
     {
         if (!_cache.TryGetValue(_cacheKey, out List<Category>? categories))
         {
-            categories = await _service.GetList();
+            categories = await _service.ListAsync();
             _cache.Set(_cacheKey, categories);
         }
 
@@ -61,10 +47,23 @@ public class CategoryController : ApiBaseController
         };
     }
 
-    [HttpPatch("{id}")]
-    public async Task<ApiResponse<string>> Update(string id, [FromBody] Category body)
+    [HttpGet("{id}")]
+    public async Task<ApiResponse<Category>> SearchByIdAsync(string id)
     {
-        bool isUpdated = await _service.UpdateById(id, body);
+        if (string.IsNullOrEmpty(id)) { throw new BadRequestException("Category id is missing"); }
+
+        Category category = await _service.SearchByIdAsync(id);
+        return new ApiResponse<Category>()
+        {
+            StatusCode = HttpStatusCode.OK,
+            Result = category
+        };
+    }
+
+    [HttpPatch("{id}")]
+    public async Task<ApiResponse<string>> UpdateOneAsync(string id, [FromBody] Category body)
+    {
+        bool isUpdated = await _service.UpdateOneAsync(id, body);
         HttpStatusCode statusCode = isUpdated ? HttpStatusCode.Created : HttpStatusCode.NotModified;
         string message = isUpdated ? "Category updated successfully" : "Category couldn't be updated";
 
@@ -76,9 +75,9 @@ public class CategoryController : ApiBaseController
     }
 
     [HttpDelete("{id}")]
-    public async Task<ApiResponse<string>> Delete(string id)
+    public async Task<ApiResponse<string>> DeleteOneAsync(string id)
     {
-        bool isDeleted = await _service.DeleteById(id);
+        bool isDeleted = await _service.DeleteOneAsync(id);
         string message = isDeleted ? "Category deleted successfully" : "Cannot delete selected category";
         HttpStatusCode statusCode = isDeleted ? HttpStatusCode.OK : HttpStatusCode.NotModified;
 

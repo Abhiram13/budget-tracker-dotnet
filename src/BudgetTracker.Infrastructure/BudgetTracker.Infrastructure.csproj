@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <ItemGroup>
+        <ProjectReference Include="..\BudgetTracker.Core\BudgetTracker.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Abhiram.Secrets.Providers" Version="1.0.0" />
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>        
+        <Nullable>enable</Nullable>        
+        <WarningsAsErrors>CS8625</WarningsAsErrors> <!-- Cannot convert null literal to non-nullable reference type. -->
+    </PropertyGroup>
+
+</Project>
