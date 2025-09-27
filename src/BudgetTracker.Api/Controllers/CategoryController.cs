@@ -21,6 +21,7 @@ public class CategoryController : ApiBaseController
         _cache = cache;
     }
 
+    [HttpPost]
     public async Task<ApiResponse<string>> AddOneAsync([FromBody] Category body)
     {
         await _service.AddOneAsync(body);
