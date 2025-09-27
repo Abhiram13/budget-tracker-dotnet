@@ -14,7 +14,7 @@ public class InitController : ControllerBase
         return Ok(new ApiResponse<string>()
         {
             StatusCode = HttpStatusCode.OK,
-            Message = "Welcome to your new budgeting journey! Get started by adding your first transaction and taking control of your finances"
+            Message = "Welcome to your new budgeting journey! Get started by adding your first transaction and taking control of your finances. This is new Domain Arch :)"
         });
     }
 }
