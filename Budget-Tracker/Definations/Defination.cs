@@ -6,6 +6,7 @@ using MongoDB.Driver;
 
 namespace BudgetTracker.Defination
 {
+    [Obsolete("Use Abhiram.Secrets.Providers package to access secret manager", false)]
     public static class Env
     {
         public static readonly string? HOST = Environment.GetEnvironmentVariable("HOST");
@@ -58,6 +59,7 @@ namespace BudgetTracker.Interface
         Task<T> SearchById(string id);
         Task<bool> DeleteById(string id);
         Task<bool> UpdateById(string id, T document);
+        Task<bool> CountByIdAsync(string id);
     }
 
     public interface ICustomMiddleware

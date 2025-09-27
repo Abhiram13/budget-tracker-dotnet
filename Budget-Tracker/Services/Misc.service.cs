@@ -1,8 +1,6 @@
-// using BudgetTracker.Application;
 using BudgetTracker.Interface;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using MongoDB.Driver;
-// using CustomUtilities;
 
 namespace BudgetTracker.Services
 {
@@ -19,10 +17,12 @@ namespace BudgetTracker.Services
     public class DataBaseHealthCheck : IHealthCheck
     {
         private readonly IMongoContext _mongoContext;
+        private readonly ILogger<DataBaseHealthCheck> _logger;
 
-        public DataBaseHealthCheck(IMongoContext context)
+        public DataBaseHealthCheck(IMongoContext context, ILogger<DataBaseHealthCheck> logger)
         {
             _mongoContext = context;
+            _logger = logger;
         }
 
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
@@ -41,15 +41,9 @@ namespace BudgetTracker.Services
                     return HealthCheckResult.Unhealthy();
                 }
             }
-            // TODO: Update this duplicate exceptional messages
-            catch (TypeInitializationException e)
+            catch (Exception ex)
             {
-                // Logger.LogCritical(e, "HEALTH CHECK: Exception at PING API");
-                return HealthCheckResult.Degraded();
-            }
-            catch (Exception e)
-            {
-                // Logger.LogCritical(e, "HEALTH CHECK: Exception at PING API");
+                _logger.LogCritical(ex, $"EXCEPTION: At Database health check. Message ({0})", ex.Message);
                 return HealthCheckResult.Degraded();
             }            
         }

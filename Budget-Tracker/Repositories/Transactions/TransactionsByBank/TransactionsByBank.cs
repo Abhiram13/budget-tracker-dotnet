@@ -2,7 +2,6 @@ using BudgetTracker.Defination;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using BudgetTracker.API.Transactions.List;
-using BudgetTracker.Application;
 using BudgetTracker.Interface;
 using BudgetTracker.Services;
 using BankResult = BudgetTracker.API.Transactions.ByBank.Result;

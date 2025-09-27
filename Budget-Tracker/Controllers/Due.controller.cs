@@ -27,42 +27,41 @@ public class DueController : ApiBaseController
         await _service.InsertOneAsync(body);
         return new ApiResponse<string>()
         {
-            StatusCode = System.Net.HttpStatusCode.OK,
+            StatusCode = HttpStatusCode.Created,
             Message = "Due created successfully",
         };
     }
 
     [HttpGet]
-    public async Task<ApiResponse<List<Due>>> ListAsync()
+    public async Task<ApiResponse<List<DueList>>> ListAsync([FromQuery] string? filter)
     {
-        ProjectionDefinition<Due> projection = Builders<Due>.Projection.Exclude(d => d.Payee);
-        List<Due> dues = await _service.GetList(projection);
-        return new ApiResponse<List<Due>>()
+        List<DueList> dues = await _service.ListAsync(filter);
+        return new ApiResponse<List<DueList>>()
         {
             Result = dues,
-            StatusCode = System.Net.HttpStatusCode.OK,
+            StatusCode = HttpStatusCode.OK,
         };
     }
 
     [HttpGet("{id}/transactions")]
-    public async Task<ApiResponse<DueTransactions>> TransactionsByDueIdAsync(string id)
+    public async Task<ApiResponse<DueTransactions>> DueTransactionsAsync(string id)
     {
         DueTransactions result = await _service.GetDueTransactionsAsync(id);
         return new ApiResponse<DueTransactions>()
         {
             Result = result,
-            StatusCode = System.Net.HttpStatusCode.OK,
+            StatusCode = HttpStatusCode.OK,
         };
     }
 
     [HttpGet("{id}")]
     public async Task<ApiResponse<Due>> GetByIdAsync(string id)
     {
-        Due result = await _service.SearchById(id);
+        Due result = await _service.GetByIdAsync(id);
         return new ApiResponse<Due>()
         {
             Result = result,
-            StatusCode = System.Net.HttpStatusCode.OK,
+            StatusCode = HttpStatusCode.OK,
         };
     }
 
@@ -72,6 +71,17 @@ public class DueController : ApiBaseController
         bool result = await _service.UpdateById(id, due);
         HttpStatusCode statusCode = result ? HttpStatusCode.Created : HttpStatusCode.NotModified;
         string message = result ? "Due updated successfully" : "Due couldn't be updated";
-        return new ApiResponse<string>() { Message = message, StatusCode = statusCode};
+        return new ApiResponse<string>() { Message = message, StatusCode = statusCode };
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ApiResponse<string>> DeleteByIdAsync(string id)
+    {
+        HttpStatusCode result = await _service.DeleteByIdAsync(id);
+
+        return new ApiResponse<string>()
+        {
+            StatusCode = result,
+        };
     }
 }

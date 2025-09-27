@@ -15,9 +15,9 @@
   <ItemGroup>
     <PackageReference Include="Abhiram.Abstractions.Logging" Version="1.0.1" />
     <PackageReference Include="Abhiram.Extensions.DotEnv" Version="1.1.1" />
+    <PackageReference Include="Abhiram.Secrets.Providers" Version="1.0.0" />
     <PackageReference Include="Google.Cloud.Diagnostics.AspNetCore3" Version="5.2.0" />
     <PackageReference Include="Google.Cloud.Diagnostics.Common" Version="5.2.0" />
-    <PackageReference Include="Google.Cloud.SecretManager.V1" Version="2.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.33" />
     <PackageReference Include="Mongo2Go" Version="3.1.3" />
     <PackageReference Include="MongoDB.Driver" Version="2.25.0" />

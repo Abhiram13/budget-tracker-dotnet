@@ -41,18 +41,18 @@ jobs:
               run: dotnet nuget list source
 
             - name: Dotnet clean
-              run: dotnet clean
+              run: dotnet clean budget-tracker.sln
                 
             - name: Restore dependencies
-              run: dotnet restore
+              run: dotnet restore budget-tracker.sln
               working-directory: ${{ github.workspace }}
               
             - name: Build
-              run: dotnet build
+              run: dotnet build budget-tracker.sln
               working-directory: ${{ github.workspace }}
               
             - name: Test
-              run: dotnet test
+              run: dotnet test budget-tracker.sln
               working-directory: ${{ github.workspace }}
               env:
                   PORT: ${{secrets.PORT}}

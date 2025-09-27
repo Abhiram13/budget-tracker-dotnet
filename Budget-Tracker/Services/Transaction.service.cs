@@ -5,7 +5,6 @@ using BudgetTracker.Repository;
 using BudgetTracker.API.Transactions.List;
 using BudgetTracker.API.Transactions.ByDate;
 using ByBankResult = BudgetTracker.API.Transactions.ByBank.Result;
-using BudgetTracker.Application;
 
 namespace BudgetTracker.Services
 {
