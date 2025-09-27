@@ -10,7 +10,7 @@ steps:
       - 'Dockerfile'
       - '--build-arg'
       - 'NUGET_PAT=$_NUGET_PAT'
-      - 'src/BudgetTracker.Api'
+      - '.'
   
   # Step 2: Push the image to Container Registry
   - name: 'gcr.io/cloud-builders/docker'
