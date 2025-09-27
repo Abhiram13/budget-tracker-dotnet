@@ -32,14 +32,11 @@ builder.Services.AddSingleton<ISecretManager, SecretManagerService>();
 builder.Services.AddSingleton<AppSecrets>();
 builder.Services.AddHostedService<SecretHostService>();
 builder.Services.AddAuthentication().AddScheme<ApiKeySchemaOptions, ApiKeyHandler>(ApiKeySchemaOptions.DefaultSchema, _ => { });
-
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddMemoryCache();
-builder.Services.AddRouting();
 builder.Services.AddHealthChecks();
+builder.Services.AddCors(opt => opt.AddDefaultPolicy(pol => pol.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
 {
     options.SuppressModelStateInvalidFilter = false;
