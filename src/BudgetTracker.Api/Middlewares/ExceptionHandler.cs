@@ -34,10 +34,12 @@ public class ExceptionHandlerMiddleware : ICustomMiddleware
                 Instance = $"{httpContext.Request.Method} {httpContext.Request.Path.Value}"
             };
 
-            ApiResponse<string> response = new ApiResponse<string>()
+            // FIXME: Fix the response which is failing the test cases
+            ApiResponse<ProblemDetails> response = new ApiResponse<ProblemDetails>()
             {
                 StatusCode = HttpStatusCode.InternalServerError,
-                Message = "Something went wrong. Please verify logs for more details"
+                Message = "Something went wrong. Please verify logs for more details",
+                // Result = problemDetails
             };
 
             await httpContext.Response.WriteAsJsonAsync(response);
