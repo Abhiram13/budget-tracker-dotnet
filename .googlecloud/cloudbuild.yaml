@@ -7,10 +7,10 @@ steps:
       - '-t'
       - '$_LOCATION-docker.pkg.dev/$_PROJECT_ID/$_REPOSITORY/$_IMAGE:$COMMIT_SHA'
       - '-f'
-      - 'Budget-Tracker/Dockerfile'
+      - 'Dockerfile'
       - '--build-arg'
       - 'NUGET_PAT=$_NUGET_PAT'
-      - 'Budget-Tracker/'
+      - 'src/BudgetTracker.Api'
   
   # Step 2: Push the image to Container Registry
   - name: 'gcr.io/cloud-builders/docker'
