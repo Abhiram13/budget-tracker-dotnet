@@ -8,9 +8,18 @@ namespace BudgetTracker.Api.Controllers;
 [Route("")]
 public class InitController : ControllerBase
 {
-    [Route("")]
+    private readonly ILogger<InitController> _logger;
+
+    public InitController(ILogger<InitController> logger)
+    {
+        _logger = logger;
+    }
+
+    [HttpGet]
     public IActionResult Get()
     {
+        _logger.LogInformation("Welcome to Budget Tracker Application :)");
+
         return Ok(new ApiResponse<string>()
         {
             StatusCode = HttpStatusCode.OK,

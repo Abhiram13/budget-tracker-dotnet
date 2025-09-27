@@ -32,14 +32,17 @@ public class CategoryController : ApiBaseController
         };
     }
 
+    // FIXME: Cache should be updated on creation/ deletion of categories
     [HttpGet]
     public async Task<ApiResponse<List<Category>>> GetListAsync()
     {
-        if (!_cache.TryGetValue(_cacheKey, out List<Category>? categories))
-        {
-            categories = await _service.ListAsync();
-            _cache.Set(_cacheKey, categories);
-        }
+        // if (!_cache.TryGetValue(_cacheKey, out List<Category>? categories))
+        // {
+        //     categories = await _service.ListAsync();
+        //     _cache.Set(_cacheKey, categories);
+        // }
+
+        List<Category> categories = await _service.ListAsync();
 
         return new ApiResponse<List<Category>>()
         {
