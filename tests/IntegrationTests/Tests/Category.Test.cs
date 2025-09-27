@@ -22,7 +22,7 @@ public class CategoryIntegrationTests : IntegrationTests
     [Fact]
     public async Task Positive_Test_After_Add_Category()
     {
-        string categoryName = "Test Category";
+        string categoryName = "Test category Again";
         string payload = JsonSerializer.Serialize(new Category() { Name = categoryName });
         StringContent? payload1 = new StringContent(payload, Encoding.UTF8, "application/json");
 
