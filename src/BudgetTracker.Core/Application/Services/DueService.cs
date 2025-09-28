@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BudgetTracker.Core.Application.Interfaces;
 using BudgetTracker.Core.Domain.Entities;
+using BudgetTracker.Core.Domain.Enums;
+using BudgetTracker.Core.Domain.ValueObject.Dues;
 using MongoDB.Driver;
 
 namespace BudgetTracker.Core.Application.Services;
@@ -26,9 +28,15 @@ public class DueService
         return dues;
     }
 
-    public async Task<Due> SearchByIdAsync(string id)
+    public async Task<List<DueList>> DueListAsync(DueStatus? dueStatus = null)
     {
-        Due due = await _dueRepository.SearchByIdAsync(id);
+        List<DueList> result = await _dueRepository.ListOfDuesAsync(dueStatus);
+        return result;
+    }
+
+    public async Task<DueDetails> SearchByIdAsync(string id)
+    {
+        DueDetails due = await _dueRepository.GetDueDetailsAsync(id);
         return due;
     }
 
@@ -42,5 +50,10 @@ public class DueService
     {
         bool isDeleted = await _dueRepository.DeleteByIdAsync(id);
         return isDeleted;
+    }
+
+    public async Task<List<DueTransactions>> GetDueTransactionsAsync(string dueId)
+    {
+        return await _dueRepository.GetDueTranasactionsAsync(dueId);
     }
 }

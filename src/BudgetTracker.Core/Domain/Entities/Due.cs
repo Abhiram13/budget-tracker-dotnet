@@ -8,6 +8,9 @@ namespace BudgetTracker.Core.Domain.Entities;
 
 public class Due : MongoObject
 {
+    [Required, JsonPropertyName("name"), BsonElement("name")]
+    public string Name { get; set; } = string.Empty;
+
     [JsonPropertyName("payee"), BsonElement("payee"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public string Payee { get; set; } = string.Empty;
 

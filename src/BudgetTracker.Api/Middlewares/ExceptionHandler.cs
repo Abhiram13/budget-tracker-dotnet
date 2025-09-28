@@ -8,10 +8,12 @@ namespace BudgetTracker.Api.Middlewares;
 public class ExceptionHandlerMiddleware : ICustomMiddleware
 {
     private readonly RequestDelegate _next;
+    private readonly ILogger<ExceptionHandlerMiddleware> _logger;
 
-    public ExceptionHandlerMiddleware(RequestDelegate requestDelegate)
+    public ExceptionHandlerMiddleware(RequestDelegate requestDelegate, ILogger<ExceptionHandlerMiddleware> logger)
     {
         _next = requestDelegate;
+        _logger = logger;
     }
 
     public async Task InvokeAsync(HttpContext httpContext)
@@ -33,6 +35,8 @@ public class ExceptionHandlerMiddleware : ICustomMiddleware
                 Detail = e.Message,
                 Instance = $"{httpContext.Request.Method} {httpContext.Request.Path.Value}"
             };
+
+            _logger.LogError(e, e.Message);
 
             // FIXME: Fix the response which is failing the test cases
             ApiResponse<ProblemDetails> response = new ApiResponse<ProblemDetails>()
