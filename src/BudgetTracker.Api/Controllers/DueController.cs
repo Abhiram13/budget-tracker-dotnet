@@ -1,5 +1,6 @@
 using System.Net;
 using BudgetTracker.Core.Application.Services;
+using BudgetTracker.Core.Domain.Entities;
 using BudgetTracker.Core.Domain.Enums;
 using BudgetTracker.Core.Domain.ValueObject;
 using BudgetTracker.Core.Domain.ValueObject.Dues;
@@ -50,5 +51,12 @@ public class DuesController : ApiBaseController
             StatusCode = HttpStatusCode.OK,
             Result = dueTransactions,
         };
+    }
+
+    [HttpPost]
+    public async Task<ApiResponse<string>> AddOneAsync([FromBody] Due due)
+    {
+        await _dueService.AddOneAsync(due);
+        return new ApiResponse<string>();
     }
 }
