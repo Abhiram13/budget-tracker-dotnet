@@ -9,4 +9,5 @@ public class Collection
     public const string CATEGORIES = "categories";
     public const string BANKS = "banks";
     public const string DUES = "dues";
+    public const string BILLS = "bills";
 }

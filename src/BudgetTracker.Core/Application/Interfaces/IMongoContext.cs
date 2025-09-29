@@ -10,4 +10,5 @@ public interface IMongoContext
     IMongoCollection<Category> Category { get; }
     IMongoCollection<Bank> Bank { get; }
     IMongoCollection<Due> Dues { get; }
+    IMongoCollection<Bill> Bills { get; }
 }

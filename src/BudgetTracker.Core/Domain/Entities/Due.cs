@@ -15,7 +15,7 @@ public class Due : MongoObject
     public string Payee { get; set; } = string.Empty;
 
     [JsonPropertyName("principal_amount"), BsonElement("principal_amount")]
-    public double PrincipalAmount { get; set; }
+    public decimal PrincipalAmount { get; set; }
 
     [Required, JsonPropertyName("description"), BsonElement("description")]
     public string Description { get; set; } = string.Empty;

@@ -8,9 +8,8 @@ namespace BudgetTracker.Core.Domain.Entities;
 
 public class Transaction : MongoObject
 {
-    [BsonElement("amount")]
-    [JsonPropertyName("amount")]
-    public double Amount { get; set; } = 0;
+    [BsonElement("amount"), JsonPropertyName("amount"), BsonRepresentation(MongoDB.Bson.BsonType.Decimal128)]
+    public decimal Amount { get; set; } = 0;
 
     [Required]
     [EnumDataType(typeof(TransactionType), ErrorMessage = "Invalid transaction type.")]
@@ -51,4 +50,7 @@ public class Transaction : MongoObject
     [BsonElement("due_id")]
     [JsonPropertyName("due_id")]
     public string? DueId { get; set; } = null;
+
+    [BsonElement("bill_id"), JsonPropertyName("bill_id")]
+    public string? BillId { get; set; } = null;
 }
