@@ -4,7 +4,7 @@ using TransactionsList = BudgetTracker.Core.Domain.ValueObject.Transaction.Trans
 using ByBankResults = BudgetTracker.Core.Domain.ValueObject.Transaction.ByBank.ResultByBank;
 using ByCategoryData = BudgetTracker.Core.Domain.ValueObject.Transaction.ByCategory.CategoryData;
 
-namespace IntegrationTests.Definations.Transactions
+namespace BudgetTracker.Tests.IntegrationTests.Definations.Transactions
 {
     /// <summary>
     /// Test data Object for Transactions by date <c>/transactions/date/:date</c>

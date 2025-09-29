@@ -57,6 +57,11 @@ public class DuesController : ApiBaseController
     public async Task<ApiResponse<string>> AddOneAsync([FromBody] Due due)
     {
         await _dueService.AddOneAsync(due);
-        return new ApiResponse<string>();
+        Response.StatusCode = StatusCodes.Status201Created;
+        return new ApiResponse<string>
+        {
+            StatusCode = HttpStatusCode.Created,
+            Message = "Due created successfully",
+        };
     }
 }

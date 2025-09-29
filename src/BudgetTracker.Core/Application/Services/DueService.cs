@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BudgetTracker.Core.Application.Exceptions;
 using BudgetTracker.Core.Application.Interfaces;
 using BudgetTracker.Core.Domain.Entities;
 using BudgetTracker.Core.Domain.Enums;
@@ -17,9 +19,37 @@ public class DueService
         _dueRepository = repository;
     }
 
-    // TODO: Due validations
     public async Task AddOneAsync(Due document)
     {
+        if (document.StartDate > DateTime.Today)
+        {
+            throw new ValidationException("Start date cannot be greater than the current date");
+        }
+
+        // TODO: See if this can be globalised and re-used for other apis
+        char[] disallowedChars = new[]
+        {
+            '@', '(', ')', '[', '{', ']', '}', '-', '+', '=', '_',
+            '!', '$', '%', '^', '&', '*', ';', ':', '\'', '"',
+            '<', '>', '?', '/', '\\', '|'
+        };
+
+        bool containesInvalidChar = document.Name.IndexOfAny(disallowedChars) >= 0;
+        if (string.IsNullOrEmpty(document.Name) || containesInvalidChar)
+        {
+            throw new ValidationException("Invalid Due Name provided");
+        }
+
+        if (document.PrincipalAmount <= 0)
+        {
+            throw new ValidationException("Principle Amount should be greater than 0");
+        }
+
+        if (document.Status != DueStatus.Active)
+        {
+            throw new ValidationException("Invalid Due status provided");
+        }
+
         await _dueRepository.InserOneAsync(document);
     }
 

@@ -4,7 +4,7 @@ using BudgetTracker.Core.Domain.Entities;
 using BudgetTracker.Core.Domain.ValueObject;
 using MongoDB.Driver;
 
-namespace IntegrationTests;
+namespace BudgetTracker.Tests.IntegrationTests;
 
 [Collection("category")]
 public class CategoryIntegrationTests : IntegrationTests

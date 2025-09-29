@@ -8,7 +8,7 @@ using Abhiram.Extensions.DotEnv;
 using BudgetTracker.Core.Domain.Entities;
 using BudgetTracker.Core.Domain.ValueObject;
 
-namespace IntegrationTests;
+namespace BudgetTracker.Tests.IntegrationTests;
 
 #pragma warning disable
 /// <summary>
@@ -88,6 +88,9 @@ public class CategoryCollection : ICollectionFixture<MongoDBFixture> { }
 
 [CollectionDefinition("transaction")]
 public class TransactionCollection : ICollectionFixture<MongoDBFixture> { }
+
+[CollectionDefinition("due")]
+public class DueCollection : ICollectionFixture<MongoDBFixture> { }
 
 public abstract class IntegrationTests
 {

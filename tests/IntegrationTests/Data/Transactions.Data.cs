@@ -1,4 +1,4 @@
-using IntegrationTests.Definations.Transactions;
+using BudgetTracker.Tests.IntegrationTests.Definations.Transactions;
 using BudgetTracker.Core.Domain.ValueObject.Transaction.ByCategory;
 using BudgetTracker.Core.Domain.Entities;
 using BudgetTracker.Core.Domain.Enums;
@@ -10,7 +10,7 @@ using ByCategoryData = BudgetTracker.Core.Domain.ValueObject.Transaction.ByCateg
 /// <summary>
 /// <see href="https://www.milanjovanovic.tech/blog/creating-data-driven-tests-with-xunit">Creating Data-Driven Tests With xUnit</see>
 /// </summary>
-namespace IntegrationTests.Data.Transactions
+namespace BudgetTracker.Tests.IntegrationTests.Data.Transactions
 {
     public abstract class TheoryTestData<T> : TheoryData<T> where T : class
     {

@@ -2,9 +2,9 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
-using IntegrationTests.Data.Transactions;
-using IntegrationTests.Definations.Transactions;
-using IntegrationTests.Utils;
+using BudgetTracker.Tests.IntegrationTests.Data.Transactions;
+using BudgetTracker.Tests.IntegrationTests.Definations.Transactions;
+using BudgetTracker.Tests.IntegrationTests.Utils;
 using BudgetTracker.Core.Domain.ValueObject;
 using BudgetTracker.Core.Domain.ValueObject.Transaction.List;
 using BudgetTracker.Core.Domain.ValueObject.Transaction;
@@ -17,7 +17,7 @@ using ByDateTransactions = BudgetTracker.Core.Domain.ValueObject.Transaction.ByD
 using ByBankResult = BudgetTracker.Core.Domain.ValueObject.Transaction.ByBank.ResultByBank;
 using CategoryData = BudgetTracker.Core.Domain.ValueObject.Transaction.List.CategoryData;
 
-namespace IntegrationTests;
+namespace BudgetTracker.Tests.IntegrationTests;
 
 [Collection("transaction")]
 [Trait("Category", "Transaction")]
