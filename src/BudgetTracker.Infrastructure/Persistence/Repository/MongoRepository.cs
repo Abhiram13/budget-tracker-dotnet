@@ -45,9 +45,10 @@ public abstract class MongoRepository<T> : IMongoDbRepository<T> where T : Mongo
         return await aggregate.ToListAsync();
     }
 
-    public async Task InserOneAsync(T document)
+    public async Task<T> InserOneAsync(T document)
     {
         await _collection.InsertOneAsync(document);
+        return document;
     }
 
     public async Task<T> SearchByIdAsync(string id)

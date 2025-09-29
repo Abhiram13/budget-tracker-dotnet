@@ -8,3 +8,8 @@ public record DueInsertTestDef(
     string ExpectedMessage,
     Due DueBody
 );
+
+public record DueDetailsTestDef(
+    int ExpectedStatusCode,
+    int ExpectedHttpStatusCode    
+);

@@ -107,3 +107,14 @@ public class DueInsertTestData : DueTheoryTestData<DueInsertTestDef>
         ));
     }
 }
+
+public class DueDetailsTestData : DueTheoryTestData<DueDetailsTestDef>
+{
+    public DueDetailsTestData()
+    {
+        Add(new(
+            ExpectedStatusCode: 200,
+            ExpectedHttpStatusCode: 200
+        ));
+    }
+}

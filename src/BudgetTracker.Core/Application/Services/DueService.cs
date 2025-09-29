@@ -19,7 +19,7 @@ public class DueService
         _dueRepository = repository;
     }
 
-    public async Task AddOneAsync(Due document)
+    public async Task<Due> AddOneAsync(Due document)
     {
         if (document.StartDate > DateTime.Today)
         {
@@ -50,7 +50,7 @@ public class DueService
             throw new ValidationException("Invalid Due status provided");
         }
 
-        await _dueRepository.InserOneAsync(document);
+        return await _dueRepository.InserOneAsync(document);
     }
 
     public async Task<List<Due>> ListAsync(ProjectionDefinition<Due>? exclude = null)

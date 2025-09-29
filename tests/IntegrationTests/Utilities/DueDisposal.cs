@@ -25,7 +25,7 @@ public class DueInsertDisposals : TestDisposal
                 Payee = "Abhi",
                 PrincipalAmount = 10000,
                 Status = DueStatus.Active,
-                StartDate = new DateTime(2025, 9, 25),
+                StartDate = DateTime.Today,
                 Comment = "Random comments :)"
             }
         };

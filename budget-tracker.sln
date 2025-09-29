@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetTracker.Api", "src\Bu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetTracker.Infrastructure", "src\BudgetTracker.Infrastructure\BudgetTracker.Infrastructure.csproj", "{EB61870B-8710-49D9-81F5-932BDA1F12E1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetTracker.Shared", "src\BudgetTracker.Shared\BudgetTracker.Shared.csproj", "{F315DFBC-5AF1-4E03-A913-79FB33E3FEDA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,10 @@ Global
 		{EB61870B-8710-49D9-81F5-932BDA1F12E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB61870B-8710-49D9-81F5-932BDA1F12E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB61870B-8710-49D9-81F5-932BDA1F12E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F315DFBC-5AF1-4E03-A913-79FB33E3FEDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F315DFBC-5AF1-4E03-A913-79FB33E3FEDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F315DFBC-5AF1-4E03-A913-79FB33E3FEDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F315DFBC-5AF1-4E03-A913-79FB33E3FEDA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -52,5 +58,6 @@ Global
 		{30C4C0E7-F21B-4EB0-AFAD-D0E815BE901F} = {9BF736DF-F94F-4CAB-B561-8968C8DD7D66}
 		{3DE60C16-F03D-416C-B94D-B4CA9AE30374} = {9BF736DF-F94F-4CAB-B561-8968C8DD7D66}
 		{EB61870B-8710-49D9-81F5-932BDA1F12E1} = {9BF736DF-F94F-4CAB-B561-8968C8DD7D66}
+		{F315DFBC-5AF1-4E03-A913-79FB33E3FEDA} = {9BF736DF-F94F-4CAB-B561-8968C8DD7D66}
 	EndGlobalSection
 EndGlobal

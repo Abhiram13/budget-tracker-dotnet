@@ -16,3 +16,9 @@ public class ApiResponse<T> where T : class
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public T? Result { get; set; }
 }
+
+public class InsertResultId
+{
+    [JsonPropertyName("id")]
+    public string Id { get; set; } = string.Empty;
+}
