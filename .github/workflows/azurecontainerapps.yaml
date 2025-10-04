@@ -1,0 +1,43 @@
+name: Deploy to Azure Container App
+
+on:
+  push:
+    branches:
+      - main  # trigger CD on pushes to main
+
+env:
+  CONTAINER_REGISTRY: budgettracker.azurecr.io
+  REPOSITORY: budget-tracker-repository
+  IMAGE: budget-tracker-server
+  VERSION: latest
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Build and push Docker image to ACR
+        uses: azure/docker-login@v1
+        with:
+          login-server: $CONTAINER_REGISTRY
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - run: |
+          docker build --platform linux/amd64 -t $CONTAINER_REGISTRY/$REPOSITORY/$IMAGE:$VERSION .
+          docker push $CONTAINER_REGISTRY/$REPOSITORY/$IMAGE:$VERSION
+
+      - name: Deploy to Azure Container App
+        run: |
+          az containerapp update \
+            --name hello-world-container-app \
+            --resource-group hello-world-resource-group \
+            --image budgettracker.azurecr.io/samples/hello-world:latest

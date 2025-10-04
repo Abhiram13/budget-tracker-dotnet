@@ -1,5 +1,6 @@
 # Use a build argument for the PAT
 ARG NUGET_PAT
+ARG ENV
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
@@ -12,6 +13,7 @@ COPY src/BudgetTracker.Infrastructure/ ./BudgetTracker.Infrastructure/
 
 # Re-declare the build argument to make it available in this stage
 ARG NUGET_PAT
+ARG ENV
 
 # Add the private package source using the build argument
 RUN dotnet nuget add source --name "github" "https://nuget.pkg.github.com/Abhiram13/index.json" --username Abhiram13 --password "${NUGET_PAT}" --store-password-in-clear-text
