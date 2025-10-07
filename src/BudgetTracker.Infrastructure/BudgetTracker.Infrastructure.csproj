@@ -13,6 +13,7 @@
         <TargetFramework>net8.0</TargetFramework>        
         <Nullable>enable</Nullable>        
         <WarningsAsErrors>CS8625</WarningsAsErrors> <!-- Cannot convert null literal to non-nullable reference type. -->
+        <NoWarn>IDE0090;IDE0130;IDE0290;IDE0300;CA1822;IDE0028;</NoWarn>
     </PropertyGroup>
 
 </Project>
