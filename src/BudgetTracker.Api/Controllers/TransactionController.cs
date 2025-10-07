@@ -16,10 +16,12 @@ namespace BudgetTracker.Api.Controllers;
 public class TransactionsController : ApiBaseController
 {
     private readonly TransactionService _service;
+    private readonly ILogger<TransactionsController> _logger;
 
-    public TransactionsController(TransactionService service)
+    public TransactionsController(TransactionService service, ILogger<TransactionsController> logger)
     {
         _service = service;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -37,6 +39,8 @@ public class TransactionsController : ApiBaseController
             Type = type,
             SortOrder = sort
         };
+
+        _logger.LogInformation("Get Transactions list Query Params: {@QueryParams}", queryParams);
 
         ListResult list = await _service.ListAsync(queryParams, ct);
         return new ApiResponse<ListResult>()
