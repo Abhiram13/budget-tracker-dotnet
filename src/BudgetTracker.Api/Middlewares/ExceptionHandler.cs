@@ -8,10 +8,12 @@ namespace BudgetTracker.Api.Middlewares;
 public class ExceptionHandlerMiddleware : ICustomMiddleware
 {
     private readonly RequestDelegate _next;
+    private readonly ILogger<ExceptionHandlerMiddleware> _logger;
 
-    public ExceptionHandlerMiddleware(RequestDelegate requestDelegate)
+    public ExceptionHandlerMiddleware(RequestDelegate requestDelegate, ILogger<ExceptionHandlerMiddleware> logger)
     {
         _next = requestDelegate;
+        _logger = logger;
     }
 
     public async Task InvokeAsync(HttpContext httpContext)
@@ -34,12 +36,11 @@ public class ExceptionHandlerMiddleware : ICustomMiddleware
                 Instance = $"{httpContext.Request.Method} {httpContext.Request.Path.Value}"
             };
 
-            // FIXME: Fix the response which is failing the test cases
-            ApiResponse<ProblemDetails> response = new ApiResponse<ProblemDetails>()
+            _logger.LogError(e, "Exception message: {@Message}. Problem Details: {@ProblemDetails}", e.Message, problemDetails);
+            ApiResponse<string> response = new ApiResponse<string>()
             {
                 StatusCode = HttpStatusCode.InternalServerError,
-                Message = "Something went wrong. Please verify logs for more details",
-                // Result = problemDetails
+                Message = "Something went wrong. Please verify logs for more details",                
             };
 
             await httpContext.Response.WriteAsJsonAsync(response);
