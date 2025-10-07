@@ -9,5 +9,5 @@ public interface IMongoContext
     IMongoCollection<Transaction> Transaction { get; }
     IMongoCollection<Category> Category { get; }
     IMongoCollection<Bank> Bank { get; }
-    // IMongoCollection<Due> Dues { get; }
+    IMongoCollection<Due> Dues { get; }
 }

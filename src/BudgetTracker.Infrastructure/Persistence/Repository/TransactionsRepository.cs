@@ -451,10 +451,10 @@ internal sealed class TransactionsByCategory
         _collection = collection;
         _params = queryParams;
         _categoryRepository = categoryRepository;
-        _UpdateDateFilter();
+        UpdateDateFilter();
     }
 
-    private void _UpdateDateFilter()
+    private void UpdateDateFilter()
     {
         if (!string.IsNullOrEmpty(_params?.Month) && !string.IsNullOrEmpty(_params?.Year))
         {
@@ -466,7 +466,7 @@ internal sealed class TransactionsByCategory
         }
     }
 
-    private BsonDocument _MatchStage()
+    private BsonDocument MatchStage()
     {
         BsonDocument pipeline = new BsonDocument() {
             {"$match", new BsonDocument {
@@ -480,7 +480,7 @@ internal sealed class TransactionsByCategory
         return pipeline;
     }
 
-    private BsonDocument _AddFieldsStage()
+    private BsonDocument AddFieldsStage()
     {
         BsonDocument pipeline = new BsonDocument {
             {"$addFields", new BsonDocument {
@@ -493,7 +493,7 @@ internal sealed class TransactionsByCategory
         return pipeline;
     }
 
-    private BsonDocument _LookUpStage()
+    private BsonDocument LookUpStage()
     {
         BsonDocument pipeline = new BsonDocument {
             {"$lookup", new BsonDocument {
@@ -507,7 +507,7 @@ internal sealed class TransactionsByCategory
         return pipeline;
     }
 
-    private BsonDocument[] _GroupAndProjectStage()
+    private BsonDocument[] GroupAndProjectStage()
     {
         BsonDocument[] pipelines = new[] {
             new BsonDocument {
@@ -562,14 +562,14 @@ internal sealed class TransactionsByCategory
     {
         BsonDocument[] pipelines = new[]
         {
-            _MatchStage(),
-            _AddFieldsStage(),
-            _LookUpStage(),
-            _GroupAndProjectStage()[0],
-            _GroupAndProjectStage()[1],
-            _GroupAndProjectStage()[2],
-            _GroupAndProjectStage()[3],
-            _GroupAndProjectStage()[4],
+            MatchStage(),
+            AddFieldsStage(),
+            LookUpStage(),
+            GroupAndProjectStage()[0],
+            GroupAndProjectStage()[1],
+            GroupAndProjectStage()[2],
+            GroupAndProjectStage()[3],
+            GroupAndProjectStage()[4],
         };
 
         List<CategoryResult> aggregate = await _collection.Aggregate<CategoryResult>(pipelines).ToListAsync();

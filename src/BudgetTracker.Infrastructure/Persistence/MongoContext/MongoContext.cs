@@ -23,4 +23,5 @@ public class MongoDBContext : IMongoContext
     public IMongoCollection<Transaction> Transaction => _database.GetCollection<Transaction>(Collection.TRANSACTIONS);
     public IMongoCollection<Category> Category => _database.GetCollection<Category>(Collection.CATEGORIES);
     public IMongoCollection<Bank> Bank => _database.GetCollection<Bank>(Collection.BANKS);
+    public IMongoCollection<Due> Dues => _database.GetCollection<Due>(Collection.DUES);
 }

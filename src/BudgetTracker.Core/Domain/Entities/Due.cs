@@ -1,0 +1,31 @@
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+using BudgetTracker.Core.Domain.Enums;
+using MongoDB.Bson.Serialization.Attributes;
+
+namespace BudgetTracker.Core.Domain.Entities;
+
+public class Due : MongoObject
+{
+    [JsonPropertyName("payee"), BsonElement("payee"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public string Payee { get; set; } = string.Empty;
+
+    [JsonPropertyName("principal_amount"), BsonElement("principal_amount")]
+    public double PrincipalAmount { get; set; }
+
+    [Required, JsonPropertyName("description"), BsonElement("description")]
+    public string Description { get; set; } = string.Empty;
+
+    [JsonPropertyName("start_date"), BsonElement("start_date")]
+    public DateTime StartDate { get; set; }
+
+    [JsonPropertyName("end_date"), BsonElement("end_date")]
+    public DateTime EndDate { get; set; }
+
+    [JsonPropertyName("comment"), BsonElement("comment")]
+    public string Comment { get; set; } = string.Empty;
+
+    [JsonPropertyName("status"), BsonElement("status")]
+    public DueStatus Status { get; set; } = DueStatus.Active;
+}

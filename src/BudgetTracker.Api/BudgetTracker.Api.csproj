@@ -4,10 +4,11 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <NoWarn>IDE0290</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Abhiram.Abstractions.Logging" Version="1.0.1" />
+        <PackageReference Include="Abhiram.Abstractions.Logging" Version="1.1.0" />
         <PackageReference Include="Abhiram.Extensions.DotEnv" Version="1.1.1" />
         <PackageReference Include="Abhiram.Secrets.Providers" Version="2.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.12" />
