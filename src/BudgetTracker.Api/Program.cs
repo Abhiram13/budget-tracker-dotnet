@@ -19,7 +19,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
 
-builder.AddConsoleGoogleSeriLog();
+builder.AddConsoleGoogleSeriLog(template: "[{Timestamp:HH:mm:ss} {Level:u3}] [TraceId: {trace_id}] [Source: {SourceContext}] {Message:lj}{NewLine}{Exception}");
 builder.Services.AddRouting();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<TransactionService>();
@@ -70,6 +70,7 @@ app.MapHealthChecks("/health", new HealthCheckOptions () {
     },
 });
 app.UseMiddleware<ExceptionHandlerMiddleware>();
+app.UseMiddleware<TraceIdMiddleware>();
 app.UseCors();
 app.MapControllers();
 app.Run();
