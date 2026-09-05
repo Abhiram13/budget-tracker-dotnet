@@ -1,6 +1,6 @@
-using BudgetTracker.Core.Application.Interfaces;
+using BudgetTracker.Interfaces;
 
-namespace BudgetTracker.Api.Middlewares;
+namespace BudgetTracker.Middlewares;
 
 public sealed class TraceIdMiddleware : ICustomMiddleware
 {

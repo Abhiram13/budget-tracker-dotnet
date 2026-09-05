@@ -1,4 +1,4 @@
-namespace BudgetTracker.Core.Domain.Enums;
+namespace BudgetTracker.Enums;
 
 public enum TransactionType
 {

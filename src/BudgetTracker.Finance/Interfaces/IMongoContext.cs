@@ -1,7 +1,7 @@
-using BudgetTracker.Core.Domain.Entities;
+using BudgetTracker.Entities;
 using MongoDB.Driver;
 
-namespace BudgetTracker.Core.Application.Interfaces;
+namespace BudgetTracker.Interfaces;
 
 public interface IMongoContext
 {

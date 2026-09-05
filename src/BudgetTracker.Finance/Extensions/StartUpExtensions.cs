@@ -1,18 +1,18 @@
 using System.Net;
 using Abhiram.Secrets.Providers;
 using Abhiram.Secrets.Providers.Interface;
-using BudgetTracker.Api.Middlewares;
-using BudgetTracker.Api.Workers;
-using BudgetTracker.Core.Application.Interfaces;
-using BudgetTracker.Core.Application.Services;
-using BudgetTracker.Core.Domain.ValueObject;
-using BudgetTracker.Infrastructure.Persistence;
-using BudgetTracker.Infrastructure.Repository;
-using BudgetTracker.Infrastructure.Security;
+using BudgetTracker.Middlewares;
+using BudgetTracker.Workers;
+using BudgetTracker.Interfaces;
+using BudgetTracker.Services;
+using BudgetTracker.ValueObject;
+using BudgetTracker.Context;
+using BudgetTracker.Repository;
+using BudgetTracker.Security;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace BudgetTracker.Api.Extensions;
+namespace BudgetTracker.Extensions;
 
 public static class ServiceCollectionExtensions
 {

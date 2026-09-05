@@ -1,9 +1,9 @@
 using System.Net;
-using BudgetTracker.Core.Application.Services;
-using BudgetTracker.Core.Domain.ValueObject;
+using BudgetTracker.Services;
+using BudgetTracker.ValueObject;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BudgetTracker.Api.Controllers;
+namespace BudgetTracker.Controllers;
 
 [ApiController]
 public class DuesController : ApiBaseController

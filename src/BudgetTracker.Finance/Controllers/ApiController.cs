@@ -1,8 +1,8 @@
-using BudgetTracker.Infrastructure.Security;
+using BudgetTracker.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BudgetTracker.Api.Controllers;
+namespace BudgetTracker.Controllers;
 
 [ApiController]
 [Authorize(AuthenticationSchemes = ApiKeySchemaOptions.DefaultSchema)]

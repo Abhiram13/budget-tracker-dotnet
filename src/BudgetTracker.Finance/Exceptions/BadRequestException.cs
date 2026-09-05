@@ -1,6 +1,6 @@
 using System;
 
-namespace BudgetTracker.Core.Application.Exceptions;
+namespace BudgetTracker.Exceptions;
 
 public class BadRequestException : Exception
 {

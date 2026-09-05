@@ -1,4 +1,4 @@
-namespace BudgetTracker.Core.Domain.Enums;
+namespace BudgetTracker.Enums;
 
 /// <summary>
 /// Provides constant string values for various collection names in MongoDB

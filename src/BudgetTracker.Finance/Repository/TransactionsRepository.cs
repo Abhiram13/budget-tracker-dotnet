@@ -4,19 +4,19 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using BudgetTracker.Core.Application.Interfaces;
-using BudgetTracker.Core.Domain.Entities;
-using BudgetTracker.Core.Domain.Enums;
-using BudgetTracker.Core.Domain.ValueObject.Transaction;
-using BudgetTracker.Core.Domain.ValueObject.Transaction.List;
+using BudgetTracker.Interfaces;
+using BudgetTracker.Entities;
+using BudgetTracker.Enums;
+using BudgetTracker.ValueObject.Transaction;
+using BudgetTracker.ValueObject.Transaction.List;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-using BankResult = BudgetTracker.Core.Domain.ValueObject.Transaction.ByBank.ResultByBank;
-using CategoryResult = BudgetTracker.Core.Domain.ValueObject.Transaction.ByCategory.Result;
-using ListResult = BudgetTracker.Core.Domain.ValueObject.Transaction.List.Result;
+using BankResult = BudgetTracker.ValueObject.Transaction.ByBank.ResultByBank;
+using CategoryResult = BudgetTracker.ValueObject.Transaction.ByCategory.Result;
+using ListResult = BudgetTracker.ValueObject.Transaction.List.Result;
 
-namespace BudgetTracker.Infrastructure.Repository;
+namespace BudgetTracker.Repository;
 
 public class TransactionRepository : MongoRepository<Transaction>, ITransactionRepository
 {

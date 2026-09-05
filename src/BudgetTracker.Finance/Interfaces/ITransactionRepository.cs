@@ -1,14 +1,14 @@
 using System.Threading;
 using System.Threading.Tasks;
-using BudgetTracker.Core.Domain.Entities;
-using BudgetTracker.Core.Domain.ValueObject.Transaction;
-using BudgetTracker.Core.Domain.ValueObject.Transaction.List;
+using BudgetTracker.Entities;
+using BudgetTracker.ValueObject.Transaction;
+using BudgetTracker.ValueObject.Transaction.List;
 
-using BankResult = BudgetTracker.Core.Domain.ValueObject.Transaction.ByBank.ResultByBank;
-using CategoryResult = BudgetTracker.Core.Domain.ValueObject.Transaction.ByCategory.Result;
-using ListResult = BudgetTracker.Core.Domain.ValueObject.Transaction.List.Result;
+using BankResult = BudgetTracker.ValueObject.Transaction.ByBank.ResultByBank;
+using CategoryResult = BudgetTracker.ValueObject.Transaction.ByCategory.Result;
+using ListResult = BudgetTracker.ValueObject.Transaction.List.Result;
 
-namespace BudgetTracker.Core.Application.Interfaces;
+namespace BudgetTracker.Interfaces;
 
 public interface ITransactionRepository : IMongoDbRepository<Transaction>
 {

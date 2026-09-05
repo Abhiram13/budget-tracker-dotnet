@@ -1,12 +1,12 @@
 using System.Net;
-using BudgetTracker.Core.Application.Exceptions;
-using BudgetTracker.Core.Application.Services;
-using BudgetTracker.Core.Domain.Entities;
-using BudgetTracker.Core.Domain.ValueObject;
+using BudgetTracker.Exceptions;
+using BudgetTracker.Services;
+using BudgetTracker.Entities;
+using BudgetTracker.ValueObject;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace BudgetTracker.Api.Controllers;
+namespace BudgetTracker.Controllers;
 
 [ApiController]
 public class BankController : ApiBaseController

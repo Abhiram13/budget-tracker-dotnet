@@ -1,17 +1,17 @@
 using IntegrationTests.Definations.Transactions;
-using BudgetTracker.Core.Domain.ValueObject.Transaction.ByCategory;
-using BudgetTracker.Core.Domain.Entities;
-using BudgetTracker.Core.Domain.Enums;
+using BudgetTracker.ValueObject.Transaction.ByCategory;
+using BudgetTracker.Entities;
+using BudgetTracker.Enums;
 
-using Result = BudgetTracker.Core.Domain.ValueObject.Transaction.ByBank.ResultByBank;
-using TransactionsList = BudgetTracker.Core.Domain.ValueObject.Transaction.TransactionsList;
-using ByCategoryData = BudgetTracker.Core.Domain.ValueObject.Transaction.ByCategory.CategoryData;
+using Result = BudgetTracker.ValueObject.Transaction.ByBank.ResultByBank;
+using TransactionsList = BudgetTracker.ValueObject.Transaction.TransactionsList;
+using ByCategoryData = BudgetTracker.ValueObject.Transaction.ByCategory.CategoryData;
 
-/// <summary>
-/// <see href="https://www.milanjovanovic.tech/blog/creating-data-driven-tests-with-xunit">Creating Data-Driven Tests With xUnit</see>
-/// </summary>
 namespace IntegrationTests.Data.Transactions
 {
+    /// <summary>
+    /// <see href="https://www.milanjovanovic.tech/blog/creating-data-driven-tests-with-xunit">Creating Data-Driven Tests With xUnit</see>
+    /// </summary>
     public abstract class TheoryTestData<T> : TheoryData<T> where T : class
     {
         protected readonly string _categoryId = "665aa29b930ad7888c6766fa";

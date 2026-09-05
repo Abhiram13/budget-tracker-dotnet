@@ -1,7 +1,7 @@
 using Abhiram.Secrets.Providers.Interface;
-using BudgetTracker.Core.Domain.ValueObject;
+using BudgetTracker.ValueObject;
 
-namespace BudgetTracker.Api.Workers;
+namespace BudgetTracker.Workers;
 
 /// <summary>
 /// A hosted service responsible for retrieving secrets at application startup
