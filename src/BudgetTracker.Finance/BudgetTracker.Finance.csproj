@@ -16,4 +16,8 @@
     <PackageReference Include="Abhiram.Secrets.Providers" Version="1.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include=".googlecloud\cloudbuild.yaml" />
+  </ItemGroup>
+
 </Project>
