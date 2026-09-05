@@ -24,8 +24,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\BudgetTracker.Core\BudgetTracker.Core.csproj" />
-      <ProjectReference Include="..\..\src\BudgetTracker.Api\BudgetTracker.Api.csproj" />
+      <ProjectReference Include="../Src\BudgetTracker.Core\BudgetTracker.Core.csproj" />
+      <ProjectReference Include="../Src\BudgetTracker.Api\BudgetTracker.Api.csproj" />
     </ItemGroup>
 
 </Project>
