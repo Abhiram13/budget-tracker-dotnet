@@ -38,7 +38,6 @@ public static class ServiceCollectionExtensions
         services.AddRouting();
         services.AddAuthentication().AddScheme<ApiKeySchemaOptions, ApiKeyHandler>(ApiKeySchemaOptions.DefaultSchema, _ => { });
         services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen();
         services.AddMemoryCache();
         services.AddHealthChecks();
         services.AddCors(opt => opt.AddDefaultPolicy(pol => pol.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
