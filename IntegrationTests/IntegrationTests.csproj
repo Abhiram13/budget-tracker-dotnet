@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
@@ -24,8 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="../Src\BudgetTracker.Core\BudgetTracker.Core.csproj" />
-      <ProjectReference Include="../Src\BudgetTracker.Api\BudgetTracker.Api.csproj" />
+      <ProjectReference Include="..\Src\BudgetTracker.Finance\BudgetTracker.Finance.csproj" />
     </ItemGroup>
 
 </Project>
