@@ -1,9 +1,9 @@
 using System.Net;
 using Abhiram.Secrets.Providers.Interface;
-using BudgetTracker.Core.Domain.ValueObject;
+using BudgetTracker.ValueObject;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BudgetTracker.Api.Controllers;
+namespace BudgetTracker.Controllers;
 
 [ApiController]
 [Route("")]

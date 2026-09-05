@@ -1,10 +1,10 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using BudgetTracker.Core.Domain.Enums;
+using BudgetTracker.Enums;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace BudgetTracker.Core.Domain.Entities;
+namespace BudgetTracker.Entities;
 
 public class Due : MongoObject
 {

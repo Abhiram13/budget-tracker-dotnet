@@ -1,8 +1,8 @@
-using BudgetTracker.Core.Domain.Entities;
+using BudgetTracker.Entities;
 
-using TransactionsList = BudgetTracker.Core.Domain.ValueObject.Transaction.TransactionsList;
-using ByBankResults = BudgetTracker.Core.Domain.ValueObject.Transaction.ByBank.ResultByBank;
-using ByCategoryData = BudgetTracker.Core.Domain.ValueObject.Transaction.ByCategory.CategoryData;
+using TransactionsList = BudgetTracker.ValueObject.Transaction.TransactionsList;
+using ByBankResults = BudgetTracker.ValueObject.Transaction.ByBank.ResultByBank;
+using ByCategoryData = BudgetTracker.ValueObject.Transaction.ByCategory.CategoryData;
 
 namespace IntegrationTests.Definations.Transactions
 {

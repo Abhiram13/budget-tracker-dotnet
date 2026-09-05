@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BudgetTracker.Core.Application.Interfaces;
-using BudgetTracker.Core.Domain.Entities;
+using BudgetTracker.Interfaces;
+using BudgetTracker.Entities;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace BudgetTracker.Infrastructure.Repository;
+namespace BudgetTracker.Repository;
 
 public abstract class MongoRepository<T> : IMongoDbRepository<T> where T : MongoObject
 {

@@ -1,7 +1,7 @@
 using System.Net;
 using System.Text.Json.Serialization;
 
-namespace BudgetTracker.Core.Domain.ValueObject;
+namespace BudgetTracker.ValueObject;
 
 public class ApiResponse<T> where T : class
 {

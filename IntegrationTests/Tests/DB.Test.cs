@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Abhiram.Extensions.DotEnv;
-using BudgetTracker.Core.Domain.Entities;
-using BudgetTracker.Core.Domain.ValueObject;
+using BudgetTracker.Entities;
+using BudgetTracker.ValueObject;
 
 namespace IntegrationTests;
 

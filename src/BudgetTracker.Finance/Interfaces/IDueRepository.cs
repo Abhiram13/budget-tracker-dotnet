@@ -1,5 +1,5 @@
-using BudgetTracker.Core.Domain.Entities;
+using BudgetTracker.Entities;
 
-namespace BudgetTracker.Core.Application.Interfaces;
+namespace BudgetTracker.Interfaces;
 
 public interface IDueRepository : IMongoDbRepository<Due> { }

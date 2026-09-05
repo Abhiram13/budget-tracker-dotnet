@@ -1,7 +1,7 @@
-using BudgetTracker.Core.Application.Interfaces;
-using BudgetTracker.Core.Domain.Entities;
+using BudgetTracker.Interfaces;
+using BudgetTracker.Entities;
 
-namespace BudgetTracker.Infrastructure.Repository;
+namespace BudgetTracker.Repository;
 
 public class DueRepository : MongoRepository<Due>, IDueRepository
 {

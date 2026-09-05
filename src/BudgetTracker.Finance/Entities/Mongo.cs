@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace BudgetTracker.Core.Domain.Entities;
+namespace BudgetTracker.Entities;
 
 public abstract class MongoObject
 {

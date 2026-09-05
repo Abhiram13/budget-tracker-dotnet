@@ -1,10 +1,10 @@
-using BudgetTracker.Core.Application.Interfaces;
-using BudgetTracker.Core.Domain.Enums;
-using BudgetTracker.Core.Domain.Entities;
-using BudgetTracker.Core.Domain.ValueObject;
+using BudgetTracker.Interfaces;
+using BudgetTracker.Enums;
+using BudgetTracker.Entities;
+using BudgetTracker.ValueObject;
 using MongoDB.Driver;
 
-namespace BudgetTracker.Infrastructure.Persistence;
+namespace BudgetTracker.Context;
 
 public class MongoDBContext : IMongoContext
 {

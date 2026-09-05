@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace BudgetTracker.Core.Application.Interfaces;
+namespace BudgetTracker.Interfaces;
 
 public interface ICustomMiddleware
 {

@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BudgetTracker.Core.Domain.Entities;
+using BudgetTracker.Entities;
 using MongoDB.Driver;
 
-namespace BudgetTracker.Core.Application.Interfaces;
+namespace BudgetTracker.Interfaces;
 
 public interface IMongoDbRepository<T> where T : class
 {

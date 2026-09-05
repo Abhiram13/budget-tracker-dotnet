@@ -1,9 +1,9 @@
-using BudgetTracker.Core.Application.Interfaces;
+using BudgetTracker.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using BudgetTracker.Core.Domain.ValueObject;
+using BudgetTracker.ValueObject;
 
-namespace BudgetTracker.Api.Middlewares;
+namespace BudgetTracker.Middlewares;
 
 public class ExceptionHandlerMiddleware : ICustomMiddleware
 {

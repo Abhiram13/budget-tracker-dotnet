@@ -1,4 +1,4 @@
-namespace BudgetTracker.Core.Domain.ValueObject;
+namespace BudgetTracker.ValueObject;
 
 public class AppSecrets
 {

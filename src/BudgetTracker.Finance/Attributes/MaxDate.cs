@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace BudgetTracker.Core.Domain.Attributes;
+namespace BudgetTracker.Attributes;
 
 public class MaxDateAttribute : ValidationAttribute
 {

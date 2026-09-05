@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace BudgetTracker.Core.Domain.ValueObject.Transaction.ByBank;
+namespace BudgetTracker.ValueObject.Transaction.ByBank;
 
 public class ResultByBank
 {

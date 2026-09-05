@@ -2,12 +2,12 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using BudgetTracker.Core.Domain.ValueObject;
+using BudgetTracker.ValueObject;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace BudgetTracker.Infrastructure.Security;
+namespace BudgetTracker.Security;
 
 public class ApiKeySchemaOptions : AuthenticationSchemeOptions
 {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace BudgetTracker.Core.Domain.ValueObject.Transaction.List;
+namespace BudgetTracker.ValueObject.Transaction.List;
 
 public class QueryParams
 {

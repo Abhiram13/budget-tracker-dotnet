@@ -1,16 +1,16 @@
 using System.Net;
-using BudgetTracker.Core.Application.Services;
-using BudgetTracker.Core.Domain.Entities;
-using BudgetTracker.Core.Domain.ValueObject;
-using BudgetTracker.Core.Domain.ValueObject.Transaction.List;
+using BudgetTracker.Services;
+using BudgetTracker.Entities;
+using BudgetTracker.ValueObject;
+using BudgetTracker.ValueObject.Transaction.List;
 using Microsoft.AspNetCore.Mvc;
 
-using ListResult = BudgetTracker.Core.Domain.ValueObject.Transaction.List.Result;
-using BankResult = BudgetTracker.Core.Domain.ValueObject.Transaction.ByBank.ResultByBank;
-using CategoryResult = BudgetTracker.Core.Domain.ValueObject.Transaction.ByCategory.Result;
-using BudgetTracker.Core.Domain.ValueObject.Transaction;
+using ListResult = BudgetTracker.ValueObject.Transaction.List.Result;
+using BankResult = BudgetTracker.ValueObject.Transaction.ByBank.ResultByBank;
+using CategoryResultt = BudgetTracker.ValueObject.Transaction.ByCategory.Result;
+using BudgetTracker.ValueObject.Transaction;
 
-namespace BudgetTracker.Api.Controllers;
+namespace BudgetTracker.Controllers;
 
 [ApiController]
 public class TransactionsController : ApiBaseController
@@ -75,14 +75,14 @@ public class TransactionsController : ApiBaseController
     }
 
     [HttpGet("category/{categoryId}")]
-    public async Task<ApiResponse<CategoryResult>> GetByCategoryAsync(string categoryId, [FromQuery] string? month, [FromQuery] string? year)
+    public async Task<ApiResponse<CategoryResultt>> GetByCategoryAsync(string categoryId, [FromQuery] string? month, [FromQuery] string? year)
     {
-        CategoryResult result = await _service.ListByCategoryAsync(categoryId, new QueryParams()
+        CategoryResultt result = await _service.ListByCategoryAsync(categoryId, new QueryParams()
         {
             Month = month,
             Year = year
         });
-        return new ApiResponse<CategoryResult>()
+        return new ApiResponse<CategoryResultt>()
         {
             StatusCode = HttpStatusCode.OK,
             Result = result,

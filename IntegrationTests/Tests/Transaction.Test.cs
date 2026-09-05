@@ -5,17 +5,17 @@ using System.Text.Json;
 using IntegrationTests.Data.Transactions;
 using IntegrationTests.Definations.Transactions;
 using IntegrationTests.Utils;
-using BudgetTracker.Core.Domain.ValueObject;
-using BudgetTracker.Core.Domain.ValueObject.Transaction.List;
-using BudgetTracker.Core.Domain.ValueObject.Transaction;
-using BudgetTracker.Core.Domain.Entities;
+using BudgetTracker.ValueObject;
+using BudgetTracker.ValueObject.Transaction.List;
+using BudgetTracker.ValueObject.Transaction;
+using BudgetTracker.Entities;
 
-using TransactionByCategoryResult = BudgetTracker.Core.Domain.ValueObject.Transaction.ByCategory.Result;
-using CategoryTypeTransactionsResult = BudgetTracker.Core.Domain.ValueObject.Transaction.List.Result;
-using TransactionsByCategoryId = BudgetTracker.Core.Domain.ValueObject.Transaction.ByCategory.CategoryData;
-using ByDateTransactions = BudgetTracker.Core.Domain.ValueObject.Transaction.ByDateTransactions;
-using ByBankResult = BudgetTracker.Core.Domain.ValueObject.Transaction.ByBank.ResultByBank;
-using CategoryData = BudgetTracker.Core.Domain.ValueObject.Transaction.List.CategoryData;
+using TransactionByCategoryResult = BudgetTracker.ValueObject.Transaction.ByCategory.Result;
+using CategoryTypeTransactionsResult = BudgetTracker.ValueObject.Transaction.List.Result;
+using TransactionsByCategoryId = BudgetTracker.ValueObject.Transaction.ByCategory.CategoryData;
+using ByDateTransactions = BudgetTracker.ValueObject.Transaction.ByDateTransactions;
+using ByBankResult = BudgetTracker.ValueObject.Transaction.ByBank.ResultByBank;
+using CategoryData = BudgetTracker.ValueObject.Transaction.List.CategoryData;
 
 namespace IntegrationTests;
 

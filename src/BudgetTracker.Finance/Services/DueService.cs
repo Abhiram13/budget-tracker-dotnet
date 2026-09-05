@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BudgetTracker.Core.Application.Interfaces;
-using BudgetTracker.Core.Domain.Entities;
+using BudgetTracker.Interfaces;
+using BudgetTracker.Entities;
 using MongoDB.Driver;
 
-namespace BudgetTracker.Core.Application.Services;
+namespace BudgetTracker.Services;
 
 public class DueService
 {
