@@ -30,18 +30,19 @@ public static class ServiceCollectionExtension
         
         private IServiceCollection AddDependencyServices()
         {
-            serviceCollection.AddScoped<CategoryService>();
-            serviceCollection.AddScoped<TransactionService>();
-            serviceCollection.AddScoped<BankService>();
-            serviceCollection.AddScoped<DueService>();
-            serviceCollection.AddSingleton<AppSecrets>();
-            serviceCollection.AddHostedService<SecretHostService>();
-            serviceCollection.AddSingleton<ICategoryRepository, CategoryRepository>();
-            serviceCollection.AddSingleton<IBankRepository, BankRepository>();
-            serviceCollection.AddSingleton<ITransactionRepository, TransactionRepository>();
-            serviceCollection.AddSingleton<IDueRepository, DueRepository>();
-            serviceCollection.AddSingleton<IMongoContext, MongoDBContext>();
-            serviceCollection.AddSingleton<ISecretManager, SecretManagerService>();
+            serviceCollection
+                .AddScoped<CategoryService>()
+                .AddScoped<TransactionService>()
+                .AddScoped<BankService>()
+                .AddScoped<DueService>()
+                .AddSingleton<AppSecrets>()
+                .AddHostedService<SecretHostService>()
+                .AddSingleton<ICategoryRepository, CategoryRepository>()
+                .AddSingleton<IBankRepository, BankRepository>()
+                .AddSingleton<ITransactionRepository, TransactionRepository>()
+                .AddSingleton<IDueRepository, DueRepository>()
+                .AddSingleton<IMongoContext, MongoDBContext>()
+                .AddSingleton<ISecretManager, SecretManagerService>();
 
             return serviceCollection;
         }
@@ -65,7 +66,8 @@ public static class ServiceCollectionExtension
 
         private IServiceCollection AddAuthConfiguration()
         {
-            serviceCollection.AddAuthentication()
+            serviceCollection
+                .AddAuthentication()
                 .AddScheme<ApiKeySchemaOptions, ApiKeyHandler>(ApiKeySchemaOptions.DefaultSchema, _ => { });
 
             return serviceCollection;
