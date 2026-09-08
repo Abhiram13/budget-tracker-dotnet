@@ -1,0 +1,8 @@
+﻿version: "3.9"
+
+services:
+    finance-server:
+        image: finance-backend-server
+        build:
+            context: .
+            dockerfile: Src/BudgetTracker.Finance/Dockerfile
