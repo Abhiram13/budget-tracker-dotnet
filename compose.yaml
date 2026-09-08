@@ -1,24 +1,8 @@
 ﻿version: "3.9"
 
 services:
-#    finance-server:
-#        image: finance-backend-server
-#        build:
-#            context: .
-#            dockerfile: Src/BudgetTracker.Finance/Dockerfile
-    
-    mongodb:
-        image: mongodb/mongodb-atlas-local
-        hostname: mongodb
-        environment:
-            - MONGODB_INITDB_ROOT_USERNAME=user
-            - MONGODB_INITDB_ROOT_PASSWORD=pass
-            - MONGOT_LOG_FILE=/dev/stderr
-            - RUNNER_LOG_FILE=/dev/stderr
-        ports:
-            - 27017:27017
-#        volumes:
-#            - mongodb-v:/data/db
-
-#volumes:
-#    mongodb-v:
+    finance-server:
+        image: finance-backend-server
+        build:
+            context: .
+            dockerfile: Src/BudgetTracker.Finance/Dockerfile
