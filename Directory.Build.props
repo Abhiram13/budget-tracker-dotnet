@@ -1,0 +1,17 @@
+<Project>
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+        <NoWarn>IDE0130;IDE0290;CA1822;IDE0090;CA2253;IDE0300;IDE0063;IDE0350;IDE0305;CA2254;CS1591;IDE0300;IDE0028;IDE0090;</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Using Include="System" />
+        <Using Include="System.Linq" />
+        <Using Include="System.Collections.Generic" />
+        <Using Include="System.Threading.Tasks" />
+        <Using Include="System.Text.Json.Serialization" />
+    </ItemGroup>
+</Project>
