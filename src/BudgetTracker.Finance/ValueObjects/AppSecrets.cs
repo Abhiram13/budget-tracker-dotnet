@@ -1,5 +1,6 @@
 namespace BudgetTracker.ValueObject;
 
+[Obsolete(message: "Use MongoSecrets instead")]
 public class AppSecrets
 {
     public required string UserName { get; set; }
