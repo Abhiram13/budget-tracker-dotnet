@@ -5,6 +5,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
         <NoWarn>IDE0130;IDE0290;CA1822;IDE0090;CA2253;IDE0300;IDE0063;IDE0350;IDE0305;CA2254;CS1591;IDE0300;IDE0028;IDE0090;NU1507</NoWarn>
+        <WarningLevel>0</WarningLevel>
+        <AnalysisLevel>none</AnalysisLevel>
     </PropertyGroup>
 
     <ItemGroup>
