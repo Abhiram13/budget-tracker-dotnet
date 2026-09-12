@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Abhiram.Extensions.DotEnv;
 using BudgetTracker.Entities;
-using BudgetTracker.ValueObject;
+using BudgetTracker.Models;
 
 namespace IntegrationTests;
 
@@ -23,10 +23,10 @@ public class MongoDBFixture : IDisposable
     public MongoDBFixture()
     {
         SetEnvironmentVariables();
-        AppSecrets secrets = GetEnvironmentVariables();
+        MongoSecrets secrets = GetEnvironmentVariables();
         _runner = MongoDbRunner.Start();
-        _client = new MongoClient($"mongodb+srv://{secrets.UserName}:{secrets.PassWord}@{secrets.Host}/?retryWrites=true&w=majority&appName=Trsnactions");
-        Database = _client.GetDatabase($"{secrets.DataBase}");
+        _client = new MongoClient($"mongodb+srv://{secrets.Username}:{secrets.Password}@{secrets.Host}/?retryWrites=true&w=majority&appName=Trsnactions");
+        Database = _client.GetDatabase($"{secrets.Database}");
     }
 
     private void SetEnvironmentVariables()
@@ -38,15 +38,16 @@ public class MongoDBFixture : IDisposable
         DotEnvironmentVariables.Load();
     }
 
-    private AppSecrets GetEnvironmentVariables()
+    private MongoSecrets GetEnvironmentVariables()
     {
-        return new AppSecrets
+        return new MongoSecrets
         {
-            ApiKey = Environment.GetEnvironmentVariable("API_KEY"),
-            DataBase = Environment.GetEnvironmentVariable("DB"),
+            // ApiKey = Environment.GetEnvironmentVariable("API_KEY"),
+            Database = Environment.GetEnvironmentVariable("DB"),
             Host = Environment.GetEnvironmentVariable("HOST"),
-            PassWord = Environment.GetEnvironmentVariable("PASSWORD"),
-            UserName = Environment.GetEnvironmentVariable("USERNAME"),
+            Password = Environment.GetEnvironmentVariable("PASSWORD"),
+            Username = Environment.GetEnvironmentVariable("USERNAME"),
+            AppName = ""
         };
     }
 

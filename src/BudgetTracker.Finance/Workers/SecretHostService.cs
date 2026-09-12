@@ -1,5 +1,5 @@
 using Abhiram.Secrets.Providers.Interface;
-using BudgetTracker.ValueObject;
+using BudgetTracker.Models;
 
 namespace BudgetTracker.Workers;
 
@@ -7,6 +7,7 @@ namespace BudgetTracker.Workers;
 /// A hosted service responsible for retrieving secrets at application startup
 /// and populating the <see cref="AppSecrets"/> singleton with those values.
 /// </summary>
+[Obsolete(message: "Secrets will be loaded from configuration", error: true)]
 public class SecretHostService : IHostedService
 {
     private readonly ISecretManager _secretManager;
@@ -33,11 +34,11 @@ public class SecretHostService : IHostedService
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        _appSecrets.DataBase = await _secretManager.GetSecretAsync("DB");
-        _appSecrets.Host = await _secretManager.GetSecretAsync("HOST");
-        _appSecrets.PassWord = await _secretManager.GetSecretAsync("PASSWORD");
-        _appSecrets.UserName = await _secretManager.GetSecretAsync("USERNAME");
-        _appSecrets.ApiKey = await _secretManager.GetSecretAsync("API_KEY");
+        // _appSecrets.DataBase = await _secretManager.GetSecretAsync("DB");
+        // _appSecrets.Host = await _secretManager.GetSecretAsync("HOST");
+        // _appSecrets.PassWord = await _secretManager.GetSecretAsync("PASSWORD");
+        // _appSecrets.UserName = await _secretManager.GetSecretAsync("USERNAME");
+        // _appSecrets.ApiKey = await _secretManager.GetSecretAsync("API_KEY");
     }
 
     /// <summary>
