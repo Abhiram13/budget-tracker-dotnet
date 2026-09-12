@@ -17,11 +17,16 @@ namespace BudgetTracker.Extensions;
 
 public static class ServiceCollectionExtension
 {
+    private static IConfiguration _configuration = default!;
+    
     extension(IServiceCollection serviceCollection)
     {
-        public IServiceCollection AddServiceCollection()
+        public IServiceCollection AddServiceCollection(IConfiguration configuration)
         {
+            _configuration = configuration;
+            
             serviceCollection
+                .AddMongoSecrets()
                 .AddDependencyServices()
                 .AddControllerConfiguration()
                 .AddAuthConfiguration()
@@ -33,18 +38,17 @@ public static class ServiceCollectionExtension
         private IServiceCollection AddDependencyServices()
         {
             serviceCollection
-                .AddScoped<CategoryService>()
-                .AddScoped<TransactionService>()
-                .AddScoped<BankService>()
-                .AddScoped<DueService>()
-                .AddSingleton<AppSecrets>()
                 .AddSingleton<MongoSecrets>(provider => provider.GetRequiredService<IOptions<MongoSecrets>>().Value)
-                .AddHostedService<SecretHostService>()
                 .AddSingleton<ICategoryRepository, CategoryRepository>()
                 .AddSingleton<IBankRepository, BankRepository>()
                 .AddSingleton<ITransactionRepository, TransactionRepository>()
                 .AddSingleton<IDueRepository, DueRepository>()
                 .AddSingleton<IMongoContext, MongoDBContext>()
+                .AddScoped<CategoryService>()
+                .AddScoped<TransactionService>()
+                .AddScoped<BankService>()
+                .AddScoped<DueService>()
+                .AddSingleton<AppSecrets>()
                 .AddSingleton<ISecretManager, SecretManagerService>();
 
             return serviceCollection;
@@ -95,6 +99,13 @@ public static class ServiceCollectionExtension
                 .BindConfiguration("Mongo")
                 .ValidateDataAnnotations()
                 .ValidateOnStart();
+            
+            return serviceCollection;
+        }
+
+        private IServiceCollection AddAppSecrets()
+        {
+            serviceCollection.AddOptions<AppSecrets>().Bind(_configuration).ValidateOnStart();
             
             return serviceCollection;
         }

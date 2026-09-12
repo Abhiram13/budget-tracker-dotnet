@@ -6,3 +6,15 @@ services:
         build:
             context: .
             dockerfile: Src/BudgetTracker.Finance/Dockerfile
+            args:
+                NUGET_PAT: ${NUGET_PAT}
+        ports:
+            - "3000:3000"
+        environment:
+            PORT: 3000
+            ENV: Development
+        volumes:
+            - type: bind
+              source: /Volumes/SecureDisk/BudgetTracker-Mongo/secrets.json
+              target: /secrets/mongo-secrets.json
+              read_only: true

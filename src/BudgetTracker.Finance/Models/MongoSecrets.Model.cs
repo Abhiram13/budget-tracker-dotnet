@@ -15,4 +15,7 @@ public record MongoSecrets
     
     [Required]
     public required string Database { get; init; }
+    
+    [Required]
+    public required string AppName { get; init; }
 }

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using BudgetTracker.ValueObject;
+using BudgetTracker.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -34,7 +34,7 @@ public class ApiKeyHandler : AuthenticationHandler<ApiKeySchemaOptions>
         }
 
         string? HEADER_API_KEY = Request.Headers[ApiKeySchemaOptions.HeaderName];
-        string? API_KEY = _secret.ApiKey;
+        string? API_KEY = _secret.Apikey;
 
         if (HEADER_API_KEY != API_KEY)
         {
