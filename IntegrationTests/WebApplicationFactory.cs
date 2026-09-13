@@ -17,8 +17,10 @@ public class FinanceWebApplicationFactory : WebApplicationFactory<Program>
         builder.UseEnvironment("Test");
         builder.ConfigureAppConfiguration((context, config) =>
         {
-            config.SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: false, reloadOnChange: true)
+            string configJsonPath = Path.Combine("/Volumes/SecureDisk/BudgetTracker-Mongo/", "secrets-test.json");
+            
+            config
+                .AddJsonFile(configJsonPath, optional: false, reloadOnChange: true)
                 .AddSecrets(environment: context.HostingEnvironment, optional: false)
                 .AddEnvironmentVariables();
         });

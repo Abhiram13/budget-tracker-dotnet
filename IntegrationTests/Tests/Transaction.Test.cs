@@ -51,8 +51,8 @@ public class TransactionIntegrationTests : IClassFixture<DbFixture>
         string jsonPayload = JsonSerializer.Serialize(payload);
         StringContent content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
         HttpResponseMessage httpResponse = await _client.PostAsync("api/transactions", content);
-        // string response = await httpResponse.Content.ReadAsStringAsync();
-        // ApiResponse apiResponse = JsonSerializer.Deserialize<ApiResponse>(response);
+        string response = await httpResponse.Content.ReadAsStringAsync();
+        ApiResponse apiResponse = JsonSerializer.Deserialize<ApiResponse>(response);
         
         Assert.Equal(HttpStatusCode.Created, httpResponse.StatusCode);
     }
