@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BudgetTracker.Interfaces;
 using BudgetTracker.Entities;
+using BudgetTracker.Models;
 using MongoDB.Driver;
 
 namespace BudgetTracker.Services;
@@ -15,9 +16,11 @@ public class BankService
         _bankRepository = repository;
     }
 
-    public async Task AddOneAsync(Bank document)
+    public async Task AddOneAsync(string bankName)
     {
-        await _bankRepository.InsertOneAsync(document);
+        Bank bank = Bank.Create(bankName);
+        
+        await _bankRepository.InsertOneAsync(bank);
     }
 
     public async Task<List<Bank>> ListAsync(ProjectionDefinition<Bank>? exclude = null)

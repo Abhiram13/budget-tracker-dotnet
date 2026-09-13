@@ -1,0 +1,13 @@
+@host=localhost
+@port=3000
+@url=api/banks
+
+### POST request to create banks
+POST http://{{host}}:{{port}}/{{url}}
+Content-Type: application/json
+
+{
+    "name": "SBI"
+}
+###
+
