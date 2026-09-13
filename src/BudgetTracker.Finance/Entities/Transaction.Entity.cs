@@ -28,16 +28,13 @@ public class Transaction : MongoObject
     [BsonElement("date")]
     public DateOnly Date { get; private set; }
 
-    [BsonElement("due")] 
-    public bool Due { get; private set; } = false;
-    
     [BsonRepresentation(BsonType.ObjectId)]
     [BsonElement("from_bank")]
-    public string? FromBank { get; private set; } = string.Empty;
+    public string? FromBank { get; private set; } = null;
 
     [BsonRepresentation(BsonType.ObjectId)]
     [BsonElement("to_bank")]
-    public string? ToBank { get; private set; } = string.Empty;
+    public string? ToBank { get; private set; } = null;
 
     [Required]
     [BsonElement("category_id")]

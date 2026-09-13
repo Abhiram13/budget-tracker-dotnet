@@ -10,13 +10,11 @@ public abstract class MongoObject : BaseTimeStampEntity
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     [BsonElement("_id")]
-    [JsonPropertyName("id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public string Id { get; set; } = "";
 
     [BsonElement("__v")]
-    [JsonPropertyName("__v")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [BsonIgnore]
     public byte? V { get; set; }
 }
 
