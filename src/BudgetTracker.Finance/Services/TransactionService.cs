@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using BudgetTracker.Exceptions;
 using BudgetTracker.Interfaces;
 using BudgetTracker.Entities;
+using BudgetTracker.Enums;
 using BudgetTracker.Models;
 using BudgetTracker.ValueObject.Transaction;
 using BudgetTracker.ValueObject.Transaction.List;
@@ -63,38 +64,46 @@ public class TransactionService
     //
     public async Task InsertOneAsync(InsertTransactionDto payload)
     {
-        // Category category = await _categoryRepository.SearchByIdAsync(doc.CategoryId);
-        //
-        // if (category is null || string.IsNullOrEmpty(category.Name))
-        // {
-        //     throw new BadRequestException($"Invalid Category Id ({0}) provided", doc.CategoryId);
-        // }
-        //
-        // if (string.IsNullOrEmpty(doc.FromBank) && string.IsNullOrEmpty(doc.ToBank))
-        // {
-        //     throw new BadRequestException($"Invalid From Bank ({0}) and To Bank ({1}) provided", doc.FromBank, doc.ToBank);
-        // }
-        //
-        // Func<string?, Task> ValidateBanks = async (string? bankId) =>
-        // {
-        //     if (string.IsNullOrEmpty(bankId)) return;
-        //
-        //     Bank bank = await _bankRepository.SearchByIdAsync(bankId);
-        //
-        //     if (bank is null || string.IsNullOrEmpty(bank.Name))
-        //     {
-        //         throw new BadRequestException($"Invalid bank id ({0}) provided", bankId);
-        //     }
-        // };
-        //
-        // await ValidateBanks(doc.FromBank);
-        // await ValidateBanks(doc.ToBank);
-
         bool isCategoryExists = await _categoryRepository.CountByIdAsync(payload.CategoryId);
 
         if (isCategoryExists == false)
         {
             throw new BadRequestException("Invalid Category id provided");
+        }
+
+        if (payload.Type == TransactionType.Debit)
+        {
+            if (string.IsNullOrEmpty(payload.FromBank))
+            {
+                throw new BadRequestException("Invalid From bank id provided for the transaction debit type");
+            }
+
+            bool isBankExists = await _bankRepository.CountByIdAsync(payload.FromBank);
+
+            if (isBankExists == false)
+            {
+                throw new BadRequestException("Invalid From bank id provided for the transaction debit type");
+            }
+        }
+        
+        if (payload.Type == TransactionType.Credit)
+        {
+            if (string.IsNullOrEmpty(payload.ToBank))
+            {
+                throw new BadRequestException("Invalid To bank id provided for the transaction credit type");
+            }
+
+            bool isBankExists = await _bankRepository.CountByIdAsync(payload.ToBank);
+
+            if (isBankExists == false)
+            {
+                throw new BadRequestException("Invalid To bank id provided for the transaction credit type");
+            }
+        }
+
+        if (string.IsNullOrEmpty(payload.FromBank) && string.IsNullOrEmpty(payload.ToBank))
+        {
+            throw new BadRequestException("Invalid To bank id and From bank id provided.");
         }
 
         Transaction transaction = Transaction.Create(

@@ -10,7 +10,7 @@ Content-Type: application/json
     "amount": 100.12,
     "description": "Milk and vegetables",
     "date": "2026-09-10",
-    "from_bank": null,
+    "from_bank": "6aa64e9f1e1db1394b792fce",
     "to_bank": null,
     "category_id": "6aa6459745149dfcd5592b7d",
     "type": 1,
