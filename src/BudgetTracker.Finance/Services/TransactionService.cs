@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using BudgetTracker.Exceptions;
 using BudgetTracker.Interfaces;
 using BudgetTracker.Entities;
+using BudgetTracker.Models;
 using BudgetTracker.ValueObject.Transaction;
 using BudgetTracker.ValueObject.Transaction.List;
 
@@ -60,36 +61,47 @@ public class TransactionService
     //     return transaction;
     // }
     //
-    // public async Task InsertOneAsync(Transaction doc)
-    // {
-    //     Category category = await _categoryRepository.SearchByIdAsync(doc.CategoryId);
-    //
-    //     if (category is null || string.IsNullOrEmpty(category.Name))
-    //     {
-    //         throw new BadRequestException($"Invalid Category Id ({0}) provided", doc.CategoryId);
-    //     }
-    //
-    //     if (string.IsNullOrEmpty(doc.FromBank) && string.IsNullOrEmpty(doc.ToBank))
-    //     {
-    //         throw new BadRequestException($"Invalid From Bank ({0}) and To Bank ({1}) provided", doc.FromBank, doc.ToBank);
-    //     }
-    //
-    //     Func<string?, Task> ValidateBanks = async (string? bankId) =>
-    //     {
-    //         if (string.IsNullOrEmpty(bankId)) return;
-    //
-    //         Bank bank = await _bankRepository.SearchByIdAsync(bankId);
-    //
-    //         if (bank is null || string.IsNullOrEmpty(bank.Name))
-    //         {
-    //             throw new BadRequestException($"Invalid bank id ({0}) provided", bankId);
-    //         }
-    //     };
-    //
-    //     await ValidateBanks(doc.FromBank);
-    //     await ValidateBanks(doc.ToBank);
-    //     await _transactionRepository.InserOneAsync(doc);
-    // }
+    public async Task InsertOneAsync(InsertTransactionDto payload)
+    {
+        // Category category = await _categoryRepository.SearchByIdAsync(doc.CategoryId);
+        //
+        // if (category is null || string.IsNullOrEmpty(category.Name))
+        // {
+        //     throw new BadRequestException($"Invalid Category Id ({0}) provided", doc.CategoryId);
+        // }
+        //
+        // if (string.IsNullOrEmpty(doc.FromBank) && string.IsNullOrEmpty(doc.ToBank))
+        // {
+        //     throw new BadRequestException($"Invalid From Bank ({0}) and To Bank ({1}) provided", doc.FromBank, doc.ToBank);
+        // }
+        //
+        // Func<string?, Task> ValidateBanks = async (string? bankId) =>
+        // {
+        //     if (string.IsNullOrEmpty(bankId)) return;
+        //
+        //     Bank bank = await _bankRepository.SearchByIdAsync(bankId);
+        //
+        //     if (bank is null || string.IsNullOrEmpty(bank.Name))
+        //     {
+        //         throw new BadRequestException($"Invalid bank id ({0}) provided", bankId);
+        //     }
+        // };
+        //
+        // await ValidateBanks(doc.FromBank);
+        // await ValidateBanks(doc.ToBank);
+
+        Transaction transaction = Transaction.Create(
+            amount: payload.Amount,
+            description: payload.Description,
+            type: payload.Type,
+            fromBank: payload.FromBank,
+            toBank: payload.ToBank,
+            categoryId: payload.CategoryId,
+            date: payload.Date
+        );
+        
+        await _transactionRepository.InsertOneAsync(transaction);
+    }
     //
     // public async Task<bool> UpdateOnAsync(string id, Transaction body)
     // {

@@ -17,7 +17,7 @@ public class CategoryService
 
     public async Task AddOneAsync(Category document)
     {
-        await _categoryRepository.InserOneAsync(document);
+        await _categoryRepository.InsertOneAsync(document);
     }
 
     public async Task<List<Category>> ListAsync(ProjectionDefinition<Category>? exclude = null)

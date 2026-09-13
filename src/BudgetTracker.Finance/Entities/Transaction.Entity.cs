@@ -44,6 +44,8 @@ public class Transaction : MongoObject
     [BsonElement("due_id")]
     [BsonRepresentation(BsonType.ObjectId)]
     public string? DueId { get; set; } = null;
+    
+    private Transaction() { }
 
     public static Transaction Create(double amount, string description, TransactionType type, string fromBank, string toBank, string categoryId, DateOnly date)
     {

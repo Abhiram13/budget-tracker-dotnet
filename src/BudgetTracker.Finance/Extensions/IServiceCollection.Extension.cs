@@ -64,7 +64,7 @@ public static class ServiceCollectionExtension
                     KeyValuePair<string, ModelStateEntry?> modelState = action.ModelState.FirstOrDefault();
                     string errorAt = modelState.Key;
                     string errorMessage = modelState.Value?.Errors?[0].ErrorMessage ?? $"Something went wrong at {errorAt}";
-                    return new BadRequestObjectResult(new ApiResponse<string> { Message = errorMessage, StatusCode = HttpStatusCode.BadRequest });
+                    return new BadRequestObjectResult(new ApiResponse { Message = errorMessage, StatusCode = HttpStatusCode.BadRequest });
                 };
             });
 

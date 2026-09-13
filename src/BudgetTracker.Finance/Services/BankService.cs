@@ -17,7 +17,7 @@ public class BankService
 
     public async Task AddOneAsync(Bank document)
     {
-        await _bankRepository.InserOneAsync(document);
+        await _bankRepository.InsertOneAsync(document);
     }
 
     public async Task<List<Bank>> ListAsync(ProjectionDefinition<Bank>? exclude = null)

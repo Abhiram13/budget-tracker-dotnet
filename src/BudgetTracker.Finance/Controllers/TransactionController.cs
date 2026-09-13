@@ -1,8 +1,10 @@
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using BudgetTracker.Services;
 using BudgetTracker.Entities;
 using BudgetTracker.Enums;
 using BudgetTracker.Interfaces;
+using BudgetTracker.Models;
 using BudgetTracker.ValueObject;
 using BudgetTracker.ValueObject.Transaction.List;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +28,13 @@ public class TransactionsController : ApiBaseController
     {
         _service = service;
         _logger = logger;
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> InsertOneAsync([FromBody, Required] InsertTransactionDto body)
+    {
+        await _service.InsertOneAsync(body);
+        return StatusCode(StatusCodes.Status201Created, new ApiResponse { StatusCode = HttpStatusCode.Created, Message = "Transaction created successfully"});
     }
 
     [HttpGet]

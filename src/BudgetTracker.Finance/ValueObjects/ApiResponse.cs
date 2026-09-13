@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace BudgetTracker.ValueObject;
 
+[Obsolete("Use newer ApiResponse class instead")]
 public class ApiResponse<T> where T : class
 {
     [JsonPropertyName("status_code")]

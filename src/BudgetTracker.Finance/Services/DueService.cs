@@ -17,7 +17,7 @@ public class DueService
 
     public async Task AddOneAsync(Due document)
     {
-        await _dueRepository.InserOneAsync(document);
+        await _dueRepository.InsertOneAsync(document);
     }
 
     public async Task<List<Due>> ListAsync(ProjectionDefinition<Due>? exclude = null)
