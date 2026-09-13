@@ -12,7 +12,7 @@ Content-Type: application/json
     "date": "2026-09-10",
     "from_bank": null,
     "to_bank": null,
-    "category_id": null,
+    "category_id": "6aa6459745149dfcd5592b7d",
     "type": 1,
     "due_id": null
 }

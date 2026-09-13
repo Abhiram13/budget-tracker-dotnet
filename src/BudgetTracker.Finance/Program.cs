@@ -23,14 +23,6 @@ builder.WebHost.ConfigureKestrel((context, server) =>
 
 WebApplication app = builder.Build();
 
-using (IServiceScope scope = app.Services.CreateScope())
-{
-    MongoSecrets ms = scope.ServiceProvider.GetRequiredService<MongoSecrets>();
-    ILogger<Program> logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-    
-    logger.LogCritical(JsonSerializer.Serialize(ms));
-}
-
 app.UseApplicationServices();
 app.Run();
 

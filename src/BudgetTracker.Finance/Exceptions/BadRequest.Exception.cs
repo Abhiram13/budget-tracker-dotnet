@@ -8,3 +8,8 @@ public class BadRequestException : Exception
 
     public BadRequestException(string message, params object[] args) : base(message) { }
 }
+
+public class InvalidPayloadException : Exception
+{
+    public InvalidPayloadException(string message) : base(message) { }
+}

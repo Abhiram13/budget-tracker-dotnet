@@ -90,6 +90,13 @@ public class TransactionService
         // await ValidateBanks(doc.FromBank);
         // await ValidateBanks(doc.ToBank);
 
+        bool isCategoryExists = await _categoryRepository.CountByIdAsync(payload.CategoryId);
+
+        if (isCategoryExists == false)
+        {
+            throw new BadRequestException("Invalid Category id provided");
+        }
+
         Transaction transaction = Transaction.Create(
             amount: payload.Amount,
             description: payload.Description,
