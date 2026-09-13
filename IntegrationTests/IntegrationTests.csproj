@@ -26,4 +26,10 @@
       <ProjectReference Include="..\Src\BudgetTracker.Finance\BudgetTracker.Finance.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <None Include="appsettings.Test.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
 </Project>

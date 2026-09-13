@@ -37,24 +37,6 @@ public class TransactionsController : ApiBaseController
         return StatusCode(StatusCodes.Status201Created, new ApiResponse { StatusCode = HttpStatusCode.Created, Message = "Transaction created successfully"});
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Insert([FromServices] IMongoContext context)
-    {
-        Transaction transaction = Transaction.Create(
-            amount: 123.44,
-            description: "random",
-            fromBank: null,
-            toBank: "",
-            categoryId: "",
-            type: TransactionType.Debit,
-            date: DateOnly.FromDateTime(DateTime.UtcNow)
-        );
-
-        await context.Transaction.InsertOneAsync(transaction);
-
-        return Ok();
-    }
-
     [HttpGet("get")]
     public async Task<IActionResult> Get([FromServices] IMongoContext context)
     {
