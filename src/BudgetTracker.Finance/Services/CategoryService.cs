@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BudgetTracker.Interfaces;
 using BudgetTracker.Entities;
+using BudgetTracker.Models;
 using MongoDB.Driver;
 
 namespace BudgetTracker.Services;
@@ -15,9 +16,11 @@ public class CategoryService
         _categoryRepository = repository;
     }
 
-    public async Task AddOneAsync(Category document)
+    public async Task AddOneAsync(InsertCategoryDto document)
     {
-        await _categoryRepository.InsertOneAsync(document);
+        Category category = Category.Create(document.Name);
+        
+        await _categoryRepository.InsertOneAsync(category);
     }
 
     public async Task<List<Category>> ListAsync(ProjectionDefinition<Category>? exclude = null)
