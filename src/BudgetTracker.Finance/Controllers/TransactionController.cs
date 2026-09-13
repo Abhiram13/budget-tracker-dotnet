@@ -1,6 +1,8 @@
 using System.Net;
 using BudgetTracker.Services;
 using BudgetTracker.Entities;
+using BudgetTracker.Enums;
+using BudgetTracker.Interfaces;
 using BudgetTracker.ValueObject;
 using BudgetTracker.ValueObject.Transaction.List;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +11,8 @@ using ListResult = BudgetTracker.ValueObject.Transaction.List.Result;
 using BankResult = BudgetTracker.ValueObject.Transaction.ByBank.ResultByBank;
 using CategoryResultt = BudgetTracker.ValueObject.Transaction.ByCategory.Result;
 using BudgetTracker.ValueObject.Transaction;
+using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace BudgetTracker.Controllers;
 
@@ -25,121 +29,149 @@ public class TransactionsController : ApiBaseController
     }
 
     [HttpGet]
-    public async Task<ApiResponse<ListResult>> GetAsync(
-        [FromQuery] string? month,
-        [FromQuery] string? year,
-        [FromQuery] string? type,
-        [FromQuery] string? sort,
-        CancellationToken ct
-    ) {
-        QueryParams queryParams = new QueryParams()
-        {
-            Month = month,
-            Year = year,
-            Type = type,
-            SortOrder = sort
-        };
-
-        _logger.LogInformation("Get Transactions list Query Params: {@QueryParams}", queryParams);
-
-        ListResult list = await _service.ListAsync(queryParams, ct);
-        return new ApiResponse<ListResult>()
-        {
-            StatusCode = HttpStatusCode.OK,
-            Result = list
-        };
-    }
-
-    [HttpGet("date/{date}")]
-    public async Task<ApiResponse<ByDateTransactions>> GetAsync(string date)
+    public async Task<IActionResult> Insert([FromServices] IMongoContext context)
     {
-        ByDateTransactions data = await _service.ListByDateAsync(date);
+        Transaction transaction = Transaction.Create(
+            amount: 123.44,
+            description: "random",
+            fromBank: null,
+            toBank: "",
+            categoryId: "",
+            type: TransactionType.Debit,
+            date: DateOnly.FromDateTime(DateTime.UtcNow)
+        );
 
-        return new ApiResponse<ByDateTransactions>()
-        {
-            StatusCode = HttpStatusCode.OK,
-            Result = data
-        };
+        await context.Transaction.InsertOneAsync(transaction);
+
+        return Ok();
     }
 
-    [HttpGet("{id}")]
-    public async Task<ApiResponse<Transaction>> GetByIdAsync(string id)
+    [HttpGet("get")]
+    public async Task<IActionResult> Get([FromServices] IMongoContext context)
     {
-        Transaction transaction = await _service.GetByIdAsync(id);
+        var result = await context.Transaction.Find(Builders<Transaction>.Filter.Eq("from_bank", ObjectId.Parse("6aa5688d22d428ae54d192fb"))).ToListAsync();
+        
+        _logger.LogInformation(TimeZoneInfo.ConvertTimeFromUtc(result.First().CreatedAt, TimeZoneInfo.Local).ToLongDateString());
 
-        return new ApiResponse<Transaction>()
-        {
-            StatusCode = HttpStatusCode.OK,
-            Result = transaction
-        };
+        return Ok(result);
     }
 
-    [HttpGet("category/{categoryId}")]
-    public async Task<ApiResponse<CategoryResultt>> GetByCategoryAsync(string categoryId, [FromQuery] string? month, [FromQuery] string? year)
-    {
-        CategoryResultt result = await _service.ListByCategoryAsync(categoryId, new QueryParams()
-        {
-            Month = month,
-            Year = year
-        });
-        return new ApiResponse<CategoryResultt>()
-        {
-            StatusCode = HttpStatusCode.OK,
-            Result = result,
-        };
-    }
-
-    [HttpGet("bank/{bankId}")]
-    public async Task<ApiResponse<BankResult>> GetByBankIdAsync(string bankId, [FromQuery] string? month, [FromQuery] string? year)
-    {
-        BankResult result = await _service.ListByBankAsync(bankId, new QueryParams()
-        {
-            Month = month,
-            Year = year
-        });
-        return new ApiResponse<BankResult>()
-        {
-            StatusCode = HttpStatusCode.OK,
-            Result = result,
-        };
-    }
-
-    [HttpPost]
-    public async Task<ApiResponse<string>> AddAsync([FromBody] Transaction body)
-    {
-        await _service.InsertOneAsync(body);
-        return new ApiResponse<string>()
-        {
-            Message = "Transaction inserted successfully",
-            StatusCode = HttpStatusCode.Created,
-        };
-    }
-
-    [HttpPatch("{id}")]
-    public async Task<ApiResponse<string>> UpdateOneAsync(string id, [FromBody] Transaction body)
-    {
-        bool isUpdated = await _service.UpdateOnAsync(id, body);
-        HttpStatusCode statusCode = isUpdated ? HttpStatusCode.Created : HttpStatusCode.NotModified;
-        string message = isUpdated ? "Transaction updated successfully" : "Transaction couldn't be updated";
-
-        return new ApiResponse<string>()
-        {
-            Message = message,
-            StatusCode = statusCode,
-        };
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<ApiResponse<string>> DeleteOneAsync(string id)
-    {
-        bool isDeleted = await _service.DeleteOneAsync(id);
-        HttpStatusCode statusCode = isDeleted ? HttpStatusCode.OK : HttpStatusCode.NotModified;
-        string message = isDeleted ? "Transaction deleted successfully" : "Transaction couldn't be deleted";
-
-        return new ApiResponse<string>()
-        {
-            Message = message,
-            StatusCode = statusCode,
-        };
-    }
+    // [HttpGet]
+    // public async Task<ApiResponse<ListResult>> GetAsync(
+    //     [FromQuery] string? month,
+    //     [FromQuery] string? year,
+    //     [FromQuery] string? type,
+    //     [FromQuery] string? sort,
+    //     CancellationToken ct
+    // ) {
+    //     QueryParams queryParams = new QueryParams()
+    //     {
+    //         Month = month,
+    //         Year = year,
+    //         Type = type,
+    //         SortOrder = sort
+    //     };
+    //
+    //     _logger.LogInformation("Get Transactions list Query Params: {@QueryParams}", queryParams);
+    //
+    //     ListResult list = await _service.ListAsync(queryParams, ct);
+    //     return new ApiResponse<ListResult>()
+    //     {
+    //         StatusCode = HttpStatusCode.OK,
+    //         Result = list
+    //     };
+    // }
+    //
+    // [HttpGet("date/{date}")]
+    // public async Task<ApiResponse<ByDateTransactions>> GetAsync(string date)
+    // {
+    //     ByDateTransactions data = await _service.ListByDateAsync(date);
+    //
+    //     return new ApiResponse<ByDateTransactions>()
+    //     {
+    //         StatusCode = HttpStatusCode.OK,
+    //         Result = data
+    //     };
+    // }
+    //
+    // [HttpGet("{id}")]
+    // public async Task<ApiResponse<Transaction>> GetByIdAsync(string id)
+    // {
+    //     Transaction transaction = await _service.GetByIdAsync(id);
+    //
+    //     return new ApiResponse<Transaction>()
+    //     {
+    //         StatusCode = HttpStatusCode.OK,
+    //         Result = transaction
+    //     };
+    // }
+    //
+    // [HttpGet("category/{categoryId}")]
+    // public async Task<ApiResponse<CategoryResultt>> GetByCategoryAsync(string categoryId, [FromQuery] string? month, [FromQuery] string? year)
+    // {
+    //     CategoryResultt result = await _service.ListByCategoryAsync(categoryId, new QueryParams()
+    //     {
+    //         Month = month,
+    //         Year = year
+    //     });
+    //     return new ApiResponse<CategoryResultt>()
+    //     {
+    //         StatusCode = HttpStatusCode.OK,
+    //         Result = result,
+    //     };
+    // }
+    //
+    // [HttpGet("bank/{bankId}")]
+    // public async Task<ApiResponse<BankResult>> GetByBankIdAsync(string bankId, [FromQuery] string? month, [FromQuery] string? year)
+    // {
+    //     BankResult result = await _service.ListByBankAsync(bankId, new QueryParams()
+    //     {
+    //         Month = month,
+    //         Year = year
+    //     });
+    //     return new ApiResponse<BankResult>()
+    //     {
+    //         StatusCode = HttpStatusCode.OK,
+    //         Result = result,
+    //     };
+    // }
+    //
+    // [HttpPost]
+    // public async Task<ApiResponse<string>> AddAsync([FromBody] Transaction body)
+    // {
+    //     await _service.InsertOneAsync(body);
+    //     return new ApiResponse<string>()
+    //     {
+    //         Message = "Transaction inserted successfully",
+    //         StatusCode = HttpStatusCode.Created,
+    //     };
+    // }
+    //
+    // [HttpPatch("{id}")]
+    // public async Task<ApiResponse<string>> UpdateOneAsync(string id, [FromBody] Transaction body)
+    // {
+    //     bool isUpdated = await _service.UpdateOnAsync(id, body);
+    //     HttpStatusCode statusCode = isUpdated ? HttpStatusCode.Created : HttpStatusCode.NotModified;
+    //     string message = isUpdated ? "Transaction updated successfully" : "Transaction couldn't be updated";
+    //
+    //     return new ApiResponse<string>()
+    //     {
+    //         Message = message,
+    //         StatusCode = statusCode,
+    //     };
+    // }
+    //
+    // [HttpDelete("{id}")]
+    // public async Task<ApiResponse<string>> DeleteOneAsync(string id)
+    // {
+    //     bool isDeleted = await _service.DeleteOneAsync(id);
+    //     HttpStatusCode statusCode = isDeleted ? HttpStatusCode.OK : HttpStatusCode.NotModified;
+    //     string message = isDeleted ? "Transaction deleted successfully" : "Transaction couldn't be deleted";
+    //
+    //     return new ApiResponse<string>()
+    //     {
+    //         Message = message,
+    //         StatusCode = statusCode,
+    //     };
+    // }
 }

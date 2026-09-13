@@ -12,8 +12,8 @@ namespace BudgetTracker.Interfaces;
 
 public interface ITransactionRepository : IMongoDbRepository<Transaction>
 {
-    Task<ListResult> ListAsync(QueryParams? queryParams, CancellationToken? cancellationToken = default);
-    Task<ByDateTransactions> ListByDateAsync(string date);
-    Task<CategoryResult> GetByCategoryAsync(string categoryId, QueryParams queryParams);
-    Task<BankResult> GetByBankAsync(string bankId, QueryParams queryParams);
+    // Task<ListResult> ListAsync(QueryParams? queryParams, CancellationToken? cancellationToken = default);
+    // Task<ByDateTransactions> ListByDateAsync(string date);
+    // Task<CategoryResult> GetByCategoryAsync(string categoryId, QueryParams queryParams);
+    // Task<BankResult> GetByBankAsync(string bankId, QueryParams queryParams);
 }

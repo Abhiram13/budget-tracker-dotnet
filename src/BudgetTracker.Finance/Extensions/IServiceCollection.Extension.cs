@@ -29,7 +29,7 @@ public static class ServiceCollectionExtension
                 .AddMongoSecrets()
                 .AddDependencyServices()
                 .AddControllerConfiguration()
-                .AddAuthConfiguration()
+                // .AddAuthConfiguration()
                 .AddApplicationServices();
 
             return serviceCollection;

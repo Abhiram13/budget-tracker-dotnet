@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using BudgetTracker.Attributes;
 using BudgetTracker.Enums;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace BudgetTracker.Entities;
@@ -9,46 +10,72 @@ namespace BudgetTracker.Entities;
 public class Transaction : MongoObject
 {
     [BsonElement("amount")]
-    [JsonPropertyName("amount")]
-    public double Amount { get; set; } = 0;
+    public double Amount { get; private set; }
 
     [Required]
     [EnumDataType(typeof(TransactionType), ErrorMessage = "Invalid transaction type.")]
     [BsonElement("type")]
-    [JsonPropertyName("type")]
-    public TransactionType Type { get; set; } = TransactionType.Debit;
+    public TransactionType Type { get; private set; } = TransactionType.Debit;
 
     [Required]
     [RegularExpression(@"^[A-Za-z0-9,.\s]+$", ErrorMessage = "Please provide valid description.")]
     [BsonElement("description")]
-    [JsonPropertyName("description")]
-    public string Description { get; set; } = "";
+    public string Description { get; private set; } = string.Empty;
 
     [Required]
     [RegularExpression(@"^\d{4}-\d{2}-\d{2}$", ErrorMessage = "Please provide valid date.")]
     [MaxDate(ErrorMessage = "Provided date is out of range or invalid.")]
     [BsonElement("date")]
-    [JsonPropertyName("date")]
-    public string Date { get; set; } = "";
+    public DateOnly Date { get; private set; }
 
-    [BsonElement("due")]
-    [JsonPropertyName("due")]
-    public bool Due { get; set; }
-
+    [BsonElement("due")] 
+    public bool Due { get; private set; } = false;
+    
+    [BsonRepresentation(BsonType.ObjectId)]
     [BsonElement("from_bank")]
-    [JsonPropertyName("from_bank")]
-    public string FromBank { get; set; } = "";
+    public string? FromBank { get; private set; } = string.Empty;
 
+    [BsonRepresentation(BsonType.ObjectId)]
     [BsonElement("to_bank")]
-    [JsonPropertyName("to_bank")]
-    public string ToBank { get; set; } = "";
+    public string? ToBank { get; private set; } = string.Empty;
 
     [Required]
     [BsonElement("category_id")]
-    [JsonPropertyName("category_id")]
-    public string CategoryId { get; set; } = "";
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string CategoryId { get; private set; } = string.Empty;
 
     [BsonElement("due_id")]
-    [JsonPropertyName("due_id")]
+    [BsonRepresentation(BsonType.ObjectId)]
     public string? DueId { get; set; } = null;
+
+    public static Transaction Create(double amount, string description, TransactionType type, string fromBank, string toBank, string categoryId, DateOnly date)
+    {
+        Transaction transaction = new Transaction
+        {
+            Amount = amount,
+            Description = description,
+            FromBank = fromBank,
+            ToBank = toBank,
+            Type = type,
+            CategoryId = categoryId,
+            Date = date
+        };
+        
+        transaction.SetModifiedAt();
+
+        return transaction;
+    }
+
+    public void Update(double amount, string description, TransactionType type, string fromBank, string toBank, string categoryId, DateOnly date)
+    {
+        Amount = amount;
+        Description = description;
+        CategoryId = categoryId;
+        FromBank = fromBank;
+        ToBank = toBank;
+        Date = date;
+        Type = type;
+        
+        SetUpdatedAt();
+    }
 }
