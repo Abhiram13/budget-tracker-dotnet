@@ -1,7 +1,8 @@
+using IntegrationTests.Utils;
 using Mongo2Go;
 using MongoDB.Driver;
 
-namespace IntegrationTests.Utils;
+namespace IntegrationTests.Fixtures;
 
 public class DbFixture
 {

@@ -11,6 +11,7 @@ using BudgetTracker.ValueObject.Transaction;
 using BudgetTracker.Entities;
 using BudgetTracker.Enums;
 using BudgetTracker.Models;
+using IntegrationTests.Fixtures;
 using TransactionByCategoryResult = BudgetTracker.ValueObject.Transaction.ByCategory.Result;
 using CategoryTypeTransactionsResult = BudgetTracker.ValueObject.Transaction.List.Result;
 using TransactionsByCategoryId = BudgetTracker.ValueObject.Transaction.ByCategory.CategoryData;
@@ -20,18 +21,18 @@ using CategoryData = BudgetTracker.ValueObject.Transaction.List.CategoryData;
 
 namespace IntegrationTests;
 
-// [Collection("transaction")]
-// [Trait("Category", "Transaction")]
 [Collection(nameof(DatabaseCollection))]
-public class TransactionIntegrationTests : IClassFixture<DbFixture>
+public class TransactionIntegrationTests : IClassFixture<TransactionFixture>
 {
-    // private const string _categoryId = "665aa29b930ad7888c6766fa";
     private HttpClient _client;
+    private string _categoryId;
+    private string _bankId;
     
-    public TransactionIntegrationTests(DbFixture fixture)
+    public TransactionIntegrationTests(TransactionFixture fixture)
     {
         _client = fixture.Client;
-        // _client.DefaultRequestHeaders.Add("API_KEY", _API_KEY);
+        _categoryId = fixture.CategoryId;
+        _bankId = fixture.BankId;
     }
 
     [Fact]
@@ -41,7 +42,7 @@ public class TransactionIntegrationTests : IClassFixture<DbFixture>
         {
             FromBank = null,
             ToBank = null,
-            CategoryId = "",
+            CategoryId = _categoryId,
             Type = TransactionType.Debit,
             Amount = 100,
             Date = DateOnly.FromDateTime(DateTime.UtcNow),
