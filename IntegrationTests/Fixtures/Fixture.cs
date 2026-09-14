@@ -9,7 +9,7 @@ public class DbFixture
     private FinanceWebApplicationFactory _factory { get; }
     public HttpClient Client { get; }
     
-    public DbFixture(FinanceWebApplicationFactory factory)
+    protected DbFixture(FinanceWebApplicationFactory factory)
     {
         _factory = factory;
         Client = factory.CreateClient();

@@ -26,6 +26,8 @@ public class TransactionFixture : DbFixture, IAsyncLifetime
     public async Task DisposeAsync()
     {
         await _context.Transaction.DeleteManyAsync(Builders<Transaction>.Filter.Empty);
+        await _context.Bank.DeleteManyAsync(Builders<Bank>.Filter.Empty);
+        await _context.Category.DeleteManyAsync(Builders<Category>.Filter.Empty);
     }
 
     private async Task<string> CreateAndGetCategoryId()
