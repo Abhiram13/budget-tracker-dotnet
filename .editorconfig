@@ -1,0 +1,9 @@
+root = true
+
+csharp_space_between_parentheses = expressions, type_casts, control_flow_statements
+csharp_style_var_for_built_in_types = true:suggestion
+
+[*.cs]
+# IDE0040: Accessibility modifiers required (escalated to a build warning)
+dotnet_diagnostic.IDE0040.severity = error
+

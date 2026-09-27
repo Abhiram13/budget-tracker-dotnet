@@ -4,20 +4,20 @@ using BudgetTracker.Entities;
 using BudgetTracker.ValueObject;
 using MongoDB.Driver;
 
-namespace IntegrationTests;
+// namespace IntegrationTests;
 
-[Collection("category")]
-public class CategoryIntegrationTests : IntegrationTests
-{
-    private readonly IMongoCollection<Category> _collection;
-    private readonly string _categoryName;
+// [Collection("category")]
+// public class CategoryIntegrationTests
+// {
+//     private readonly IMongoCollection<Category> _collection;
+//     private readonly string _categoryName;
 
-    public CategoryIntegrationTests(MongoDBFixture fixture) : base(fixture)
-    {
-        _collection = fixture.Database.GetCollection<Category>("categories");
-        _client.DefaultRequestHeaders.Add("API_KEY", _API_KEY);
-        _categoryName = "Sample Category";
-    }
+    // public CategoryIntegrationTests(MongoDBFixture fixture) : base(fixture)
+    // {
+    //     _collection = fixture.Database.GetCollection<Category>("categories");
+    //     _client.DefaultRequestHeaders.Add("API_KEY", _API_KEY);
+    //     _categoryName = "Sample Category";
+    // }
 
     // [Fact]
     // public async Task Positive_Test_After_Add_Category()
@@ -79,5 +79,5 @@ public class CategoryIntegrationTests : IntegrationTests
     //     StringContent? payload1 = new StringContent(payload, Encoding.UTF8, "application/json");
     //     HttpResponseMessage data = await _client.PostAsync("category", payload1);
     // }
-}
+// }
 
