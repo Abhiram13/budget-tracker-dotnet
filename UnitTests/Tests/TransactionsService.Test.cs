@@ -21,6 +21,25 @@ public class TransactionServiceTests
         _transactionService = new TransactionService(_transactionRepository.Object, _categoryRepository.Object, _bankRepository.Object);
     }
 
+    #region Transaction entity unit tests
+
+    [Fact]
+    public void Transaction_Entity_Valid()
+    {
+        double amount = 123.45;
+        string description = "Random description";
+        string fromBank = "from_bank";
+        string toBank = "to_bank";
+        string categoryId = "category_id";
+        TransactionType type = TransactionType.Debit;
+        DateOnly date = DateOnly.FromDateTime(DateTime.UtcNow);
+        Transaction transaction = Transaction.Create(amount, description, type, fromBank, toBank, categoryId, date);
+    }
+
+    #endregion
+
+    #region Insert Transactions unit tests
+
     [Fact]
     public void Insert_Transaction_Valid()
     {
@@ -30,7 +49,7 @@ public class TransactionServiceTests
             CategoryId = "random",
             Amount = 123.45,
             Date = DateOnly.FromDateTime(DateTime.UtcNow),
-            Description = "Randome description",
+            Description = "Random description",
             DueId = null,
             FromBank = "random_from",
             ToBank = null,
@@ -43,11 +62,11 @@ public class TransactionServiceTests
 
         // Act
         _transactionService.InsertOneAsync(dto);
-        
+
         // Assert
         _transactionRepository.Verify(t => t.InsertOneAsync(It.IsAny<Transaction>()), Times.Once());
     }
-    
+
     [Fact]
     public async Task Insert_Transaction_InValid_Category_Exception_Async()
     {
@@ -57,7 +76,7 @@ public class TransactionServiceTests
             CategoryId = "random",
             Amount = 123.45,
             Date = DateOnly.FromDateTime(DateTime.UtcNow),
-            Description = "Randome description",
+            Description = "Random description",
             DueId = null,
             FromBank = "random_from",
             ToBank = null,
@@ -71,9 +90,9 @@ public class TransactionServiceTests
         // Act
         Exception exception = await Record.ExceptionAsync(async () =>
         {
-            await _transactionService.InsertOneAsync(dto);
+            await _transactionService.InsertOneAsync(dto).ConfigureAwait(false);
         });
-        
+
         // Assert
         // 'InsertOnceAsync' method never calls since category 'CountAsync' method will throw error
         _transactionRepository.Verify(t => t.InsertOneAsync(It.IsAny<Transaction>()), Times.Never());
@@ -81,7 +100,7 @@ public class TransactionServiceTests
         Assert.IsType<BadRequestException>(exception);
         Assert.Equal("Invalid Category id provided", exception.Message);
     }
-    
+
     [Fact]
     public async Task Insert_Transaction_Null_FromBank_For_Debit_Exception_Async()
     {
@@ -91,7 +110,7 @@ public class TransactionServiceTests
             CategoryId = "random",
             Amount = 123.45,
             Date = DateOnly.FromDateTime(DateTime.UtcNow),
-            Description = "Randome description",
+            Description = "Random description",
             DueId = null,
             FromBank = null,
             ToBank = "random_bank",
@@ -105,9 +124,9 @@ public class TransactionServiceTests
         // Act
         Exception exception = await Record.ExceptionAsync(async () =>
         {
-            await _transactionService.InsertOneAsync(dto);
+            await _transactionService.InsertOneAsync(dto).ConfigureAwait(false);
         });
-        
+
         // Assert
         // 'InsertOnceAsync' method never calls since category 'CountAsync' method will throw error
         _transactionRepository.Verify(t => t.InsertOneAsync(It.IsAny<Transaction>()), Times.Never());
@@ -115,7 +134,7 @@ public class TransactionServiceTests
         Assert.IsType<BadRequestException>(exception);
         Assert.Equal("Invalid From bank id provided for the transaction debit type", exception.Message);
     }
-    
+
     [Fact]
     public async Task Insert_Transaction_Invalid_FromBank_For_Debit_Exception_Async()
     {
@@ -125,7 +144,7 @@ public class TransactionServiceTests
             CategoryId = "random",
             Amount = 123.45,
             Date = DateOnly.FromDateTime(DateTime.UtcNow),
-            Description = "Randome description",
+            Description = "Random description",
             DueId = null,
             FromBank = "random_bank",
             ToBank = null,
@@ -139,9 +158,9 @@ public class TransactionServiceTests
         // Act
         Exception exception = await Record.ExceptionAsync(async () =>
         {
-            await _transactionService.InsertOneAsync(dto);
+            await _transactionService.InsertOneAsync(dto).ConfigureAwait(false);
         });
-        
+
         // Assert
         // 'InsertOnceAsync' method never calls since category 'CountAsync' method will throw error
         _transactionRepository.Verify(t => t.InsertOneAsync(It.IsAny<Transaction>()), Times.Never());
@@ -149,7 +168,7 @@ public class TransactionServiceTests
         Assert.IsType<BadRequestException>(exception);
         Assert.Equal("Invalid From bank id provided for the transaction debit type", exception.Message);
     }
-    
+
     [Fact]
     public async Task Insert_Transaction_Null_ToBank_For_Credit_Exception_Async()
     {
@@ -159,7 +178,7 @@ public class TransactionServiceTests
             CategoryId = "random",
             Amount = 123.45,
             Date = DateOnly.FromDateTime(DateTime.UtcNow),
-            Description = "Randome description",
+            Description = "Random description",
             DueId = null,
             FromBank = "random",
             ToBank = null,
@@ -173,9 +192,9 @@ public class TransactionServiceTests
         // Act
         Exception exception = await Record.ExceptionAsync(async () =>
         {
-            await _transactionService.InsertOneAsync(dto);
+            await _transactionService.InsertOneAsync(dto).ConfigureAwait(false);
         });
-        
+
         // Assert
         // 'InsertOnceAsync' method never calls since category 'CountAsync' method will throw error
         _transactionRepository.Verify(t => t.InsertOneAsync(It.IsAny<Transaction>()), Times.Never());
@@ -183,7 +202,7 @@ public class TransactionServiceTests
         Assert.IsType<BadRequestException>(exception);
         Assert.Equal("Invalid To bank id provided for the transaction credit type", exception.Message);
     }
-    
+
     [Fact]
     public async Task Insert_Transaction_Invalid_ToBank_For_Credit_Exception_Async()
     {
@@ -193,7 +212,7 @@ public class TransactionServiceTests
             CategoryId = "random",
             Amount = 123.45,
             Date = DateOnly.FromDateTime(DateTime.UtcNow),
-            Description = "Randome description",
+            Description = "Random description",
             DueId = null,
             FromBank = null,
             ToBank = "random_bank",
@@ -207,9 +226,9 @@ public class TransactionServiceTests
         // Act
         Exception exception = await Record.ExceptionAsync(async () =>
         {
-            await _transactionService.InsertOneAsync(dto);
+            await _transactionService.InsertOneAsync(dto).ConfigureAwait(false);
         });
-        
+
         // Assert
         // 'InsertOnceAsync' method never calls since category 'CountAsync' method will throw error
         _transactionRepository.Verify(t => t.InsertOneAsync(It.IsAny<Transaction>()), Times.Never());
@@ -227,23 +246,23 @@ public class TransactionServiceTests
             CategoryId = "random",
             Amount = 123.45,
             Date = DateOnly.FromDateTime(DateTime.UtcNow),
-            Description = "Randome description",
+            Description = "Random description",
             DueId = null,
             FromBank = null,
             ToBank = null,
             Type = TransactionType.Credit
         };
-        
+
         _transactionRepository.Setup(t => t.InsertOneAsync(It.IsAny<Transaction>()));
         _categoryRepository.Setup(c => c.CountByIdAsync(It.IsAny<string>())).ReturnsAsync(true);
         _bankRepository.Setup(b => b.CountByIdAsync(It.IsAny<string>())).ReturnsAsync(false);
-        
+
         // Act
         Exception exception = await Record.ExceptionAsync(async () =>
         {
-            await _transactionService.InsertOneAsync(dto);
+            await _transactionService.InsertOneAsync(dto).ConfigureAwait(false);
         });
-        
+
         // Assert
         // 'InsertOnceAsync' method never calls since category 'CountAsync' method will throw error
         _transactionRepository.Verify(t => t.InsertOneAsync(It.IsAny<Transaction>()), Times.Never());
@@ -251,4 +270,6 @@ public class TransactionServiceTests
         Assert.IsType<BadRequestException>(exception);
         Assert.Equal("Invalid To bank id and From bank id provided.", exception.Message);
     }
+
+    #endregion
 }
