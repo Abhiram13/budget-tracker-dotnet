@@ -7,7 +7,7 @@ using MongoDB.Driver;
 
 namespace BudgetTracker.Context;
 
-[Obsolete(message: "use from BudgetTracker.Mongo", error: true)]
+[Obsolete(message: "use from BudgetTracker.Infrastructure", error: true)]
 public class MongoDBContext : IMongoContext
 {
     private readonly IMongoDatabase _database;

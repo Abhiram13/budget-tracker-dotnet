@@ -18,7 +18,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetTracker.Finance", "Sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetTracker.Models", "Src\BudgetTracker.Models\BudgetTracker.Models.csproj", "{48240E12-55CD-4491-8C1F-5BC3D25698F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetTracker.Mongo", "Src\BudgetTracker.Mongo\BudgetTracker.Mongo.csproj", "{843EBE61-ECB1-4061-8F95-8CDB61B7BEA0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetTracker.Infrastructure", "Src\BudgetTracker.Infrastructure\BudgetTracker.Infrastructure.csproj", "{843EBE61-ECB1-4061-8F95-8CDB61B7BEA0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

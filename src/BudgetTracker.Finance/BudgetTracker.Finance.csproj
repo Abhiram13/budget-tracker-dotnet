@@ -20,7 +20,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\BudgetTracker.Models\BudgetTracker.Models.csproj" />
-      <ProjectReference Include="..\BudgetTracker.Mongo\BudgetTracker.Mongo.csproj" />
+      <ProjectReference Include="..\BudgetTracker.Infrastructure\BudgetTracker.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

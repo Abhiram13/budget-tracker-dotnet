@@ -2,7 +2,7 @@ using BudgetTracker.Models.Entities;
 using BudgetTracker.Models.Mongo;
 using MongoDB.Driver;
 
-namespace BudgetTracker.Mongo;
+namespace BudgetTracker.Infrastructure;
 
 internal static class MongoCollections
 {

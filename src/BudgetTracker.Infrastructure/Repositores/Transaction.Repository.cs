@@ -1,7 +1,7 @@
 using BudgetTracker.Models.Entities;
 using BudgetTracker.Models.Mongo;
 
-namespace BudgetTracker.Mongo.Repositories;
+namespace BudgetTracker.Infrastructure.Repositories;
 
 public class TransactionRepository : MongoRepository<Transaction>, ITransactionRepository
 {

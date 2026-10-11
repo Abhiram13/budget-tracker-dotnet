@@ -2,7 +2,7 @@ using BudgetTracker.Models.Entities;
 using BudgetTracker.Models.Mongo;
 using MongoDB.Driver;
 
-namespace BudgetTracker.Mongo.Repositories;
+namespace BudgetTracker.Infrastructure.Repositories;
 
 public abstract class MongoRepository<T> : IMongoRepository<T> where T : MongoObject
 {

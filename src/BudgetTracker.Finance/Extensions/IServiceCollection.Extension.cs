@@ -8,7 +8,7 @@ using BudgetTracker.ValueObject;
 using BudgetTracker.Context;
 using BudgetTracker.Models;
 using BudgetTracker.Models.Mongo;
-using BudgetTracker.Mongo.Repositories;
+using BudgetTracker.Infrastructure.Repositories;
 using BudgetTracker.Repository;
 using BudgetTracker.Security;
 using Microsoft.AspNetCore.Mvc;
