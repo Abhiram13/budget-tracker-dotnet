@@ -3,7 +3,7 @@ using BudgetTracker.Entities;
 
 namespace BudgetTracker.Repository;
 
-public class DueRepository : MongoRepository<Due>, IDueRepository
-{
-    public DueRepository(IMongoContext context) : base (context.Dues) { }
-}
+// public class DueRepository : MongoRepository<Due>, IDueRepository
+// {
+//     public DueRepository(IMongoContext context) : base (context.Dues) { }
+// }

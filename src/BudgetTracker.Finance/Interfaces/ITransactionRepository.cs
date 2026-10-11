@@ -8,12 +8,12 @@ using BankResult = BudgetTracker.ValueObject.Transaction.ByBank.ResultByBank;
 using CategoryResult = BudgetTracker.ValueObject.Transaction.ByCategory.Result;
 using ListResult = BudgetTracker.ValueObject.Transaction.List.Result;
 
-namespace BudgetTracker.Interfaces;
+// namespace BudgetTracker.Interfaces;
 
-public interface ITransactionRepository : IMongoDbRepository<Transaction>
-{
+// public interface ITransactionRepository : IMongoDbRepository<Transaction>
+// {
     // Task<ListResult> ListAsync(QueryParams? queryParams, CancellationToken? cancellationToken = default);
     // Task<ByDateTransactions> ListByDateAsync(string date);
     // Task<CategoryResult> GetByCategoryAsync(string categoryId, QueryParams queryParams);
     // Task<BankResult> GetByBankAsync(string bankId, QueryParams queryParams);
-}
+// }

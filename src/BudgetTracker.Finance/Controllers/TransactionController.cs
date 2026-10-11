@@ -37,15 +37,15 @@ public class TransactionsController : ApiBaseController
         return StatusCode(StatusCodes.Status201Created, new ApiResponse { StatusCode = HttpStatusCode.Created, Message = "Transaction created successfully"});
     }
 
-    [HttpGet("get")]
-    public async Task<IActionResult> Get([FromServices] IMongoContext context)
-    {
-        var result = await context.Transaction.Find(Builders<Transaction>.Filter.Eq("from_bank", ObjectId.Parse("6aa5688d22d428ae54d192fb"))).ToListAsync();
-        
-        _logger.LogInformation(TimeZoneInfo.ConvertTimeFromUtc(result.First().CreatedAt, TimeZoneInfo.Local).ToLongDateString());
-
-        return Ok(result);
-    }
+    // [HttpGet("get")]
+    // public async Task<IActionResult> Get([FromServices] IMongoContext context)
+    // {
+    //     var result = await context.Transaction.Find(Builders<Transaction>.Filter.Eq("from_bank", ObjectId.Parse("6aa5688d22d428ae54d192fb"))).ToListAsync();
+    //
+    //     _logger.LogInformation(TimeZoneInfo.ConvertTimeFromUtc(result.First().CreatedAt, TimeZoneInfo.Local).ToLongDateString());
+    //
+    //     return Ok(result);
+    // }
 
     // [HttpGet]
     // public async Task<ApiResponse<ListResult>> GetAsync(

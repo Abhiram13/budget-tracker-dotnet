@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
 using BudgetTracker.Enums;
+using BudgetTracker.Models;
 
 namespace BudgetTracker.ValueObject.Transaction;
 

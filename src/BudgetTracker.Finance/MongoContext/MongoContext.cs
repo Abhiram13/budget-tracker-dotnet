@@ -7,6 +7,7 @@ using MongoDB.Driver;
 
 namespace BudgetTracker.Context;
 
+[Obsolete(message: "use from BudgetTracker.Mongo", error: true)]
 public class MongoDBContext : IMongoContext
 {
     private readonly IMongoDatabase _database;
@@ -19,7 +20,7 @@ public class MongoDBContext : IMongoContext
     }
 
     public IMongoDatabase Database => _database;
-    public IMongoCollection<Transaction> Transaction => _database.GetCollection<Transaction>(MongoCollections.Transactions);
+    // public IMongoCollection<Transaction> Transaction => _database.GetCollection<Transaction>(MongoCollections.Transactions);
     public IMongoCollection<Category> Category => _database.GetCollection<Category>(MongoCollections.Categories);
     public IMongoCollection<Bank> Bank => _database.GetCollection<Bank>(MongoCollections.Banks);
     public IMongoCollection<Due> Dues => _database.GetCollection<Due>(MongoCollections.Dues);

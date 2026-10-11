@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using BudgetTracker.Interfaces;
 using BudgetTracker.Entities;
 using BudgetTracker.Enums;
+using BudgetTracker.Models.Entities;
 using BudgetTracker.ValueObject.Transaction;
 using BudgetTracker.ValueObject.Transaction.List;
 using MongoDB.Bson;
@@ -16,22 +17,23 @@ using BankResult = BudgetTracker.ValueObject.Transaction.ByBank.ResultByBank;
 using CategoryResult = BudgetTracker.ValueObject.Transaction.ByCategory.Result;
 using ListResult = BudgetTracker.ValueObject.Transaction.List.Result;
 
-namespace BudgetTracker.Repository;
+// namespace BudgetTracker.Repository;
 
-public class TransactionRepository : MongoRepository<Transaction>, ITransactionRepository
-{
-    private readonly ICategoryRepository _categoryRepository;
-    private readonly IBankRepository _bankRepository;
-
-    public TransactionRepository(
-        IMongoContext context,
-        ICategoryRepository categoryRepository,
-        IBankRepository bankRepository
-    ) : base(context.Transaction)
-    {
-        _categoryRepository = categoryRepository;
-        _bankRepository = bankRepository;
-    }
+// [Obsolete(message: "Use from repository project", error: true)]
+// public class TransactionRepository : MongoRepository<Transaction>, ITransactionRepository
+// {
+//     private readonly ICategoryRepository _categoryRepository;
+//     private readonly IBankRepository _bankRepository;
+//
+//     public TransactionRepository(
+//         IMongoContext context,
+//         ICategoryRepository categoryRepository,
+//         IBankRepository bankRepository
+//     ) : base(context.Transaction)
+//     {
+//         _categoryRepository = categoryRepository;
+//         _bankRepository = bankRepository;
+//     }
 
     // public async Task<BankResult> GetByBankAsync(string bankId, QueryParams queryParams)
     // {
@@ -77,7 +79,7 @@ public class TransactionRepository : MongoRepository<Transaction>, ITransactionR
     //     ByDateTransactions data = await new TransactionsByDate(date, _collection).GetTransactionsAsync();
     //     return data;
     // }
-}
+// }
 
 // #region List by Date API Repository
 // internal sealed class TransactionsByDate

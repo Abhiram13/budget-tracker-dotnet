@@ -7,24 +7,28 @@ using BudgetTracker.Services;
 using BudgetTracker.ValueObject;
 using BudgetTracker.Context;
 using BudgetTracker.Models;
+using BudgetTracker.Models.Mongo;
+using BudgetTracker.Mongo.Repositories;
 using BudgetTracker.Repository;
 using BudgetTracker.Security;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
+// using IMongoContext = BudgetTracker.Interfaces.IMongoContext;
+using MongoSecrets = BudgetTracker.Models.MongoSecrets;
 
 namespace BudgetTracker.Extensions;
 
 public static class ServiceCollectionExtension
 {
     private static IConfiguration _configuration = default!;
-    
+
     extension(IServiceCollection serviceCollection)
     {
         public IServiceCollection AddServiceCollection(IConfiguration configuration)
         {
             _configuration = configuration;
-            
+
             serviceCollection
                 .AddMongoSecrets()
                 .AddDependencyServices()
@@ -34,16 +38,16 @@ public static class ServiceCollectionExtension
 
             return serviceCollection;
         }
-        
+
         private IServiceCollection AddDependencyServices()
         {
             serviceCollection
                 .AddSingleton<MongoSecrets>(provider => provider.GetRequiredService<IOptions<MongoSecrets>>().Value)
-                .AddSingleton<ICategoryRepository, CategoryRepository>()
-                .AddSingleton<IBankRepository, BankRepository>()
+                // .AddSingleton<ICategoryRepository, CategoryRepository>()
+                // .AddSingleton<IBankRepository, BankRepository>()
                 .AddSingleton<ITransactionRepository, TransactionRepository>()
-                .AddSingleton<IDueRepository, DueRepository>()
-                .AddSingleton<IMongoContext, MongoDBContext>()
+                // .AddSingleton<IDueRepository, DueRepository>()
+                // .AddSingleton<IMongoContext, MongoDBContext>()
                 .AddScoped<CategoryService>()
                 .AddScoped<TransactionService>()
                 .AddScoped<BankService>()
@@ -99,14 +103,14 @@ public static class ServiceCollectionExtension
                 .BindConfiguration("Mongo")
                 .ValidateDataAnnotations()
                 .ValidateOnStart();
-            
+
             return serviceCollection;
         }
 
         private IServiceCollection AddAppSecrets()
         {
             serviceCollection.AddOptions<AppSecrets>().Bind(_configuration).ValidateOnStart();
-            
+
             return serviceCollection;
         }
     }
