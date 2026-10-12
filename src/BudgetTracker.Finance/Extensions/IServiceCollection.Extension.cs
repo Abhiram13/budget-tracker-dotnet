@@ -48,10 +48,10 @@ public static class ServiceCollectionExtension
                 .AddSingleton<ITransactionRepository, TransactionRepository>()
                 // .AddSingleton<IDueRepository, DueRepository>()
                 // .AddSingleton<IMongoContext, MongoDBContext>()
-                .AddScoped<CategoryService>()
-                .AddScoped<TransactionService>()
-                .AddScoped<BankService>()
-                .AddScoped<DueService>()
+                // .AddScoped<CategoryService>()
+                // .AddScoped<TransactionService>()
+                // .AddScoped<BankService>()
+                // .AddScoped<DueService>()
                 .AddSingleton<AppSecrets>()
                 .AddSingleton<ISecretManager, SecretManagerService>();
 
