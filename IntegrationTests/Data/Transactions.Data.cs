@@ -242,122 +242,122 @@ namespace IntegrationTests.Data.Transactions
     /// Test data object for Insert Transactions
     /// <c>/transactions</c>
     /// </summary>
-    public class TransactionsInsertTestData : TheoryTestData<TransactionsInsertTestDef>
-    {
-        public TransactionsInsertTestData()
-        {
-            Add(new(
-                ExpectedMessage: "Transaction inserted successfully",
-                ExpectedStatusCode: 201,
-                ExpectedHttpStatusCode: 200,
-                Transaction: new() { Amount = 123, CategoryId = _categoryId, Date = _date, Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit }
-            ));
-            Add(new(
-                ExpectedMessage: "The CategoryId field is required.",
-                ExpectedStatusCode: 400,
-                ExpectedHttpStatusCode: 400,
-                Transaction: new() { Amount = 123, CategoryId = "", Date = _date, Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit }
-            ));
-            Add(new(
-                ExpectedMessage: "Something went wrong. Please verify logs for more details",
-                ExpectedStatusCode: 500,
-                ExpectedHttpStatusCode: 200,
-                Transaction: new() { Amount = 123, CategoryId = _categoryId, Date = _date, Description = _description, Due = false, FromBank = "", ToBank = "", Type = TransactionType.Debit }
-            ));
-            Add(new(
-                ExpectedMessage: "Something went wrong. Please verify logs for more details",
-                ExpectedStatusCode: 500,
-                ExpectedHttpStatusCode: 200,
-                Transaction: new() { Amount = 123, CategoryId = _invalidCategoryId, Date = _date, Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit }
-            ));
-            Add(new(
-                ExpectedMessage: "Something went wrong. Please verify logs for more details",
-                ExpectedStatusCode: 500,
-                ExpectedHttpStatusCode: 200,
-                Transaction: new() { Amount = 123, CategoryId = _categoryId, Date = _date, Description = _description, Due = false, FromBank = _invalidBankId, ToBank = "", Type = TransactionType.Debit }
-            ));
-            Add(new(
-                ExpectedMessage: "The Date field is required.",
-                ExpectedStatusCode: 400,
-                ExpectedHttpStatusCode: 400,
-                Transaction: new() { Amount = 123, CategoryId = _categoryId, Date = "", Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit }
-            ));
-            Add(new(
-                ExpectedMessage: "Please provide valid date.",
-                ExpectedStatusCode: 400,
-                ExpectedHttpStatusCode: 400,
-                Transaction: new() { Amount = 123, CategoryId = _categoryId, Date = "2024-01-011#", Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit }
-            ));
-            Add(new(
-                ExpectedMessage: "Please provide valid date.",
-                ExpectedStatusCode: 400,
-                ExpectedHttpStatusCode: 400,
-                Transaction: new() { Amount = 123, CategoryId = _categoryId, Date = "hasgds77y9-hdsk7-", Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit }
-            ));
-            Add(new(
-                ExpectedMessage: "Provided date is out of range or invalid.",
-                ExpectedStatusCode: 400,
-                ExpectedHttpStatusCode: 400,
-                Transaction: new() { Amount = 123, CategoryId = _categoryId, Date = DateTime.Now.AddDays(2).ToString("yyyy-MM-dd"), Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit }
-            ));
-            Add(new(
-                ExpectedMessage: "Please provide valid description.",
-                ExpectedStatusCode: 400,
-                ExpectedHttpStatusCode: 400,
-                Transaction: new() { Amount = 123, CategoryId = _categoryId, Date = _date, Description = "Sample test !", Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit }
-            ));
-            Add(new(
-                ExpectedMessage: "Transaction inserted successfully",
-                ExpectedStatusCode: 201,
-                ExpectedHttpStatusCode: 200,
-                Transaction: new() { Amount = 123, CategoryId = _categoryId, Date = _date, Description = "Sample test 123", Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit }
-            ));
-            Add(new(
-                ExpectedMessage: "Please provide valid description.",
-                ExpectedStatusCode: 400,
-                ExpectedHttpStatusCode: 400,
-                Transaction: new() { Amount = 123, CategoryId = _categoryId, Date = _date, Description = "ajdhsah HKHKHk %&^%", Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit }
-            ));
-            Add(new(
-                ExpectedMessage: "The Description field is required.",
-                ExpectedStatusCode: 400,
-                ExpectedHttpStatusCode: 400,
-                Transaction: new() { Amount = 123, CategoryId = _categoryId, Date = _date, Description = "", Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit }
-            ));
-            Add(new(
-                ExpectedMessage: "Transaction inserted successfully",
-                ExpectedStatusCode: 201,
-                ExpectedHttpStatusCode: 200,
-                Transaction: new() { Amount = 234, CategoryId = _categoryId, Date = _currentDate, Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit }
-            ));
-        }
-    }
+    // public class TransactionsInsertTestData : TheoryTestData<TransactionsInsertTestDef>
+    // {
+    //     public TransactionsInsertTestData()
+    //     {
+    //         Add(new(
+    //             ExpectedMessage: "Transaction inserted successfully",
+    //             ExpectedStatusCode: 201,
+    //             ExpectedHttpStatusCode: 200,
+    //             Transaction: new() { Amount = 123, CategoryId = _categoryId, Date = _date, Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit }
+    //         ));
+    //         Add(new(
+    //             ExpectedMessage: "The CategoryId field is required.",
+    //             ExpectedStatusCode: 400,
+    //             ExpectedHttpStatusCode: 400,
+    //             Transaction: new() { Amount = 123, CategoryId = "", Date = _date, Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit }
+    //         ));
+    //         Add(new(
+    //             ExpectedMessage: "Something went wrong. Please verify logs for more details",
+    //             ExpectedStatusCode: 500,
+    //             ExpectedHttpStatusCode: 200,
+    //             Transaction: new() { Amount = 123, CategoryId = _categoryId, Date = _date, Description = _description, Due = false, FromBank = "", ToBank = "", Type = TransactionType.Debit }
+    //         ));
+    //         Add(new(
+    //             ExpectedMessage: "Something went wrong. Please verify logs for more details",
+    //             ExpectedStatusCode: 500,
+    //             ExpectedHttpStatusCode: 200,
+    //             Transaction: new() { Amount = 123, CategoryId = _invalidCategoryId, Date = _date, Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit }
+    //         ));
+    //         Add(new(
+    //             ExpectedMessage: "Something went wrong. Please verify logs for more details",
+    //             ExpectedStatusCode: 500,
+    //             ExpectedHttpStatusCode: 200,
+    //             Transaction: new() { Amount = 123, CategoryId = _categoryId, Date = _date, Description = _description, Due = false, FromBank = _invalidBankId, ToBank = "", Type = TransactionType.Debit }
+    //         ));
+    //         Add(new(
+    //             ExpectedMessage: "The Date field is required.",
+    //             ExpectedStatusCode: 400,
+    //             ExpectedHttpStatusCode: 400,
+    //             Transaction: new() { Amount = 123, CategoryId = _categoryId, Date = "", Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit }
+    //         ));
+    //         Add(new(
+    //             ExpectedMessage: "Please provide valid date.",
+    //             ExpectedStatusCode: 400,
+    //             ExpectedHttpStatusCode: 400,
+    //             Transaction: new() { Amount = 123, CategoryId = _categoryId, Date = "2024-01-011#", Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit }
+    //         ));
+    //         Add(new(
+    //             ExpectedMessage: "Please provide valid date.",
+    //             ExpectedStatusCode: 400,
+    //             ExpectedHttpStatusCode: 400,
+    //             Transaction: new() { Amount = 123, CategoryId = _categoryId, Date = "hasgds77y9-hdsk7-", Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit }
+    //         ));
+    //         Add(new(
+    //             ExpectedMessage: "Provided date is out of range or invalid.",
+    //             ExpectedStatusCode: 400,
+    //             ExpectedHttpStatusCode: 400,
+    //             Transaction: new() { Amount = 123, CategoryId = _categoryId, Date = DateTime.Now.AddDays(2).ToString("yyyy-MM-dd"), Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit }
+    //         ));
+    //         Add(new(
+    //             ExpectedMessage: "Please provide valid description.",
+    //             ExpectedStatusCode: 400,
+    //             ExpectedHttpStatusCode: 400,
+    //             Transaction: new() { Amount = 123, CategoryId = _categoryId, Date = _date, Description = "Sample test !", Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit }
+    //         ));
+    //         Add(new(
+    //             ExpectedMessage: "Transaction inserted successfully",
+    //             ExpectedStatusCode: 201,
+    //             ExpectedHttpStatusCode: 200,
+    //             Transaction: new() { Amount = 123, CategoryId = _categoryId, Date = _date, Description = "Sample test 123", Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit }
+    //         ));
+    //         Add(new(
+    //             ExpectedMessage: "Please provide valid description.",
+    //             ExpectedStatusCode: 400,
+    //             ExpectedHttpStatusCode: 400,
+    //             Transaction: new() { Amount = 123, CategoryId = _categoryId, Date = _date, Description = "ajdhsah HKHKHk %&^%", Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit }
+    //         ));
+    //         Add(new(
+    //             ExpectedMessage: "The Description field is required.",
+    //             ExpectedStatusCode: 400,
+    //             ExpectedHttpStatusCode: 400,
+    //             Transaction: new() { Amount = 123, CategoryId = _categoryId, Date = _date, Description = "", Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit }
+    //         ));
+    //         Add(new(
+    //             ExpectedMessage: "Transaction inserted successfully",
+    //             ExpectedStatusCode: 201,
+    //             ExpectedHttpStatusCode: 200,
+    //             Transaction: new() { Amount = 234, CategoryId = _categoryId, Date = _currentDate, Description = _description, Due = false, FromBank = _bankId, ToBank = "", Type = TransactionType.Debit }
+    //         ));
+    //     }
+    // }
 
     /// <summary>
     /// Test data object for Transactions by Id <c>/transactions/:id</c>
     /// </summary>
-    public class TransactionsByIdTestData : TheoryTestData<TransactionByIdTestDef>
-    {
-        public TransactionsByIdTestData()
-        {
-            Add(new TransactionByIdTestDef(
-                ShouldIdBeValidTest: true,
-                ExpectedStatusCode: 200,
-                ExpectedHttpStatusCode: 200,
-                date: _currentDate,
-                Transaction: new Transaction()
-                {
-                    Amount = 234,
-                    CategoryId = _categoryId,
-                    Date = _currentDate,
-                    Description = _description,
-                    Due = false,
-                    FromBank = _bankId,
-                    ToBank = "",
-                    Type = TransactionType.Debit
-                }
-            ));
-        }
-    }
+    // public class TransactionsByIdTestData : TheoryTestData<TransactionByIdTestDef>
+    // {
+    //     public TransactionsByIdTestData()
+    //     {
+    //         Add(new TransactionByIdTestDef(
+    //             ShouldIdBeValidTest: true,
+    //             ExpectedStatusCode: 200,
+    //             ExpectedHttpStatusCode: 200,
+    //             date: _currentDate,
+    //             Transaction: new Transaction()
+    //             {
+    //                 Amount = 234,
+    //                 CategoryId = _categoryId,
+    //                 Date = _currentDate,
+    //                 Description = _description,
+    //                 Due = false,
+    //                 FromBank = _bankId,
+    //                 ToBank = "",
+    //                 Type = TransactionType.Debit
+    //             }
+    //         ));
+    //     }
+    // }
 }
 

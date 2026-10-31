@@ -75,7 +75,7 @@ public static class ServiceCollectionExtension
         {
             serviceCollection
                 .AddAuthentication()
-                .AddScheme<ApiKeySchemaOptions, ApiKeyHandler>(ApiKeySchemaOptions.DefaultSchema, _ => { });
+                .AddScheme<ApiKeySchemaOptions, ApiKeyHandler>(ApiKeySchemaOptions.DEFAULT_SCHEMA, _ => { });
 
             return serviceCollection;
         }

@@ -18,4 +18,8 @@
         </PackageReference>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Src\BudgetTracker.Finance\BudgetTracker.Finance.csproj" />
+    </ItemGroup>
+
 </Project>

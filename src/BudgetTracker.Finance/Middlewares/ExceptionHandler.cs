@@ -27,7 +27,7 @@ public class ExceptionHandlerMiddleware : ICustomMiddleware
             /// <summary>
             /// <see href="https://www.milanjovanovic.tech/blog/problem-details-for-aspnetcore-apis">Problem Details for ASP.NET Core APIs</see>
             /// </summary>
-            ProblemDetails problemDetails = new ProblemDetails()
+            ProblemDetails problemDetails = new ProblemDetails
             {
                 Type = e.GetType().ToString(),
                 Title = "Middleware Exception",
@@ -43,6 +43,7 @@ public class ExceptionHandlerMiddleware : ICustomMiddleware
                 Message = "Something went wrong. Please verify logs for more details",                
             };
 
+            httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
             await httpContext.Response.WriteAsJsonAsync(response);
         }
     }

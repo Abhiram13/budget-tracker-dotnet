@@ -11,8 +11,8 @@ namespace BudgetTracker.Security;
 
 public class ApiKeySchemaOptions : AuthenticationSchemeOptions
 {
-    public const string DefaultSchema = "ApiKeySchema";
-    public const string HeaderName = "API_KEY";
+    public const string DEFAULT_SCHEMA = "ApiKeySchema";
+    public const string HEADER_NAME = "API_KEY";
 }
 
 public class ApiKeyHandler : AuthenticationHandler<ApiKeySchemaOptions>
@@ -26,27 +26,27 @@ public class ApiKeyHandler : AuthenticationHandler<ApiKeySchemaOptions>
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        bool isHeaderExist = Request.Headers.ContainsKey(ApiKeySchemaOptions.HeaderName);
+        bool isHeaderExist = Request.Headers.ContainsKey(ApiKeySchemaOptions.HEADER_NAME);
 
         if (!isHeaderExist)
         {
             return Task.FromResult(AuthenticateResult.Fail("No Key"));
         }
 
-        string? HEADER_API_KEY = Request.Headers[ApiKeySchemaOptions.HeaderName];
-        string? API_KEY = _secret.Apikey;
+        string? headerApiKey = Request.Headers[ApiKeySchemaOptions.HEADER_NAME];
+        string? apiKey = _secret.Apikey;
 
-        if (HEADER_API_KEY != API_KEY)
+        if (headerApiKey != apiKey)
         {
             return Task.FromResult(AuthenticateResult.Fail("Invalid key provided"));
         }
 
-        List<Claim> claims = new List<Claim>()
+        List<Claim> claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, "Api User")
         };
 
-        ClaimsIdentity identity = new(claims, Scheme.Name);
+        ClaimsIdentity identity = new ClaimsIdentity(claims, Scheme.Name);
         ClaimsPrincipal principal = new(identity);
         AuthenticationTicket ticket = new AuthenticationTicket(principal, Scheme.Name);
 

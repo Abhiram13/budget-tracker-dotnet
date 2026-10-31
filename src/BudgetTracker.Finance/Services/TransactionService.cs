@@ -65,21 +65,26 @@ public class TransactionService
     public async Task InsertOneAsync(InsertTransactionDto payload)
     {
         bool isCategoryExists = await _categoryRepository.CountByIdAsync(payload.CategoryId);
-
+        
         if (isCategoryExists == false)
         {
             throw new BadRequestException("Invalid Category id provided");
         }
-
+        
+        if (string.IsNullOrEmpty(payload.FromBank) && string.IsNullOrEmpty(payload.ToBank))
+        {
+            throw new BadRequestException("Invalid To bank id and From bank id provided.");
+        }
+        
         if (payload.Type == TransactionType.Debit)
         {
             if (string.IsNullOrEmpty(payload.FromBank))
             {
                 throw new BadRequestException("Invalid From bank id provided for the transaction debit type");
             }
-
+        
             bool isBankExists = await _bankRepository.CountByIdAsync(payload.FromBank);
-
+        
             if (isBankExists == false)
             {
                 throw new BadRequestException("Invalid From bank id provided for the transaction debit type");
@@ -92,18 +97,13 @@ public class TransactionService
             {
                 throw new BadRequestException("Invalid To bank id provided for the transaction credit type");
             }
-
+        
             bool isBankExists = await _bankRepository.CountByIdAsync(payload.ToBank);
-
+        
             if (isBankExists == false)
             {
                 throw new BadRequestException("Invalid To bank id provided for the transaction credit type");
             }
-        }
-
-        if (string.IsNullOrEmpty(payload.FromBank) && string.IsNullOrEmpty(payload.ToBank))
-        {
-            throw new BadRequestException("Invalid To bank id and From bank id provided.");
         }
 
         Transaction transaction = Transaction.Create(
