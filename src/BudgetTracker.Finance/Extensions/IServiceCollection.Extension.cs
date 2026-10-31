@@ -6,6 +6,7 @@ using BudgetTracker.Interfaces;
 using BudgetTracker.Services;
 using BudgetTracker.ValueObject;
 using BudgetTracker.Context;
+using BudgetTracker.Infrastructure;
 using BudgetTracker.Models;
 using BudgetTracker.Models.Mongo;
 using BudgetTracker.Infrastructure.Repositories;
@@ -14,7 +15,7 @@ using BudgetTracker.Security;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
-// using IMongoContext = BudgetTracker.Interfaces.IMongoContext;
+using IMongoContext = BudgetTracker.Models.Mongo.IMongoContext;
 using MongoSecrets = BudgetTracker.Models.MongoSecrets;
 
 namespace BudgetTracker.Extensions;
@@ -43,6 +44,7 @@ public static class ServiceCollectionExtension
         {
             serviceCollection
                 .AddSingleton<MongoSecrets>(provider => provider.GetRequiredService<IOptions<MongoSecrets>>().Value)
+                .AddSingleton<IMongoContext, MongoDbContext>()
                 // .AddSingleton<ICategoryRepository, CategoryRepository>()
                 // .AddSingleton<IBankRepository, BankRepository>()
                 .AddSingleton<ITransactionRepository, TransactionRepository>()
@@ -52,8 +54,8 @@ public static class ServiceCollectionExtension
                 // .AddScoped<TransactionService>()
                 // .AddScoped<BankService>()
                 // .AddScoped<DueService>()
-                .AddSingleton<AppSecrets>()
-                .AddSingleton<ISecretManager, SecretManagerService>();
+                .AddSingleton<AppSecrets>();
+                // .AddSingleton<ISecretManager, SecretManagerService>();
 
             return serviceCollection;
         }

@@ -2,4 +2,7 @@ using BudgetTracker.Models.Entities;
 
 namespace BudgetTracker.Models.Mongo;
 
-public interface ITransactionRepository : IMongoRepository<Transaction>;
+public interface ITransactionRepository
+{
+    public Task InsertOneAsync(Transaction payload);
+}

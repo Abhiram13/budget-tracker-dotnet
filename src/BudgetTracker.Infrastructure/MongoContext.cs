@@ -23,7 +23,7 @@ public class MongoDbContext : IMongoContext
         }
     }
 
-    public IMongoDatabase Database { get; }
+    public IMongoDatabase Database { get; set; }
     public IMongoCollection<Transaction> Transaction
     {
         get { return Database.GetCollection<Transaction>(MongoCollections.Transactions); }

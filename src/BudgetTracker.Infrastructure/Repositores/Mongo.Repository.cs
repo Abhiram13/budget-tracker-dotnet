@@ -6,7 +6,7 @@ namespace BudgetTracker.Infrastructure.Repositories;
 
 public abstract class MongoRepository<T> : IMongoRepository<T> where T : MongoObject
 {
-    protected readonly IMongoCollection<T> _collection;
+    private readonly IMongoCollection<T> _collection;
 
     protected MongoRepository(IMongoCollection<T> collection)
     {
